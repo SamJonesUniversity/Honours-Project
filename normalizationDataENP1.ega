@@ -1,0 +1,162 @@
+[HEADER]
+[HEADER:DATASOURCE]
+rawFile=FILE_RAW
+sourceFile=
+sourceFormat=
+sourceHeaders=t
+[SETUP]
+[SETUP:CONFIG]
+allowedClasses=integer,string
+csvFormat=decpnt|comma
+inputHeaders=t
+maxClassCount=50
+[SETUP:FILENAMES]
+FILE_RAW=ENP1.csv
+FILE_NORMALIZE=ENP1_norm.csv
+FILE_RANDOMIZE=ENP1_random.csv
+FILE_CLUSTER=ENP1_cluster.csv
+FILE_TRAIN=ENP1_train.csv
+FILE_EVAL=ENP1_eval.csv
+FILE_EVAL_NORM=ENP1_eval_norm.csv
+FILE_TRAINSET=ENP1_train.egb
+FILE_ML=ENP1_train.eg
+FILE_OUTPUT=ENP1_output.csv
+[DATA]
+[DATA:CONFIG]
+goal=classification
+[DATA:STATS]
+"name","isclass","iscomplete","isint","isreal","amax","amin","mean","sdev","source"
+"Nickel Concentration g/l",1,1,1,1,30,10,21.72,4.5388985448,""
+"Nickel Type",1,1,0,0,0.0001,-0.0001,0,0,""
+"Reducer (sodium hypophosphite) Concentration g/l",1,1,1,1,30,13,22.12,3.6695503812,""
+"Complexing Agent Concentration g/l 1",0,1,0,1,46,2.5,17.62,17.6925294969,""
+"Complexing agent 1",1,1,0,0,0.0001,-0.0001,0,0,""
+"Complexing agent concentration g/l 2",0,0,0,1,1.2001,1.1999,1.2,0,""
+"Complexing Agent 2",1,0,0,0,0.0001,-0.0001,0,0,""
+"pH",0,1,0,1,9,4,5.96,1.3982846634,""
+"Temperature",1,1,1,1,90,70,80.72,6.3278432345,""
+"Substrate",1,1,0,0,0.0001,-0.0001,0,0,""
+"Deposition Rate �m/h",0,1,0,1,60,4.9,24.644,14.5748846994,""
+[DATA:CLASSES]
+"field","code","name"
+"Nickel Concentration g/l","10","10",1
+"Nickel Concentration g/l","15","15",3
+"Nickel Concentration g/l","20","20",9
+"Nickel Concentration g/l","25","25",10
+"Nickel Concentration g/l","28","28",1
+"Nickel Concentration g/l","30","30",1
+"Nickel Type","nickel sulphate","nickel sulphate",25
+"Reducer (sodium hypophosphite) Concentration g/l","13","13",1
+"Reducer (sodium hypophosphite) Concentration g/l","15","15",1
+"Reducer (sodium hypophosphite) Concentration g/l","20","20",11
+"Reducer (sodium hypophosphite) Concentration g/l","25","25",11
+"Reducer (sodium hypophosphite) Concentration g/l","30","30",1
+"Complexing agent 1","citric acid","citric acid",13
+"Complexing agent 1","glycine","glycine",1
+"Complexing agent 1","sodium acetate","sodium acetate",1
+"Complexing agent 1","sodium citrate","sodium citrate",10
+"Complexing Agent 2","glycine","glycine",13
+"Temperature","70","70",4
+"Temperature","75","75",1
+"Temperature","80","80",13
+"Temperature","85","85",1
+"Temperature","88","88",1
+"Temperature","90","90",5
+"Substrate","AZ31 Magnesium Alloy","AZ31 Magnesium Alloy",1
+"Substrate","AZ91D Magnesium Alloy","AZ91D Magnesium Alloy",13
+"Substrate","Brass","Brass",10
+"Substrate","Mild carbon Steel","Mild carbon Steel",1
+[NORMALIZE]
+[NORMALIZE:CONFIG]
+missingValues=DiscardMissing
+sourceFile=FILE_TRAIN
+targetFile=FILE_NORMALIZE
+[NORMALIZE:RANGE]
+"name","io","timeSlice","action","high","low"
+"Nickel Concentration g/l","input",0,"equilateral",1,0
+"Nickel Type","input",0,"oneof",1,0
+"Reducer (sodium hypophosphite) Concentration g/l","input",0,"equilateral",1,0
+"Complexing Agent Concentration g/l 1","input",0,"range",1,0
+"Complexing agent 1","input",0,"equilateral",1,0
+"Complexing agent concentration g/l 2","input",0,"range",1,0
+"Complexing Agent 2","input",0,"oneof",1,0
+"pH","input",0,"range",1,0
+"Temperature","input",0,"equilateral",1,0
+"Substrate","output",0,"equilateral",1,0
+"Deposition Rate �m/h","input",0,"range",1,0
+[RANDOMIZE]
+[RANDOMIZE:CONFIG]
+sourceFile=FILE_RAW
+targetFile=FILE_RANDOMIZE
+[CLUSTER]
+[CLUSTER:CONFIG]
+clusters=4
+sourceFile=FILE_EVAL
+targetFile=FILE_CLUSTER
+type=kmeans
+[BALANCE]
+[BALANCE:CONFIG]
+balanceField=
+countPer=
+sourceFile=
+targetFile=
+[CODE]
+[CODE:CONFIG]
+embedData=
+targetFile=
+targetLanguage=
+[SEGREGATE]
+[SEGREGATE:CONFIG]
+sourceFile=FILE_RANDOMIZE
+[SEGREGATE:FILES]
+"file","percent"
+"FILE_TRAIN",75
+"FILE_EVAL",25
+[GENERATE]
+[GENERATE:CONFIG]
+sourceFile=FILE_NORMALIZE
+targetFile=FILE_TRAINSET
+[ML]
+[ML:CONFIG]
+architecture=?:B->TANH->34:B->TANH->?
+evalFile=FILE_EVAL
+machineLearningFile=FILE_ML
+outputFile=FILE_OUTPUT
+query=
+trainingFile=FILE_TRAINSET
+type=feedforward
+[ML:TRAIN]
+arguments=
+cross=
+targetError=0.05
+type=rprop
+[TASKS]
+[TASKS:task-cluster]
+cluster
+[TASKS:task-code]
+code
+[TASKS:task-create]
+create
+[TASKS:task-evaluate]
+evaluate
+[TASKS:task-evaluate-raw]
+set ML.CONFIG.evalFile="FILE_EVAL_NORM"
+set NORMALIZE.CONFIG.sourceFile="FILE_EVAL"
+set NORMALIZE.CONFIG.targetFile="FILE_EVAL_NORM"
+normalize
+evaluate-raw
+[TASKS:task-full]
+randomize
+segregate
+normalize
+generate
+create
+train
+evaluate
+[TASKS:task-generate]
+randomize
+segregate
+normalize
+generate
+[TASKS:task-train]
+train
