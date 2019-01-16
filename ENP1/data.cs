@@ -47,22 +47,19 @@ namespace ENP1
                     for (int v = 0; v < values.Length; v++)
                     {
                         bool updated = false;
+
                         for (int k = 0; k < titles.Count; k++)
                         {
                             if (values[v].Contains(titles[k]))
                             {
                                 outputNumber++;
                             }
-                            else
+                            else if (!updated)
                             {
-                                if (!updated)
-                                {
-                                    inputNumber++;
-                                    updated = true;
-                                }
+                                inputNumber++;
+                                updated = true;
                             }
-                        }
-                        
+                        } 
                     }
                 }
 
@@ -84,7 +81,7 @@ namespace ENP1
             bool passed = false;
             int numOfSamples = 0;
             int sampleCount = 0;
-            sampleNumber = (csvLength - 1) / (((csvLength - 1) / 10) * sampleNumber);
+            sampleNumber = (csvLength - 1) / (((csvLength - 1) / 10) * (sampleNumber + 1)) + 1;
 
             double[][] inputData = CreateArray<double>(csvLength - 1, inputNumber);
             double[][] outputData = CreateArray<double>(csvLength - 1, outputNumber);
@@ -133,6 +130,7 @@ namespace ENP1
                         {
                             sampleCount = 0;
                             numOfSamples++;
+                            passed = false;
                         }
 
                         sampleCount++;

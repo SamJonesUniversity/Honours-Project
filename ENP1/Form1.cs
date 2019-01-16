@@ -2,6 +2,7 @@
 using System;
 using System.Windows.Forms;
 using System.IO;
+using System.Collections.Generic;
 
 //Engoc libraries.
 using Encog.Neural.Networks;
@@ -19,9 +20,10 @@ using Encog.App.Analyst.Script.Normalize;
 
 //Accord libraries.
 using Accord.Neuro;
+using Accord.MachineLearning;
+using Accord.Neuro.Networks;
 using Accord.Neuro.Learning;
 using Accord.Math;
-using System.Collections.Generic;
 
 namespace ENP1
 {
@@ -174,11 +176,16 @@ namespace ENP1
             data info = new data(); info = info.return_info(path + dataFile.Replace(".csv", "Normal.csv"), outputTiltes, sampleBar.Value);
 
             //Setup network
-            Accord.Neuro.IActivationFunction function = new SigmoidFunction();
-            ActivationNetwork network = new ActivationNetwork(function, info.InputNumber, 10, 10, info.OutputNumber); //Activation function, input, hidden, hidden, output.
+            Accord.Neuro.IActivationFunction function = new SigmoidFunction(); 
+            ActivationNetwork network = new ActivationNetwork(function, info.InputNumber, 5, info.OutputNumber); //Activation function, input, hidden, hidden, output.
+            //DeepBeliefNetwork network = new DeepBeliefNetwork(info.InputNumber, 10, 2);
 
             //Setup trainer using backpropagation.
             BackPropagationLearning teacher = new BackPropagationLearning(network);
+            //DeepNeuralNetworkLearning teacher = new DeepNeuralNetworkLearning(network);
+            //ActivationNetworkLearningConfigurationFunction algorit = new ActivationNetworkLearningConfigurationFunction(network, 1);
+            //teacher.Algorithm = function;
+            //teacher.LayerCount = 2;
             teacher.LearningRate = ((float)(learningRateBar.Value) / 10);
             teacher.Momentum = ((float)(momentumBar.Value) / 10);
 
@@ -273,71 +280,99 @@ namespace ENP1
 
             using (StreamWriter sw = new StreamWriter(test))
             {
-                sw.WriteLine(String.Format("Encog Error,Accord Error,Learning Rate,Momentum"));
+                sw.WriteLine(String.Format("Encog Error,Accord Error,Learning Rate,Momentum,Neurons,Layers"));
             }
 
-            for (double lr = 0.1; lr <= 1; lr += 0.1)
+            for (int layers = 1; layers <= 4; layers++)
             {
-                for (double m = 0.1; m <= 1; m += 0.1)
+                for (int neurons = 5; neurons <= 15; neurons += 5)
                 {
-                    // initialize input and output values.
-                    data infoAccord = new data(); infoAccord = infoAccord.return_info(path + dataFile.Replace(".csv", "Normal.csv"), outputTiltes, sampleBar.Value);
-                    //data sample = new data(); sample = sample.return_info(path + dataFile.Replace(".csv", "Sample.csv"), outputTiltes, sampleBar.Value);
-
-                    //Setup network
-                    Accord.Neuro.IActivationFunction function = new SigmoidFunction();
-                    ActivationNetwork networkAccord = new ActivationNetwork(function, infoAccord.InputNumber, 10, 10, infoAccord.OutputNumber); //Activation function, input, hidden, hidden, output.
-
-                    //Setup trainer using backpropagation.
-                    BackPropagationLearning teacher = new BackPropagationLearning(networkAccord);
-                    teacher.LearningRate = lr; //((float)(learningRateBar.Value) / 10);
-                    teacher.Momentum = m; //((float)(momentumBar.Value) / 10);
-
-                    //Train network on data set.
-                    double error = double.PositiveInfinity;
-
-                    //Recording time per tick.
-                    DateTime start = DateTime.Now;
-                    DateTime end;
-                    
-                    do
+                    for (double lr = 0.1; lr <= 1; lr += 0.1)
                     {
-                        error = teacher.RunEpoch(infoAccord.InputData, infoAccord.OutputData);
-                        end = DateTime.Now;
+                        for (double m = 0.1; m <= 1; m += 0.1)
+                        {
+                            // initialize input and output values.
+                            data infoAccord = new data(); infoAccord = infoAccord.return_info(path + dataFile.Replace(".csv", "Normal.csv"), outputTiltes, sampleBar.Value);
 
-                    } while (((end.Minute * 60) + end.Second) - ((start.Minute * 60) + start.Second) < 1);
+                            //Setup network
+                            Accord.Neuro.IActivationFunction function = new SigmoidFunction();
+                            ActivationNetwork networkAccord = new ActivationNetwork(function, infoAccord.InputNumber, neurons, infoAccord.OutputNumber);
 
-                    //Setup training dataset.
-                    data infoEncog = new data(); infoEncog = infoEncog.return_info(path + dataFile.Replace(".csv", "Normal.csv"), outputTiltes, sampleBar.Value);
-                   
-                    IMLDataSet data = new BasicMLDataSet(infoEncog.InputData, infoEncog.OutputData);
-                    IMLDataSet sampleData = new BasicMLDataSet(infoEncog.InputDataSample, infoEncog.OutputDataSample);
+                            switch (layers)
+                            {
+                                case 2:
+                                    networkAccord = new ActivationNetwork(function, infoAccord.InputNumber, neurons, neurons, infoAccord.OutputNumber); //Activation function, input, hidden, hidden, output.
+                                    break;
 
-                    //Setup network, parameters (Activation, bias, number of neurons).
-                    BasicNetwork networkEncog = new BasicNetwork();
-                    networkEncog.AddLayer(new BasicLayer(null, true, infoEncog.InputNumber)); //Input.
-                    networkEncog.AddLayer(new BasicLayer(new ActivationSigmoid(), true, 10)); //Hidden.
-                    networkEncog.AddLayer(new BasicLayer(new ActivationSigmoid(), true, 10)); //Hidden.
-                    networkEncog.AddLayer(new BasicLayer(new ActivationSigmoid(), false, infoEncog.OutputNumber)); //Output.
-                    networkEncog.Structure.FinalizeStructure();
-                    networkEncog.Reset();
+                                case 3:
+                                    networkAccord = new ActivationNetwork(function, infoAccord.InputNumber, neurons, neurons, neurons, infoAccord.OutputNumber); //Activation function, input, hidden, hidden, output.
+                                    break;
 
-                    //Train network on data set, parameters (Network, dataset, learning rate, momentum).
-                    IMLTrain learner = new Backpropagation(networkEncog, data, lr, m);
+                                case 4:
+                                    networkAccord = new ActivationNetwork(function, infoAccord.InputNumber, neurons, neurons, neurons, neurons, infoAccord.OutputNumber); //Activation function, input, hidden, hidden, output.
+                                    break;
 
-                    start = DateTime.Now;
+                                case 5:
+                                    networkAccord = new ActivationNetwork(function, infoAccord.InputNumber, neurons, neurons, neurons, neurons, neurons, infoAccord.OutputNumber); //Activation function, input, hidden, hidden, output.
+                                    break;
+                            }
+                            
+                            //Setup trainer using backpropagation.
+                            BackPropagationLearning teacher = new BackPropagationLearning(networkAccord);
+                            teacher.LearningRate = lr; 
+                            teacher.Momentum = m; 
 
-                    do
-                    {
-                        learner.Iteration();
-                        end = DateTime.Now;
+                            //Train network on data set.
+                            double error = double.PositiveInfinity;
 
-                    } while (((end.Minute * 60) + end.Second) - ((start.Minute * 60) + start.Second) < 1);
+                            //Recording time per tick.
+                            DateTime start = DateTime.Now;
+                            DateTime end;
 
-                    using (StreamWriter sw = new StreamWriter(path + "Results.csv", true))
-                    {
-                            sw.WriteLine(String.Format(
-                                "{0},{1},{2},{3}", learner.Error, error, lr, m));
+                            do
+                            {
+                                error = teacher.RunEpoch(infoAccord.InputData, infoAccord.OutputData);
+                                end = DateTime.Now;
+
+                            } while ((((end.Hour * 60 * 60) + end.Minute * 60) + end.Second) - (((start.Hour * 60 * 60) + start.Minute * 60) + start.Second) < 1);
+
+                            //Setup training dataset.
+                            data infoEncog = new data(); infoEncog = infoEncog.return_info(path + dataFile.Replace(".csv", "Normal.csv"), outputTiltes, sampleBar.Value);
+
+                            IMLDataSet data = new BasicMLDataSet(infoEncog.InputData, infoEncog.OutputData);
+                            IMLDataSet sampleData = new BasicMLDataSet(infoEncog.InputDataSample, infoEncog.OutputDataSample);
+
+                            //Setup network, parameters (Activation, bias, number of neurons).
+                            BasicNetwork networkEncog = new BasicNetwork();
+                            networkEncog.AddLayer(new BasicLayer(null, true, infoEncog.InputNumber)); //Input.
+
+                            for(int i = 0; i < layers; i++)
+                            {
+                                networkEncog.AddLayer(new BasicLayer(new ActivationSigmoid(), true, neurons)); //Hidden.
+                            }
+
+                            networkEncog.AddLayer(new BasicLayer(new ActivationSigmoid(), false, infoEncog.OutputNumber)); //Output.
+                            networkEncog.Structure.FinalizeStructure();
+                            networkEncog.Reset();
+
+                            //Train network on data set, parameters (Network, dataset, learning rate, momentum).
+                            IMLTrain learner = new Backpropagation(networkEncog, data, lr, m);
+
+                            start = DateTime.Now;
+
+                            do
+                            {
+                                learner.Iteration();
+                                end = DateTime.Now;
+
+                            } while ((((end.Hour * 60 * 60) + end.Minute * 60) + end.Second) - (((start.Hour * 60 * 60) + start.Minute * 60) + start.Second) < 1);
+
+                            using (StreamWriter sw = new StreamWriter(path + "Results.csv", true))
+                            {
+                                sw.WriteLine(String.Format(
+                                    "{0},{1},{2},{3},{4},{5}", learner.Error, error, lr, m, neurons, layers));
+                            }
+                        }
                     }
                 }
             }
