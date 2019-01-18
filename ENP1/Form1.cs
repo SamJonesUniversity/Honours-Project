@@ -20,10 +20,10 @@ using Encog.App.Analyst.Script.Normalize;
 
 //Accord libraries.
 using Accord.Neuro;
-using Accord.MachineLearning;
 using Accord.Neuro.Networks;
 using Accord.Neuro.Learning;
 using Accord.Math;
+using Accord.Neuro.ActivationFunctions;
 
 namespace ENP1
 {
@@ -119,7 +119,7 @@ namespace ENP1
                 learner.Iteration();
                 end = DateTime.Now;
 
-            } while (((end.Minute * 60) + end.Second) - ((start.Minute * 60) + start.Second) < 10);
+            } while ((((end.Hour * 60 * 60) + end.Minute * 60) + end.Second) - (((start.Hour * 60 * 60) + start.Minute * 60) + start.Second) < 10);
 
             //Load analyst from earlier.
             var analyst = new EncogAnalyst();
@@ -172,20 +172,22 @@ namespace ENP1
                 return;
             }
 
+            if(deepNetworkBox.Checked == true)
+            {
+                deepAccord();
+                return;
+            }
+
             // initialize input and output values.
             data info = new data(); info = info.return_info(path + dataFile.Replace(".csv", "Normal.csv"), outputTiltes, sampleBar.Value);
 
             //Setup network
             Accord.Neuro.IActivationFunction function = new SigmoidFunction(); 
             ActivationNetwork network = new ActivationNetwork(function, info.InputNumber, 5, info.OutputNumber); //Activation function, input, hidden, hidden, output.
-            //DeepBeliefNetwork network = new DeepBeliefNetwork(info.InputNumber, 10, 2);
 
             //Setup trainer using backpropagation.
             BackPropagationLearning teacher = new BackPropagationLearning(network);
-            //DeepNeuralNetworkLearning teacher = new DeepNeuralNetworkLearning(network);
-            //ActivationNetworkLearningConfigurationFunction algorit = new ActivationNetworkLearningConfigurationFunction(network, 1);
-            //teacher.Algorithm = function;
-            //teacher.LayerCount = 2;
+
             teacher.LearningRate = ((float)(learningRateBar.Value) / 10);
             teacher.Momentum = ((float)(momentumBar.Value) / 10);
 
@@ -201,7 +203,7 @@ namespace ENP1
                 error = teacher.RunEpoch(info.InputData, info.OutputData);
                 end = DateTime.Now;
 
-            } while (((end.Minute * 60) + end.Second) - ((start.Minute * 60) + start.Second) < 10);
+            } while ((((end.Hour * 60 * 60) + end.Minute * 60) + end.Second) - (((start.Hour * 60 * 60) + start.Minute * 60) + start.Second) < 10);
 
             //Load analyst from earlier.
             var analyst = new EncogAnalyst();
@@ -244,6 +246,121 @@ namespace ENP1
                     item += String.Format(
                         "Predicted Output: [{0}] = [{1}]\n Error = [{2}]",
                         prediction, outpt, error
+                    );
+                }
+
+                Flowers.Items.Add(item);
+            }
+
+            Flowers.Items.Add("\n");
+        }
+
+        private void deepAccord()
+        {
+            if (dataFile == null || !dataFile.Contains(".csv"))
+            {
+                MessageBox.Show("You must select a file first, if you have it is not the correct format. The file must be .csv", "File Access Error");
+                return;
+            }
+
+            // initialize input and output values.
+            data info = new data(); info = info.return_info(path + dataFile.Replace(".csv", "Normal.csv"), outputTiltes, sampleBar.Value);
+
+            IStochasticFunction function = new GaussianFunction();
+
+            //Setup network
+            DeepBeliefNetwork network = new DeepBeliefNetwork(function, info.InputNumber, 20, info.OutputNumber);
+
+            new GaussianWeights(network, 0.1).Randomize();
+            network.UpdateVisibleWeights();
+
+            //Setup trainer using backpropagation.
+            DeepBeliefNetworkLearning teacher = new DeepBeliefNetworkLearning(network)
+            {
+                Algorithm = (h, v, i) => new ContrastiveDivergenceLearning(h, v)
+                {
+                    LearningRate = ((float)(learningRateBar.Value) / 10),
+                    Momentum = ((float)(momentumBar.Value) / 10),
+                    Decay = 0.001,
+                }
+            };
+
+            // Setup batches of input for learning.
+            int batchCount = Math.Max(1, info.InputData.Length / 100);
+            // Create mini-batches to speed learning.
+            int[] groups = Accord.Statistics.Tools.RandomGroups(info.InputData.Length, batchCount);
+            double[][][] batches = info.InputData.Subgroups(groups);
+            // Learning data for the specified layer.
+            double[][][] layerData;
+
+            double unsupervisedError = 0.0;
+
+            // Unsupervised learning on each hidden layer, except for the output.
+            for (int layerIndex = 0; layerIndex < network.Machines.Count - 1; layerIndex++)
+            {
+                teacher.LayerIndex = layerIndex;
+                layerData = teacher.GetLayerInput(batches);
+                for (int i = 0; i < 10000; i++)
+                {
+                    unsupervisedError = teacher.RunEpoch(layerData) / info.InputData.Length;
+                }
+            }
+
+            //Setup trainer using backpropagation.
+            BackPropagationLearning teacher2 = new BackPropagationLearning(network);
+
+            teacher2.LearningRate = ((float)(learningRateBar.Value) / 10);
+            teacher2.Momentum = ((float)(momentumBar.Value) / 10);
+
+            double supervisedError = 0.0;
+
+            // Run supervised learning.
+            for (int i = 0; i < 100000; i++)
+            {
+                supervisedError = teacher2.RunEpoch(info.InputData, info.OutputData) / info.InputData.Length;
+            }
+
+            //Load analyst from earlier.
+            var analyst = new EncogAnalyst();
+            analyst.Load(new FileInfo(path + @"\normalizationData" + dataFile.Replace(".csv", "") + ".ega"));
+
+            var sourcefile = new FileInfo(path + dataFile);
+
+            var norm = new AnalystNormalizeCSV();
+            norm.Analyze(sourcefile, true, CSVFormat.English, analyst);
+
+            Flowers.Items.Add("----------------------------------------------------------Accord.NET----------------------------------------------------------\n");
+
+            for (int i = 0; i < info.InputDataSample.Length; i++)
+            {
+                string item = "";
+
+                //Predict outputs.
+                double[] answers = network.Compute(info.InputDataSample[i]);
+
+                /*for (int j = 0; j < info.InputDataSample[0].Length; j++)
+                {
+                    double input = Math.Round(analyst.Script.Normalize.NormalizedFields[count].DeNormalize(info.InputDataSample[i][j]), 2);
+
+                    if (input > 0)
+                    {
+                        item += String.Format(
+                        "Input {0}: [{1}] ", j + 1,
+                        input
+                        );
+
+                        count++;
+                    }
+                }*/
+
+                for (int j = 0; j < answers.Length; j++)
+                {
+                    var outpt = analyst.Script.Normalize.NormalizedFields[analyst.Script.Normalize.NormalizedFields.Count - 1].DeNormalize(info.OutputDataSample[i][j]); //??????????????????????
+                    var prediction = analyst.Script.Normalize.NormalizedFields[analyst.Script.Normalize.NormalizedFields.Count - 1].DeNormalize(answers[j]);
+
+                    item += String.Format(
+                        "Predicted Output: [{0}] = [{1}]\n Error = [{2}] = [{3}]",
+                        prediction, outpt, unsupervisedError, supervisedError
                     );
                 }
 

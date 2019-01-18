@@ -40,6 +40,7 @@
             this.learningRateLbl = new System.Windows.Forms.Label();
             this.momentumLbl = new System.Windows.Forms.Label();
             this.rateTestBtn = new System.Windows.Forms.Button();
+            this.deepNetworkBox = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.sampleBar)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.learningRateBar)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.momentumBar)).BeginInit();
@@ -52,7 +53,7 @@
             this.Flowers.ItemHeight = 31;
             this.Flowers.Location = new System.Drawing.Point(12, 12);
             this.Flowers.Name = "Flowers";
-            this.Flowers.Size = new System.Drawing.Size(1133, 376);
+            this.Flowers.Size = new System.Drawing.Size(1505, 376);
             this.Flowers.TabIndex = 8;
             // 
             // engocBtn
@@ -153,11 +154,22 @@
             this.rateTestBtn.UseVisualStyleBackColor = true;
             this.rateTestBtn.Click += new System.EventHandler(this.rateTestBtn_Click);
             // 
+            // deepNetworkBox
+            // 
+            this.deepNetworkBox.AutoSize = true;
+            this.deepNetworkBox.Location = new System.Drawing.Point(802, 409);
+            this.deepNetworkBox.Name = "deepNetworkBox";
+            this.deepNetworkBox.Size = new System.Drawing.Size(96, 17);
+            this.deepNetworkBox.TabIndex = 12;
+            this.deepNetworkBox.Text = "Deep Learning";
+            this.deepNetworkBox.UseVisualStyleBackColor = true;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1157, 438);
+            this.ClientSize = new System.Drawing.Size(1529, 438);
+            this.Controls.Add(this.deepNetworkBox);
             this.Controls.Add(this.rateTestBtn);
             this.Controls.Add(this.momentumLbl);
             this.Controls.Add(this.learningRateLbl);
@@ -194,6 +206,7 @@
         private System.Windows.Forms.Label learningRateLbl;
         private System.Windows.Forms.Label momentumLbl;
         private System.Windows.Forms.Button rateTestBtn;
+        private System.Windows.Forms.CheckBox deepNetworkBox;
     }
 }
 
