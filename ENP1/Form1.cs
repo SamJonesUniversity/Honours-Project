@@ -24,6 +24,12 @@ using Accord.Neuro.Networks;
 using Accord.Neuro.Learning;
 using Accord.Math;
 using Accord.Neuro.ActivationFunctions;
+using Encog.Neural.Thermal;
+using Encog.Neural.Pattern;
+using Encog.Neural.Networks.Training.Lma;
+using Encog.ML.Train.Strategy;
+using Encog.Neural.Networks.Training.Anneal;
+using Encog.Neural.Networks.Training;
 
 namespace ENP1
 {
@@ -92,6 +98,12 @@ namespace ENP1
                 return;
             }
 
+            if (deepNetworkBox.Checked == true)
+            {
+                deepEncog();
+                return;
+            }
+
             //Setup training dataset.
             data info = new data(); info = info.return_info(path + dataFile.Replace(".csv", "Normal.csv"), outputTiltes, sampleBar.Value);
 
@@ -138,6 +150,92 @@ namespace ENP1
 
                 string item = "";
                 
+                /*for (int j = 0; j < analyst.Script.Normalize.NormalizedFields.Count; j++)
+                {
+                    item += String.Format(
+                        "Input {0}: [{1}] ", j + 1,
+                        Math.Round(analyst.Script.Normalize.NormalizedFields[j].DeNormalize(pair.Input[j]), 2)
+                    );
+                }*/
+
+                for (int j = 0; j < info.OutputDataSample[0].Length; j++)
+                {
+                    var outpt = analyst.Script.Normalize.NormalizedFields[analyst.Script.Normalize.NormalizedFields.Count - 1].DeNormalize(pair.Ideal[j]); //??????????????????????
+                    var prediction = analyst.Script.Normalize.NormalizedFields[analyst.Script.Normalize.NormalizedFields.Count - 1].DeNormalize(result[j]);
+
+                    item += String.Format(
+                        "Predicted Output: [{0}] Correct Output: {1}\n Error = [{2}]",
+                        prediction, outpt, learner.Error
+                    );
+                }
+
+                Flowers.Items.Add(item);
+            }
+
+            Flowers.Items.Add("\n");
+        }
+
+        private void deepEncog()
+        {
+            if (dataFile == null || !dataFile.Contains(".csv"))
+            {
+                MessageBox.Show("You must select a file first, if you have it is not the correct format. The file must be .csv", "File Access Error");
+                return;
+            }
+
+            //Setup training dataset.
+            data info = new data(); info = info.return_info(path + dataFile.Replace(".csv", "Normal.csv"), outputTiltes, sampleBar.Value);
+
+            IMLDataSet data = new BasicMLDataSet(info.InputData, info.OutputData);
+            IMLDataSet sampleData = new BasicMLDataSet(info.InputDataSample, info.OutputDataSample);
+
+            //Setup network, parameters (Activation, bias, number of neurons).
+            var elman = new ElmanPattern()
+            {
+                ActivationFunction = new ActivationSigmoid(),
+                InputNeurons = info.InputNumber,
+                OutputNeurons = info.OutputNumber
+            };
+
+            elman.AddHiddenLayer(5);
+
+            var network = (BasicNetwork) elman.Generate();
+
+            //Train network on data set, parameters (Network, dataset, learning rate, momentum).
+            ICalculateScore score = new TrainingSetScore(data);
+            IMLTrain trainAlt = new NeuralSimulatedAnnealing(network, score, 10, 2, 1000);
+            IMLTrain learner;
+
+            learner = new LevenbergMarquardtTraining(network, data);
+  
+            var stop = new StopTrainingStrategy();
+            learner.AddStrategy(new Greedy());
+            learner.AddStrategy(new HybridStrategy(trainAlt));
+            learner.AddStrategy(stop);
+
+            do
+            {
+                learner.Iteration();
+
+            } while (!stop.ShouldStop());
+
+            //Load analyst from earlier.
+            var analyst = new EncogAnalyst();
+            analyst.Load(new FileInfo(path + @"\normalizationData" + dataFile.Replace(".csv", "") + ".ega"));
+
+            var sourcefile = new FileInfo(path + dataFile);
+
+            var norm = new AnalystNormalizeCSV();
+            norm.Analyze(sourcefile, true, CSVFormat.English, analyst);
+
+            Flowers.Items.Add("----------------------------------------------------------Encog----------------------------------------------------------\n");
+
+            foreach (BasicMLDataPair pair in sampleData)
+            {
+                IMLData result = network.Compute(pair.Input);
+
+                string item = "";
+
                 /*for (int j = 0; j < analyst.Script.Normalize.NormalizedFields.Count; j++)
                 {
                     item += String.Format(
