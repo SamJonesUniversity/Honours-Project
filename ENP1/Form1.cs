@@ -87,6 +87,8 @@ namespace ENP1
 
             //Save configuration to be used later.
             analyst.Save(new FileInfo(path + @"\normalizationData"+ dataFile.Replace(".csv", "") + ".ega"));
+
+            Output.Text += "Loading File: " + dataFile;
         }
 
         //ANN using Engoc library.
@@ -142,7 +144,7 @@ namespace ENP1
             var norm = new AnalystNormalizeCSV();
             norm.Analyze(sourcefile, true, CSVFormat.English, analyst);
 
-            Flowers.Items.Add("----------------------------------------------------------Encog----------------------------------------------------------\n");
+            Output.Text += ("----------------------------------------------------------Encog----------------------------------------------------------\n");
 
             foreach (BasicMLDataPair pair in sampleData)
             {
@@ -169,10 +171,10 @@ namespace ENP1
                     );
                 }
 
-                Flowers.Items.Add(item);
+                Output.Text += (item);
             }
 
-            Flowers.Items.Add("\n");
+            Output.Text += ("\n");
         }
 
         private void deepEncog()
@@ -228,7 +230,7 @@ namespace ENP1
             var norm = new AnalystNormalizeCSV();
             norm.Analyze(sourcefile, true, CSVFormat.English, analyst);
 
-            Flowers.Items.Add("----------------------------------------------------------Encog----------------------------------------------------------\n");
+            Output.Text += ("----------------------------------------------------------Encog----------------------------------------------------------\n");
 
             foreach (BasicMLDataPair pair in sampleData)
             {
@@ -255,10 +257,10 @@ namespace ENP1
                     );
                 }
 
-                Flowers.Items.Add(item);
+                Output.Text += (item);
             }
 
-            Flowers.Items.Add("\n");
+            Output.Text += ("\n");
         }
 
         //ANN using Accord.NET library.
@@ -315,7 +317,7 @@ namespace ENP1
             //Predict outputs.
             double[][] answers = info.InputDataSample.Apply(network.Compute);
 
-            Flowers.Items.Add("----------------------------------------------------------Accord.NET----------------------------------------------------------\n");
+            Output.Text += ("----------------------------------------------------------Accord.NET----------------------------------------------------------\n");
 
             for (int i = 0; i < answers.Length; i++)
             {
@@ -347,10 +349,10 @@ namespace ENP1
                     );
                 }
 
-                Flowers.Items.Add(item);
+                Output.Text += (item);
             }
 
-            Flowers.Items.Add("\n");
+            Output.Text += ("\n");
         }
 
         private void deepAccord()
@@ -427,7 +429,7 @@ namespace ENP1
             var norm = new AnalystNormalizeCSV();
             norm.Analyze(sourcefile, true, CSVFormat.English, analyst);
 
-            Flowers.Items.Add("----------------------------------------------------------Accord.NET----------------------------------------------------------\n");
+            Output.Text += ("----------------------------------------------------------Accord.NET----------------------------------------------------------\n");
 
             for (int i = 0; i < info.InputDataSample.Length; i++)
             {
@@ -462,25 +464,25 @@ namespace ENP1
                     );
                 }
 
-                Flowers.Items.Add(item);
+                Output.Text += (item);
             }
 
-            Flowers.Items.Add("\n");
+            Output.Text += ("\n");
         }
 
         private void sampleBar_Scroll(object sender, EventArgs e)
         {
-            sampleLbl.Text = String.Format((sampleBar.Value * 10).ToString() + "%");
+            sampleLbl.Text = String.Format("Sample Data: " + (sampleBar.Value * 10).ToString() + "%");
         }
 
         private void learningRateBar_Scroll(object sender, EventArgs e)
         {
-            learningRateLbl.Text = String.Format(((float)(learningRateBar.Value) / 10).ToString());
+            learningRateLbl.Text = String.Format("Learning Rate: " + ((float)(learningRateBar.Value) / 10).ToString());
         }
 
         private void momentumBar_Scroll(object sender, EventArgs e)
         {
-            momentumLbl.Text = String.Format(((float)(momentumBar.Value) / 10).ToString());
+            momentumLbl.Text = String.Format("Momentum: " + ((float)(momentumBar.Value) / 10).ToString());
         }
 
         private void rateTestBtn_Click(object sender, EventArgs e)
@@ -590,6 +592,30 @@ namespace ENP1
                         }
                     }
                 }
+            }
+        }
+
+        private void advancedBtn_Click(object sender, EventArgs e)
+        {
+            if(learningRateBar.Visible)
+            {
+                learningRateBar.Hide();
+                momentumBar.Hide();
+                learningRateLbl.Hide();
+                momentumLbl.Hide();
+                deepNetworkBox.Hide();
+                advancedLbl.Text = "Advanced Settings";
+                advancedBtn.Text = "+";
+            }
+            else
+            {
+                learningRateBar.Show();
+                momentumBar.Show();
+                learningRateLbl.Show();
+                momentumLbl.Show();
+                deepNetworkBox.Show();
+                advancedLbl.Text = "Close";
+                advancedBtn.Text = "-";
             }
         }
     }
