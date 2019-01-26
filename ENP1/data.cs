@@ -29,7 +29,7 @@ namespace ENP1
         public data() { }
 
         ///<summary> Dynamically creates arrays of size (rows, columns) </summary>
-        static T[][] CreateArray<T>(int rows, int columns)
+        public static T[][] CreateArray<T>(int rows, int columns)
         {
             T[][] array = new T[rows][];
 

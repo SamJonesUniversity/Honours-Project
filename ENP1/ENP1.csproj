@@ -95,12 +95,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AccordDeepNetwork.cs" />
+    <Compile Include="AccordNetwork.cs" />
     <Compile Include="data.cs" />
-    <Compile Include="Form1.cs">
+    <Compile Include="EncogDeepNetwork.cs" />
+    <Compile Include="EncogNetwork.cs" />
+    <Compile Include="NeuralNetwork.cs" />
+    <Compile Include="TestForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Form1.Designer.cs">
-      <DependentUpon>Form1.cs</DependentUpon>
+    <Compile Include="TestForm.Designer.cs">
+      <DependentUpon>TestForm.cs</DependentUpon>
     </Compile>
     <Compile Include="InputForm.cs">
       <SubType>Form</SubType>
@@ -110,8 +115,8 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="Form1.resx">
-      <DependentUpon>Form1.cs</DependentUpon>
+    <EmbeddedResource Include="TestForm.resx">
+      <DependentUpon>TestForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="InputForm.resx">
       <DependentUpon>InputForm.cs</DependentUpon>

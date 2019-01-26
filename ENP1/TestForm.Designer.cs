@@ -1,6 +1,6 @@
 ﻿namespace ENP1
 {
-    partial class Form1
+    partial class TestForm
     {
         /// <summary>
         /// Required designer variable.
@@ -28,9 +28,8 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
-            this.engocBtn = new System.Windows.Forms.Button();
-            this.accordBtn = new System.Windows.Forms.Button();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TestForm));
+            this.networkBtn = new System.Windows.Forms.Button();
             this.fileBtn = new System.Windows.Forms.Button();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.sampleBar = new System.Windows.Forms.TrackBar();
@@ -45,30 +44,27 @@
             this.advancedBtn = new System.Windows.Forms.Button();
             this.advancedLbl = new System.Windows.Forms.Label();
             this.Output = new System.Windows.Forms.RichTextBox();
+            this.radBtnCrossVal = new System.Windows.Forms.RadioButton();
+            this.radBtnSplit = new System.Windows.Forms.RadioButton();
+            this.sampleLbl2 = new System.Windows.Forms.Label();
+            this.sampleBar2 = new System.Windows.Forms.TrackBar();
+            this.radBtnEncog = new System.Windows.Forms.RadioButton();
+            this.radBtnAccord = new System.Windows.Forms.RadioButton();
             ((System.ComponentModel.ISupportInitialize)(this.sampleBar)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.learningRateBar)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.momentumBar)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.sampleBar2)).BeginInit();
             this.SuspendLayout();
             // 
-            // engocBtn
+            // networkBtn
             // 
-            this.engocBtn.Location = new System.Drawing.Point(255, 438);
-            this.engocBtn.Name = "engocBtn";
-            this.engocBtn.Size = new System.Drawing.Size(75, 23);
-            this.engocBtn.TabIndex = 1;
-            this.engocBtn.Text = "Encog";
-            this.engocBtn.UseVisualStyleBackColor = true;
-            this.engocBtn.Click += new System.EventHandler(this.engocBtn_Click);
-            // 
-            // accordBtn
-            // 
-            this.accordBtn.Location = new System.Drawing.Point(255, 477);
-            this.accordBtn.Name = "accordBtn";
-            this.accordBtn.Size = new System.Drawing.Size(75, 23);
-            this.accordBtn.TabIndex = 2;
-            this.accordBtn.Text = "Accord.NET";
-            this.accordBtn.UseVisualStyleBackColor = true;
-            this.accordBtn.Click += new System.EventHandler(this.accordBtn_Click);
+            this.networkBtn.Location = new System.Drawing.Point(255, 480);
+            this.networkBtn.Name = "networkBtn";
+            this.networkBtn.Size = new System.Drawing.Size(75, 23);
+            this.networkBtn.TabIndex = 1;
+            this.networkBtn.Text = "Generate Network";
+            this.networkBtn.UseVisualStyleBackColor = true;
+            this.networkBtn.Click += new System.EventHandler(this.networkBtn_Click);
             // 
             // fileBtn
             // 
@@ -87,20 +83,22 @@
             // sampleBar
             // 
             this.sampleBar.LargeChange = 1;
-            this.sampleBar.Location = new System.Drawing.Point(5, 482);
+            this.sampleBar.Location = new System.Drawing.Point(7, 490);
+            this.sampleBar.Minimum = 1;
             this.sampleBar.Name = "sampleBar";
             this.sampleBar.Size = new System.Drawing.Size(104, 45);
             this.sampleBar.TabIndex = 4;
+            this.sampleBar.Value = 1;
             this.sampleBar.Scroll += new System.EventHandler(this.sampleBar_Scroll);
             // 
             // sampleLbl
             // 
             this.sampleLbl.AutoSize = true;
-            this.sampleLbl.Location = new System.Drawing.Point(113, 482);
+            this.sampleLbl.Location = new System.Drawing.Point(117, 490);
             this.sampleLbl.Name = "sampleLbl";
-            this.sampleLbl.Size = new System.Drawing.Size(88, 13);
+            this.sampleLbl.Size = new System.Drawing.Size(94, 13);
             this.sampleLbl.TabIndex = 7;
-            this.sampleLbl.Text = "Sample Data: 0%";
+            this.sampleLbl.Text = "Sample Data: 10%";
             // 
             // learningRateBar
             // 
@@ -207,11 +205,88 @@
             this.Output.TabIndex = 16;
             this.Output.Text = "";
             // 
-            // Form1
+            // radBtnCrossVal
+            // 
+            this.radBtnCrossVal.AutoSize = true;
+            this.radBtnCrossVal.Location = new System.Drawing.Point(119, 467);
+            this.radBtnCrossVal.Name = "radBtnCrossVal";
+            this.radBtnCrossVal.Size = new System.Drawing.Size(100, 17);
+            this.radBtnCrossVal.TabIndex = 17;
+            this.radBtnCrossVal.Text = "Cross-Validation";
+            this.radBtnCrossVal.UseVisualStyleBackColor = true;
+            this.radBtnCrossVal.CheckedChanged += new System.EventHandler(this.radBtnCrossVal_CheckedChanged);
+            // 
+            // radBtnSplit
+            // 
+            this.radBtnSplit.AutoCheck = false;
+            this.radBtnSplit.AutoSize = true;
+            this.radBtnSplit.Checked = true;
+            this.radBtnSplit.Location = new System.Drawing.Point(13, 467);
+            this.radBtnSplit.Name = "radBtnSplit";
+            this.radBtnSplit.Size = new System.Drawing.Size(103, 17);
+            this.radBtnSplit.TabIndex = 18;
+            this.radBtnSplit.TabStop = true;
+            this.radBtnSplit.Text = "Percentage Split";
+            this.radBtnSplit.UseVisualStyleBackColor = true;
+            this.radBtnSplit.CheckedChanged += new System.EventHandler(this.radBtnSplit_CheckedChanged);
+            // 
+            // sampleLbl2
+            // 
+            this.sampleLbl2.AutoSize = true;
+            this.sampleLbl2.Location = new System.Drawing.Point(117, 490);
+            this.sampleLbl2.Name = "sampleLbl2";
+            this.sampleLbl2.Size = new System.Drawing.Size(112, 13);
+            this.sampleLbl2.TabIndex = 24;
+            this.sampleLbl2.Text = "Pool Percentage: 10%";
+            this.sampleLbl2.Visible = false;
+            // 
+            // sampleBar2
+            // 
+            this.sampleBar2.LargeChange = 1;
+            this.sampleBar2.Location = new System.Drawing.Point(7, 490);
+            this.sampleBar2.Minimum = 1;
+            this.sampleBar2.Name = "sampleBar2";
+            this.sampleBar2.Size = new System.Drawing.Size(104, 45);
+            this.sampleBar2.TabIndex = 23;
+            this.sampleBar2.Value = 1;
+            this.sampleBar2.Visible = false;
+            this.sampleBar2.Scroll += new System.EventHandler(this.sampleBar2_Scroll);
+            // 
+            // radBtnEncog
+            // 
+            this.radBtnEncog.AutoSize = true;
+            this.radBtnEncog.Location = new System.Drawing.Point(255, 438);
+            this.radBtnEncog.Name = "radBtnEncog";
+            this.radBtnEncog.Size = new System.Drawing.Size(56, 17);
+            this.radBtnEncog.TabIndex = 25;
+            this.radBtnEncog.TabStop = true;
+            this.radBtnEncog.Text = "Encog";
+            this.radBtnEncog.UseVisualStyleBackColor = true;
+            this.radBtnEncog.CheckedChanged += new System.EventHandler(this.radBtnEncog_CheckedChanged);
+            // 
+            // radBtnAccord
+            // 
+            this.radBtnAccord.AutoSize = true;
+            this.radBtnAccord.Location = new System.Drawing.Point(255, 457);
+            this.radBtnAccord.Name = "radBtnAccord";
+            this.radBtnAccord.Size = new System.Drawing.Size(59, 17);
+            this.radBtnAccord.TabIndex = 26;
+            this.radBtnAccord.TabStop = true;
+            this.radBtnAccord.Text = "Accord";
+            this.radBtnAccord.UseVisualStyleBackColor = true;
+            this.radBtnAccord.CheckedChanged += new System.EventHandler(this.radBtnAccord_CheckedChanged);
+            // 
+            // TestForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(957, 570);
+            this.Controls.Add(this.radBtnAccord);
+            this.Controls.Add(this.radBtnEncog);
+            this.Controls.Add(this.sampleLbl2);
+            this.Controls.Add(this.sampleBar2);
+            this.Controls.Add(this.radBtnSplit);
+            this.Controls.Add(this.radBtnCrossVal);
             this.Controls.Add(this.Output);
             this.Controls.Add(this.advancedLbl);
             this.Controls.Add(this.advancedBtn);
@@ -225,22 +300,21 @@
             this.Controls.Add(this.sampleLbl);
             this.Controls.Add(this.sampleBar);
             this.Controls.Add(this.fileBtn);
-            this.Controls.Add(this.accordBtn);
-            this.Controls.Add(this.engocBtn);
-            this.Name = "Form1";
+            this.Controls.Add(this.networkBtn);
+            this.Name = "TestForm";
             this.Text = "Test Window";
             this.Load += new System.EventHandler(this.Form1_Load);
             ((System.ComponentModel.ISupportInitialize)(this.sampleBar)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.learningRateBar)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.momentumBar)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.sampleBar2)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
         }
 
         #endregion
-        private System.Windows.Forms.Button engocBtn;
-        private System.Windows.Forms.Button accordBtn;
+        private System.Windows.Forms.Button networkBtn;
 		private System.Windows.Forms.Button fileBtn;
         private System.Windows.Forms.OpenFileDialog openFileDialog1;
         private System.Windows.Forms.TrackBar sampleBar;
@@ -255,6 +329,12 @@
         private System.Windows.Forms.Button advancedBtn;
         private System.Windows.Forms.Label advancedLbl;
         private System.Windows.Forms.RichTextBox Output;
+        private System.Windows.Forms.RadioButton radBtnCrossVal;
+        private System.Windows.Forms.RadioButton radBtnSplit;
+        private System.Windows.Forms.Label sampleLbl2;
+        private System.Windows.Forms.TrackBar sampleBar2;
+        private System.Windows.Forms.RadioButton radBtnEncog;
+        private System.Windows.Forms.RadioButton radBtnAccord;
     }
 }
 
