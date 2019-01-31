@@ -46,14 +46,11 @@
             this.Output = new System.Windows.Forms.RichTextBox();
             this.radBtnCrossVal = new System.Windows.Forms.RadioButton();
             this.radBtnSplit = new System.Windows.Forms.RadioButton();
-            this.sampleLbl2 = new System.Windows.Forms.Label();
-            this.sampleBar2 = new System.Windows.Forms.TrackBar();
             this.radBtnEncog = new System.Windows.Forms.RadioButton();
             this.radBtnAccord = new System.Windows.Forms.RadioButton();
             ((System.ComponentModel.ISupportInitialize)(this.sampleBar)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.learningRateBar)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.momentumBar)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.sampleBar2)).BeginInit();
             this.SuspendLayout();
             // 
             // networkBtn
@@ -230,31 +227,10 @@
             this.radBtnSplit.UseVisualStyleBackColor = true;
             this.radBtnSplit.CheckedChanged += new System.EventHandler(this.radBtnSplit_CheckedChanged);
             // 
-            // sampleLbl2
-            // 
-            this.sampleLbl2.AutoSize = true;
-            this.sampleLbl2.Location = new System.Drawing.Point(117, 490);
-            this.sampleLbl2.Name = "sampleLbl2";
-            this.sampleLbl2.Size = new System.Drawing.Size(112, 13);
-            this.sampleLbl2.TabIndex = 24;
-            this.sampleLbl2.Text = "Pool Percentage: 10%";
-            this.sampleLbl2.Visible = false;
-            // 
-            // sampleBar2
-            // 
-            this.sampleBar2.LargeChange = 1;
-            this.sampleBar2.Location = new System.Drawing.Point(7, 490);
-            this.sampleBar2.Minimum = 1;
-            this.sampleBar2.Name = "sampleBar2";
-            this.sampleBar2.Size = new System.Drawing.Size(104, 45);
-            this.sampleBar2.TabIndex = 23;
-            this.sampleBar2.Value = 1;
-            this.sampleBar2.Visible = false;
-            this.sampleBar2.Scroll += new System.EventHandler(this.sampleBar2_Scroll);
-            // 
             // radBtnEncog
             // 
             this.radBtnEncog.AutoSize = true;
+            this.radBtnEncog.Checked = true;
             this.radBtnEncog.Location = new System.Drawing.Point(255, 438);
             this.radBtnEncog.Name = "radBtnEncog";
             this.radBtnEncog.Size = new System.Drawing.Size(56, 17);
@@ -271,7 +247,6 @@
             this.radBtnAccord.Name = "radBtnAccord";
             this.radBtnAccord.Size = new System.Drawing.Size(59, 17);
             this.radBtnAccord.TabIndex = 26;
-            this.radBtnAccord.TabStop = true;
             this.radBtnAccord.Text = "Accord";
             this.radBtnAccord.UseVisualStyleBackColor = true;
             this.radBtnAccord.CheckedChanged += new System.EventHandler(this.radBtnAccord_CheckedChanged);
@@ -283,8 +258,6 @@
             this.ClientSize = new System.Drawing.Size(957, 570);
             this.Controls.Add(this.radBtnAccord);
             this.Controls.Add(this.radBtnEncog);
-            this.Controls.Add(this.sampleLbl2);
-            this.Controls.Add(this.sampleBar2);
             this.Controls.Add(this.radBtnSplit);
             this.Controls.Add(this.radBtnCrossVal);
             this.Controls.Add(this.Output);
@@ -307,7 +280,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.sampleBar)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.learningRateBar)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.momentumBar)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.sampleBar2)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -331,8 +303,6 @@
         private System.Windows.Forms.RichTextBox Output;
         private System.Windows.Forms.RadioButton radBtnCrossVal;
         private System.Windows.Forms.RadioButton radBtnSplit;
-        private System.Windows.Forms.Label sampleLbl2;
-        private System.Windows.Forms.TrackBar sampleBar2;
         private System.Windows.Forms.RadioButton radBtnEncog;
         private System.Windows.Forms.RadioButton radBtnAccord;
     }

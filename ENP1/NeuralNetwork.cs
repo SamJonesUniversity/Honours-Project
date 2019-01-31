@@ -1,5 +1,6 @@
 ﻿using Encog.App.Analyst;
 using System;
+using System.Collections.Generic;
 
 namespace ENP1
 {

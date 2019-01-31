@@ -38,10 +38,7 @@ namespace ENP1
         List<string> outputTiltes = new List<string>();
 
         /// <summary> need comments </summary>
-        private void Form1_Load(object sender, EventArgs e)
-        {
-            
-        }
+        private void Form1_Load(object sender, EventArgs e) { }
 
         /// Buttons ///
 
@@ -124,8 +121,20 @@ namespace ENP1
                 return;
             }
 
+            //False when percentage split, true when cross validation.
+            bool validation;
+
+            if (radBtnSplit.Checked)
+            {
+                validation = false;
+            }
+            else
+            {
+                validation = true;
+            }
+
             //Setup training dataset.
-            data info = new data(); info = info.return_info(path + dataFile.Replace(".csv", "Normal.csv"), outputTiltes, sampleBar.Value);
+            data info = new data(); info = info.returnInfo(path + dataFile.Replace(".csv", "Normal.csv"), outputTiltes, sampleBar.Value, validation);
 
             //Load analyst from earlier.
             var analyst = new EncogAnalyst();
@@ -143,32 +152,138 @@ namespace ENP1
                     Output.Text += ("\n@Encog:\n\n");
                     EncogNetwork encogNetwork = new EncogNetwork();
                     encogNetwork.Create(info.InputNumber, info.OutputNumber);
-                    Output.Text += "Training complete with an inaccuracy of: " + Math.Round(encogNetwork.Train(info, ((float)(learningRateBar.Value) / 10), ((float)(momentumBar.Value) / 10)), 5) + "\n\n";
 
-                    double[][] answers = data.CreateArray<double>(info.InputDataSample.Length, info.InputDataSample[0].Length);
-
-                    for (int i = 0; i < answers.Length; i++)
+                    if (validation)
                     {
-                        encogNetwork.network.Compute(info.InputDataSample[i], answers[i]);
+                        int poolSize = (info.InputData.Length * sampleBar.Value) / 10;
+
+                        double[][] arrayIn = info.InputData; double[][] arrayOut = info.OutputData;
+
+                        info.InputData = data.CreateArray<double>(poolSize, info.InputData[0].Length);
+                        info.OutputData = data.CreateArray<double>(poolSize, info.OutputData[0].Length);
+
+                        Random rnd = new Random();
+
+                        int[] index = new int[arrayIn.Length - 1];
+
+                        for (int j = 0; j < info.InputData.Length; j++)
+                        {
+                            index[j] = rnd.Next(0, arrayIn.Length);
+                            info.InputData[j] = arrayIn[index[j]]; info.OutputData[j] = arrayOut[index[j]];
+                        }
+
+                        arrayIn = data.RemoveFromArray(arrayIn, index, poolSize);
+                        arrayOut = data.RemoveFromArray(arrayOut, index, poolSize);
+
+                        for (int i = 0; i < arrayIn.Length / poolSize; i++)
+                        {
+                            info.InputDataSample = data.CreateArray<double>(poolSize, arrayIn[0].Length);
+                            info.OutputDataSample = data.CreateArray<double>(poolSize, arrayOut[0].Length);
+
+                            for (int j = 0; j < info.InputDataSample.Length; j++)
+                            {
+                                index[j] = rnd.Next(0, arrayIn.Length);
+                                info.InputDataSample[j] = arrayIn[index[j]]; info.OutputDataSample[j] = arrayOut[index[j]];
+                            }
+
+                            arrayIn = data.RemoveFromArray(arrayIn, index, poolSize);
+                            arrayOut = data.RemoveFromArray(arrayOut, index, poolSize);
+
+                            Output.Text += "Training complete with an inaccuracy of: " + Math.Round(encogNetwork.Train(info, ((float)(learningRateBar.Value) / 10), ((float)(momentumBar.Value) / 10)), 10) + "\n\n";
+
+                            double[][] answers = data.CreateArray<double>(poolSize, info.InputData[0].Length);
+
+                            for (int j = 0; j < answers.Length; j++)
+                            {
+                                encogNetwork.network.Compute(info.InputDataSample[j], answers[j]);
+                            }
+
+                            Output.Text += encogNetwork.display(answers, info, analyst);
+                        }
+                    }
+                    else
+                    {
+                        Output.Text += "Training complete with an inaccuracy of: " + Math.Round(encogNetwork.Train(info, ((float)(learningRateBar.Value) / 10), ((float)(momentumBar.Value) / 10)), 5) + "\n\n";
+
+                        double[][] answers = data.CreateArray<double>(info.InputDataSample.Length, info.InputDataSample[0].Length);
+
+                        for (int i = 0; i < answers.Length; i++)
+                        {
+                            encogNetwork.network.Compute(info.InputDataSample[i], answers[i]);
+                        }
+
+                        Output.Text += encogNetwork.display(answers, info, analyst);
                     }
 
-                    Output.Text += encogNetwork.display(answers, info, analyst);
+                    
                 }
                 else
                 {
                     Output.Text += ("\n@Deep Encog:\n\n");
                     EncogDeepNetwork encogNetwork = new EncogDeepNetwork();
                     encogNetwork.Create(info.InputNumber, info.OutputNumber);
-                    Output.Text += "Training complete with an inaccuracy of: " + Math.Round(encogNetwork.Train(info, ((float)(learningRateBar.Value) / 10), ((float)(momentumBar.Value) / 10)), 5) + "\n\n";
 
-                    double[][] answers = data.CreateArray<double>(info.InputDataSample.Length, info.InputDataSample[0].Length);
-
-                    for (int i = 0; i < answers.Length; i++)
+                    if (validation)
                     {
-                        encogNetwork.network.Compute(info.InputDataSample[i], answers[i]);
-                    }
+                        int poolSize = (info.InputData.Length * sampleBar.Value) / 10;
 
-                    Output.Text += encogNetwork.display(answers, info, analyst);
+                        double[][] arrayIn = info.InputData; double[][] arrayOut = info.OutputData;
+
+                        info.InputData = data.CreateArray<double>(poolSize, info.InputData[0].Length);
+                        info.OutputData = data.CreateArray<double>(poolSize, info.OutputData[0].Length);
+
+                        Random rnd = new Random();
+
+                        int[] index = new int[arrayIn.Length - 1];
+
+                        for (int j = 0; j < info.InputData.Length; j++)
+                        {
+                            index[j] = rnd.Next(0, arrayIn.Length);
+                            info.InputData[j] = arrayIn[index[j]]; info.OutputData[j] = arrayOut[index[j]];
+                        }
+
+                        arrayIn = data.RemoveFromArray(arrayIn, index, poolSize);
+                        arrayOut = data.RemoveFromArray(arrayOut, index, poolSize);
+
+                        for (int i = 0; i < arrayIn.Length / poolSize; i++)
+                        {
+                            info.InputDataSample = data.CreateArray<double>(poolSize, arrayIn[0].Length);
+                            info.OutputDataSample = data.CreateArray<double>(poolSize, arrayOut[0].Length);
+
+                            for (int j = 0; j < info.InputDataSample.Length; j++)
+                            {
+                                index[j] = rnd.Next(0, arrayIn.Length);
+                                info.InputDataSample[j] = arrayIn[index[j]]; info.OutputDataSample[j] = arrayOut[index[j]];
+                            }
+
+                            arrayIn = data.RemoveFromArray(arrayIn, index, poolSize);
+                            arrayOut = data.RemoveFromArray(arrayOut, index, poolSize);
+
+                            Output.Text += "Training complete with an inaccuracy of: " + Math.Round(encogNetwork.Train(info, ((float)(learningRateBar.Value) / 10), ((float)(momentumBar.Value) / 10)), 10) + "\n\n";
+
+                            double[][] answers = data.CreateArray<double>(poolSize, info.InputData[0].Length);
+
+                            for (int j = 0; j < answers.Length; j++)
+                            {
+                                encogNetwork.network.Compute(info.InputDataSample[j], answers[j]);
+                            }
+
+                            Output.Text += encogNetwork.display(answers, info, analyst);
+                        }
+                    }
+                    else
+                    {
+                        Output.Text += "Training complete with an inaccuracy of: " + Math.Round(encogNetwork.Train(info, ((float)(learningRateBar.Value) / 10), ((float)(momentumBar.Value) / 10)), 5) + "\n\n";
+
+                        double[][] answers = data.CreateArray<double>(info.InputDataSample.Length, info.InputDataSample[0].Length);
+
+                        for (int i = 0; i < answers.Length; i++)
+                        {
+                            encogNetwork.network.Compute(info.InputDataSample[i], answers[i]);
+                        }
+
+                        Output.Text += encogNetwork.display(answers, info, analyst);
+                    }
                 }
             }
             else if(radBtnAccord.Checked)
@@ -178,27 +293,126 @@ namespace ENP1
                     Output.Text += ("\n@Accord:\n\n");
                     AccordNetwork accordNetwork = new AccordNetwork();
                     accordNetwork.Create(info.InputNumber, info.OutputNumber);
-                    Output.Text += "Training complete with an inaccuracy of: " + Math.Round(accordNetwork.Train(info, ((float)(learningRateBar.Value) / 10), ((float)(momentumBar.Value) / 10)), 5) + "\n\n";
 
-                    double[][] answers = info.InputDataSample.Apply(accordNetwork.network.Compute);
+                    if (validation)
+                    {
+                        int poolSize = (info.InputData.Length * sampleBar.Value) / 10;
 
-                    Output.Text += accordNetwork.display(answers, info, analyst);
+                        double[][] arrayIn = info.InputData; double[][] arrayOut = info.OutputData;
+
+                        info.InputData = data.CreateArray<double>(poolSize, info.InputData[0].Length);
+                        info.OutputData = data.CreateArray<double>(poolSize, info.OutputData[0].Length);
+
+                        Random rnd = new Random();
+
+                        int[] index = new int[arrayIn.Length - 1];
+
+                        for (int j = 0; j < info.InputData.Length; j++)
+                        {
+                            index[j] = rnd.Next(0, arrayIn.Length);
+                            info.InputData[j] = arrayIn[index[j]]; info.OutputData[j] = arrayOut[index[j]];
+                        }
+
+                        arrayIn = data.RemoveFromArray(arrayIn, index, poolSize);
+                        arrayOut = data.RemoveFromArray(arrayOut, index, poolSize);
+
+                        for (int i = 0; i < arrayIn.Length / poolSize; i++)
+                        {
+                            info.InputDataSample = data.CreateArray<double>(poolSize, arrayIn[0].Length);
+                            info.OutputDataSample = data.CreateArray<double>(poolSize, arrayOut[0].Length);
+
+                            for (int j = 0; j < info.InputDataSample.Length; j++)
+                            {
+                                index[j] = rnd.Next(0, arrayIn.Length);
+                                info.InputDataSample[j] = arrayIn[index[j]]; info.OutputDataSample[j] = arrayOut[index[j]];
+                            }
+
+                            arrayIn = data.RemoveFromArray(arrayIn, index, poolSize);
+                            arrayOut = data.RemoveFromArray(arrayOut, index, poolSize);
+                            
+                            Output.Text += "Training complete with an inaccuracy of: " + Math.Round(accordNetwork.Train(info, ((float)(learningRateBar.Value) / 10), ((float)(momentumBar.Value) / 10)), 5) + "\n\n";
+
+                            double[][] answers = info.InputDataSample.Apply(accordNetwork.network.Compute);
+
+                            Output.Text += accordNetwork.display(answers, info, analyst);
+                        }
+                    }
+                    else
+                    {
+                        Output.Text += "Training complete with an inaccuracy of: " + Math.Round(accordNetwork.Train(info, ((float)(learningRateBar.Value) / 10), ((float)(momentumBar.Value) / 10)), 5) + "\n\n";
+
+                        double[][] answers = info.InputDataSample.Apply(accordNetwork.network.Compute);
+
+                        Output.Text += accordNetwork.display(answers, info, analyst);
+                    }
                 }
                 else
                 {
                     Output.Text += ("\n@Deep Accord:\n\n");
                     AccordNetwork accordNetwork = new AccordNetwork();
                     accordNetwork.Create(info.InputNumber, info.OutputNumber);
-                    Output.Text += "Training complete with an inaccuracy of: " + Math.Round(accordNetwork.Train(info, ((float)(learningRateBar.Value) / 10), ((float)(momentumBar.Value) / 10)), 5) + "\n\n";
 
-                    double[][] answers = data.CreateArray<double>(info.InputDataSample.Length, info.InputDataSample[0].Length);
-
-                    for (int i = 0; i < answers.Length; i++)
+                    if (validation)
                     {
-                        answers[i] = accordNetwork.network.Compute(info.InputDataSample[i]);
-                    }
+                        int poolSize = (info.InputData.Length * sampleBar.Value) / 10;
 
-                    Output.Text += accordNetwork.display(answers, info, analyst);
+                        double[][] arrayIn = info.InputData; double[][] arrayOut = info.OutputData;
+
+                        info.InputData = data.CreateArray<double>(poolSize, info.InputData[0].Length);
+                        info.OutputData = data.CreateArray<double>(poolSize, info.OutputData[0].Length);
+
+                        Random rnd = new Random();
+
+                        int[] index = new int[arrayIn.Length - 1];
+
+                        for (int j = 0; j < info.InputData.Length; j++)
+                        {
+                            index[j] = rnd.Next(0, arrayIn.Length);
+                            info.InputData[j] = arrayIn[index[j]]; info.OutputData[j] = arrayOut[index[j]];
+                        }
+
+                        arrayIn = data.RemoveFromArray(arrayIn, index, poolSize);
+                        arrayOut = data.RemoveFromArray(arrayOut, index, poolSize);
+
+                        for (int i = 0; i < arrayIn.Length / poolSize; i++)
+                        {
+                            info.InputDataSample = data.CreateArray<double>(poolSize, arrayIn[0].Length);
+                            info.OutputDataSample = data.CreateArray<double>(poolSize, arrayOut[0].Length);
+
+                            for (int j = 0; j < info.InputDataSample.Length; j++)
+                            {
+                                index[j] = rnd.Next(0, arrayIn.Length);
+                                info.InputDataSample[j] = arrayIn[index[j]]; info.OutputDataSample[j] = arrayOut[index[j]];
+                            }
+
+                            arrayIn = data.RemoveFromArray(arrayIn, index, poolSize);
+                            arrayOut = data.RemoveFromArray(arrayOut, index, poolSize);
+
+                            Output.Text += "Training complete with an inaccuracy of: " + Math.Round(accordNetwork.Train(info, ((float)(learningRateBar.Value) / 10), ((float)(momentumBar.Value) / 10)), 5) + "\n\n";
+
+                            double[][] answers = data.CreateArray<double>(info.InputDataSample.Length, info.InputDataSample[0].Length);
+
+                            for (int j = 0; j < answers.Length; j++)
+                            {
+                                answers[j] = accordNetwork.network.Compute(info.InputDataSample[j]);
+                            }
+
+                            Output.Text += accordNetwork.display(answers, info, analyst);
+                        }
+                    }
+                    else
+                    {
+                        Output.Text += "Training complete with an inaccuracy of: " + Math.Round(accordNetwork.Train(info, ((float)(learningRateBar.Value) / 10), ((float)(momentumBar.Value) / 10)), 5) + "\n\n";
+
+                        double[][] answers = data.CreateArray<double>(info.InputDataSample.Length, info.InputDataSample[0].Length);
+
+                        for (int i = 0; i < answers.Length; i++)
+                        {
+                            answers[i] = accordNetwork.network.Compute(info.InputDataSample[i]);
+                        }
+
+                        Output.Text += accordNetwork.display(answers, info, analyst);
+                    }
                 }
             }
         }
@@ -212,9 +426,21 @@ namespace ENP1
                 return;
             }
 
-            string test = path + "Results.csv";
+            //False when percentage split, true when cross validation.
+            bool validation = false;
 
-            using (StreamWriter sw = new StreamWriter(test))
+            if (radBtnSplit.Checked)
+            {
+                validation = false;
+            }
+            else
+            {
+                validation = true;
+            }
+
+            string header = path + "Results.csv";
+
+            using (StreamWriter sw = new StreamWriter(header))
             {
                 sw.WriteLine(String.Format("Encog Error,Accord Error,Learning Rate,Momentum,Neurons,Layers"));
             }
@@ -228,28 +454,28 @@ namespace ENP1
                         for (double m = 0.1; m <= 1; m += 0.1)
                         {
                             // initialize input and output values.
-                            data infoAccord = new data(); infoAccord = infoAccord.return_info(path + dataFile.Replace(".csv", "Normal.csv"), outputTiltes, sampleBar.Value);
+                            data info = new data(); info = info.returnInfo(path + dataFile.Replace(".csv", "Normal.csv"), outputTiltes, sampleBar.Value, validation);
 
                             //Setup network
                             Accord.Neuro.IActivationFunction function = new SigmoidFunction();
-                            ActivationNetwork networkAccord = new ActivationNetwork(function, infoAccord.InputNumber, neurons, infoAccord.OutputNumber);
+                            ActivationNetwork networkAccord = new ActivationNetwork(function, info.InputNumber, neurons, info.OutputNumber);
 
                             switch (layers)
                             {
                                 case 2:
-                                    networkAccord = new ActivationNetwork(function, infoAccord.InputNumber, neurons, neurons, infoAccord.OutputNumber); //Activation function, input, hidden, hidden, output.
+                                    networkAccord = new ActivationNetwork(function, info.InputNumber, neurons, neurons, info.OutputNumber); //Activation function, input, hidden, hidden, output.
                                     break;
 
                                 case 3:
-                                    networkAccord = new ActivationNetwork(function, infoAccord.InputNumber, neurons, neurons, neurons, infoAccord.OutputNumber); //Activation function, input, hidden, hidden, output.
+                                    networkAccord = new ActivationNetwork(function, info.InputNumber, neurons, neurons, neurons, info.OutputNumber); //Activation function, input, hidden, hidden, output.
                                     break;
 
                                 case 4:
-                                    networkAccord = new ActivationNetwork(function, infoAccord.InputNumber, neurons, neurons, neurons, neurons, infoAccord.OutputNumber); //Activation function, input, hidden, hidden, output.
+                                    networkAccord = new ActivationNetwork(function, info.InputNumber, neurons, neurons, neurons, neurons, info.OutputNumber); //Activation function, input, hidden, hidden, output.
                                     break;
 
                                 case 5:
-                                    networkAccord = new ActivationNetwork(function, infoAccord.InputNumber, neurons, neurons, neurons, neurons, neurons, infoAccord.OutputNumber); //Activation function, input, hidden, hidden, output.
+                                    networkAccord = new ActivationNetwork(function, info.InputNumber, neurons, neurons, neurons, neurons, neurons, info.OutputNumber); //Activation function, input, hidden, hidden, output.
                                     break;
                             }
                             
@@ -267,27 +493,24 @@ namespace ENP1
 
                             do
                             {
-                                error = teacher.RunEpoch(infoAccord.InputData, infoAccord.OutputData);
+                                error = teacher.RunEpoch(info.InputData, info.OutputData);
                                 end = DateTime.Now;
 
                             } while ((((end.Hour * 60 * 60) + end.Minute * 60) + end.Second) - (((start.Hour * 60 * 60) + start.Minute * 60) + start.Second) < 1);
 
-                            //Setup training dataset.
-                            data infoEncog = new data(); infoEncog = infoEncog.return_info(path + dataFile.Replace(".csv", "Normal.csv"), outputTiltes, sampleBar.Value);
-
-                            IMLDataSet data = new BasicMLDataSet(infoEncog.InputData, infoEncog.OutputData);
-                            IMLDataSet sampleData = new BasicMLDataSet(infoEncog.InputDataSample, infoEncog.OutputDataSample);
+                            IMLDataSet data = new BasicMLDataSet(info.InputData, info.OutputData);
+                            IMLDataSet sampleData = new BasicMLDataSet(info.InputDataSample, info.OutputDataSample);
 
                             //Setup network, parameters (Activation, bias, number of neurons).
                             BasicNetwork networkEncog = new BasicNetwork();
-                            networkEncog.AddLayer(new BasicLayer(null, true, infoEncog.InputNumber)); //Input.
+                            networkEncog.AddLayer(new BasicLayer(null, true, info.InputNumber)); //Input.
 
                             for(int i = 0; i < layers; i++)
                             {
                                 networkEncog.AddLayer(new BasicLayer(new ActivationSigmoid(), true, neurons)); //Hidden.
                             }
 
-                            networkEncog.AddLayer(new BasicLayer(new ActivationSigmoid(), false, infoEncog.OutputNumber)); //Output.
+                            networkEncog.AddLayer(new BasicLayer(new ActivationSigmoid(), false, info.OutputNumber)); //Output.
                             networkEncog.Structure.FinalizeStructure();
                             networkEncog.Reset();
 
@@ -344,7 +567,14 @@ namespace ENP1
         /// <summary> need comments </summary>
         private void sampleBar_Scroll(object sender, EventArgs e)
         {
-            sampleLbl.Text = String.Format("Sample Data: " + (sampleBar.Value * 10).ToString() + "%");
+            if(radBtnSplit.Checked)
+            {
+                sampleLbl.Text = String.Format("Sample Data: " + (sampleBar.Value * 10).ToString() + "%");
+            }
+            else
+            {
+                sampleLbl.Text = String.Format("Pool Size: " + (sampleBar.Value * 10).ToString() + "%");
+            }
         }
 
         /// <summary> need comments </summary>
@@ -358,12 +588,6 @@ namespace ENP1
         {
             momentumLbl.Text = String.Format("Momentum: " + ((float)(momentumBar.Value) / 10).ToString());
         }
-
-        /// <summary> need comments </summary> 
-        private void sampleBar2_Scroll(object sender, EventArgs e)
-        {
-            sampleLbl2.Text = String.Format("Pool Percentage: " + (sampleBar2.Value * 10).ToString() + "%");
-        }
         
         /// Radio buttons ///
 
@@ -374,20 +598,13 @@ namespace ENP1
             {
                 radBtnSplit.AutoCheck = false;
                 radBtnCrossVal.Checked = false;
-                sampleBar2.Hide();
-                sampleLbl2.Hide();
-                sampleBar.Show();
-                sampleLbl.Show();
+                sampleLbl.Text = String.Format("Sample Data: " + (sampleBar.Value * 10).ToString() + "%");
             }
             else
             {
                 radBtnSplit.AutoCheck = true;
                 radBtnCrossVal.AutoCheck = false;
                 radBtnSplit.Checked = false;
-                sampleBar.Hide();
-                sampleLbl.Hide();
-                sampleBar2.Show();
-                sampleLbl2.Show();
             }
         }
 
@@ -398,20 +615,13 @@ namespace ENP1
             {
                 radBtnCrossVal.AutoCheck = false;
                 radBtnSplit.Checked = false;
-                sampleBar.Hide();
-                sampleLbl.Hide();
-                sampleBar2.Show();
-                sampleLbl2.Show();
+                sampleLbl.Text = String.Format("Pool Size: " + (sampleBar.Value * 10).ToString() + "%");
             }
             else
             {
                 radBtnCrossVal.AutoCheck = true;
                 radBtnSplit.AutoCheck = false;
                 radBtnCrossVal.Checked = false;
-                sampleBar2.Hide();
-                sampleLbl2.Hide();
-                sampleBar.Hide();
-                sampleLbl.Hide();
             }
         }
 
