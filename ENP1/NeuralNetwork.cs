@@ -1,4 +1,7 @@
-﻿using Encog.App.Analyst;
+﻿using Accord.Neuro;
+using Accord.Neuro.Networks;
+using Encog.App.Analyst;
+using Encog.Neural.Networks;
 using System;
 using System.Collections.Generic;
 
@@ -7,12 +10,16 @@ namespace ENP1
     /// <summary> Abstract NeuralNetwork class. </summary>
     abstract class NeuralNetwork
     {
+        public BasicNetwork EncogNetwork;
+        public DeepBeliefNetwork DeepAccordNetwork;
+        public ActivationNetwork AccordNetwork;
+
         /// <summary> Creates a new neural network. </summary>
         public abstract void Create(int input, int output);
 
-        public abstract double Train(data info, float lr, float mom);
+        public abstract double Train(Data info, float lr, float mom);
 
-        public string display(double[][] answers, data info, EncogAnalyst analyst)
+        public string Display(double[][] answers, Data info, EncogAnalyst analyst)
         {
             string item = "";
 
@@ -49,6 +56,6 @@ namespace ENP1
         }
 
         /// <summary> Saves current neural network to a file. </summary>
-        public abstract void Save();
+        public abstract void Save(string fileName);
     }
 }

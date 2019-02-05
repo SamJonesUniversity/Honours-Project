@@ -1,6 +1,12 @@
-﻿using System;
+﻿using Encog.App.Analyst;
+using Encog.App.Analyst.CSV.Normalize;
+using Encog.App.Analyst.Script.Normalize;
+using Encog.App.Analyst.Wizard;
+using Encog.Util.CSV;
+using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Windows.Forms;
 
 namespace ENP1
 {
@@ -8,7 +14,7 @@ namespace ENP1
     /// Data class used to load and validate CSV files.
     /// This data is then stored as a data object.
     /// </summary>
-    class data
+    class Data
     {
         /// <summary> Training data input array. </summary>
         public double[][] InputData { get; set; }
@@ -26,7 +32,7 @@ namespace ENP1
         public int OutputNumber;
 
         ///<summary> Empty constuctor </summary>
-        public data() { }
+        public Data() { }
 
         ///<summary> Dynamically creates arrays of size (rows, columns) </summary>
         public static T[][] CreateArray<T>(int rows, int columns)
@@ -56,7 +62,7 @@ namespace ENP1
                 tmp.RemoveAt(index[i] - i);
             }
 
-            T[][] array = data.CreateArray<T>(tmp.Count, tmp[0].Count);
+            T[][] array = Data.CreateArray<T>(tmp.Count, tmp[0].Count);
 
             int j = 0;
             foreach (List<T> entry in tmp)
@@ -68,8 +74,62 @@ namespace ENP1
             return array;
         }
 
+        public static List<string> Normalise(FileInfo sourceFile, FileInfo normalFile, string path, string dataFile, int outputs, bool inputs)
+        {
+            List<string> titles = new List<string>();
+
+            //Setup analyst with orignal csv.
+            var analyst = new EncogAnalyst();
+            var wizard = new AnalystWizard(analyst);
+
+            //Additional validation to check that the file is not empty.
+            try
+            {
+                wizard.Wizard(sourceFile, true, AnalystFileFormat.DecpntComma);
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("The file you have selected is empty.", "File Access Error");
+                return null;
+            }
+
+            //Setup max and min range for normalization.
+            foreach (AnalystField field in analyst.Script.Normalize.NormalizedFields)
+            {
+                field.NormalizedHigh = 1;
+                field.NormalizedLow = 0;
+                //field.Action = Encog.Util.Arrayutil.NormalizationAction.OneOf; //Use this to change normalizaiton type.
+            }
+
+            //Normalization.
+            var norm = new AnalystNormalizeCSV();
+            norm.Analyze(sourceFile, true, CSVFormat.English, analyst);
+            norm.ProduceOutputHeaders = true;
+            norm.Normalize(normalFile);
+
+            if(!inputs)
+            {
+                for (int i = outputs; i + analyst.Script.Fields.Length > analyst.Script.Fields.Length; i--)
+                {
+                    titles.Add(analyst.Script.Fields[analyst.Script.Fields.Length - i].Name);
+                }
+            }
+            else
+            {
+                for (int i = 0; i < analyst.Script.Fields.Length - outputs; i++)
+                {
+                    titles.Add(analyst.Script.Fields[i].Name);
+                }
+            }
+
+            //Save configuration to be used later.
+            analyst.Save(new FileInfo(path + @"\normalizationData" + dataFile.Replace(".csv", "") + ".ega"));
+
+            return titles;
+        }
+
         ///<summary> Read and store data from csv (File path, Column titles, Sample Percent, Validation type) </summary>
-        public data returnInfo(string path, List<string> titles, int sampleNumber, bool validation)
+        public Data ReturnInfo(string path, List<string> titles, int sampleNumber, bool validation)
         {
             int csvLength = 0;
             int inputNumber = 0, outputNumber = 0;
@@ -186,10 +246,15 @@ namespace ENP1
                 }
             }
 
-            data info = new data();
-            info.InputData = inputData; info.OutputData = outputData;
-            info.InputDataSample = inputDataSample; info.OutputDataSample = outputDataSample;
-            info.InputNumber = inputNumber; info.OutputNumber = outputNumber;
+            Data info = new Data
+            {
+                InputData = inputData,
+                OutputData = outputData,
+                InputDataSample = inputDataSample,
+                OutputDataSample = outputDataSample,
+                InputNumber = inputNumber,
+                OutputNumber = outputNumber
+            };
 
             return info;
         }

@@ -7,25 +7,23 @@ using System;
 
 namespace ENP1
 {
-    class AccordDeepNetwork : NeuralNetwork
+    class AccordDeepNeuralNetwork : NeuralNetwork
     {
-        public DeepBeliefNetwork network;
-
         public override void Create(int input, int output)
         {
             IStochasticFunction function = new GaussianFunction();
 
             //Setup network
-            network = new DeepBeliefNetwork(function, input, 20, output);
+            DeepAccordNetwork = new DeepBeliefNetwork(function, input, 20, output);
 
-            new GaussianWeights(network, 0.1).Randomize();
-            network.UpdateVisibleWeights();
+            new GaussianWeights(DeepAccordNetwork, 0.1).Randomize();
+            DeepAccordNetwork.UpdateVisibleWeights();
         }
 
-        public override double Train(data info, float lr, float mom)
+        public override double Train(Data info, float lr, float mom)
         {
             //Setup trainer using backpropagation.
-            DeepBeliefNetworkLearning teacher = new DeepBeliefNetworkLearning(network)
+            DeepBeliefNetworkLearning teacher = new DeepBeliefNetworkLearning(DeepAccordNetwork)
             {
                 Algorithm = (h, v, i) => new ContrastiveDivergenceLearning(h, v)
                 {
@@ -38,15 +36,15 @@ namespace ENP1
             // Setup batches of input for learning.
             int batchCount = Math.Max(1, info.InputData.Length / 100);
             // Create mini-batches to speed learning.
-            int[] groups = Accord.Statistics.Tools.RandomGroups(info.InputData.Length, batchCount);
-            double[][][] batches = info.InputData.Subgroups(groups);
+            int[] groups = Accord.Statistics.Classes.Random(info.InputData.Length, batchCount); //Tools.RandomGroups(info.InputData.Length, batchCount);
+            double[][][] batches = Accord.Statistics.Classes.Separate(info.InputData, groups); //info.InputData.Subgroups(groups);
             // Learning data for the specified layer.
             double[][][] layerData;
 
             double unsupervisedError = 0.0;
 
             // Unsupervised learning on each hidden layer, except for the output.
-            for (int layerIndex = 0; layerIndex < network.Machines.Count - 1; layerIndex++)
+            for (int layerIndex = 0; layerIndex < DeepAccordNetwork.Machines.Count - 1; layerIndex++)
             {
                 teacher.LayerIndex = layerIndex;
                 layerData = teacher.GetLayerInput(batches);
@@ -57,10 +55,11 @@ namespace ENP1
             }
 
             //Setup trainer using backpropagation.
-            BackPropagationLearning teacher2 = new BackPropagationLearning(network);
-
-            teacher2.LearningRate = lr;
-            teacher2.Momentum = mom;
+            BackPropagationLearning teacher2 = new BackPropagationLearning(DeepAccordNetwork)
+            {
+                LearningRate = lr,
+                Momentum = mom
+            };
 
             double error = 0.0;
 
@@ -73,9 +72,9 @@ namespace ENP1
             return error;
         }
 
-        public override void Save()
+        public override void Save(string fileName)
         {
-            throw new NotImplementedException();
+            DeepAccordNetwork.Save(fileName);
         }
     }
 }

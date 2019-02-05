@@ -82,6 +82,9 @@
       <HintPath>..\packages\SharpZipLib.1.0.0\lib\net45\ICSharpCode.SharpZipLib.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.12.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -95,17 +98,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AccordDeepNetwork.cs" />
-    <Compile Include="AccordNetwork.cs" />
+    <Compile Include="AccordDeepNeuralNetwork.cs" />
+    <Compile Include="AccordNeuralNetwork.cs" />
     <Compile Include="data.cs" />
-    <Compile Include="EncogDeepNetwork.cs" />
-    <Compile Include="EncogNetwork.cs" />
+    <Compile Include="EncogDeepNeuralNetwork.cs" />
+    <Compile Include="EncogNeuralNetwork.cs" />
     <Compile Include="EntryForm.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="EntryForm.Designer.cs">
       <DependentUpon>EntryForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="NetworkSaveData.cs" />
     <Compile Include="NeuralNetwork.cs" />
     <Compile Include="TestForm.cs">
       <SubType>Form</SubType>

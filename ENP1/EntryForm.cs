@@ -17,7 +17,7 @@ namespace ENP1
             InitializeComponent();
         }
 
-        private void testBtn_Click(object sender, EventArgs e)
+        private void TestBtn_Click(object sender, EventArgs e)
         {
             TestForm f1 = new TestForm();
             Hide();
@@ -25,7 +25,7 @@ namespace ENP1
             Show();
         }
 
-        private void inputBtn_Click(object sender, EventArgs e)
+        private void InputBtn_Click(object sender, EventArgs e)
         {
             InputForm f1 = new InputForm();
             Hide();

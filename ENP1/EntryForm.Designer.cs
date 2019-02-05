@@ -40,7 +40,7 @@
             this.testBtn.TabIndex = 0;
             this.testBtn.Text = "Test Window";
             this.testBtn.UseVisualStyleBackColor = true;
-            this.testBtn.Click += new System.EventHandler(this.testBtn_Click);
+            this.testBtn.Click += new System.EventHandler(this.TestBtn_Click);
             // 
             // inputBtn
             // 
@@ -50,7 +50,7 @@
             this.inputBtn.TabIndex = 1;
             this.inputBtn.Text = "Input Window";
             this.inputBtn.UseVisualStyleBackColor = true;
-            this.inputBtn.Click += new System.EventHandler(this.inputBtn_Click);
+            this.inputBtn.Click += new System.EventHandler(this.InputBtn_Click);
             // 
             // EntryForm
             // 

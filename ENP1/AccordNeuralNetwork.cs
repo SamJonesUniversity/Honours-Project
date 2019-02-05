@@ -4,21 +4,19 @@ using System;
 
 namespace ENP1
 {
-    class AccordNetwork : NeuralNetwork
+    class AccordNeuralNetwork : NeuralNetwork
     {
-        public ActivationNetwork network;
-
         public override void Create(int input, int output)
         {
             //Setup network
             IActivationFunction function = new SigmoidFunction();
-            network = new ActivationNetwork(function, input, 5, output); //Activation function, input, hidden, hidden, output.
+            AccordNetwork = new ActivationNetwork(function, input, 5, output); //Activation function, input, hidden, hidden, output.
         }
 
-        public override double Train(data info, float lr, float mom)
+        public override double Train(Data info, float lr, float mom)
         {
             //Setup trainer using backpropagation.
-            BackPropagationLearning teacher = new BackPropagationLearning(network);
+            BackPropagationLearning teacher = new BackPropagationLearning(AccordNetwork);
 
             //Train network on data set.
             double error = double.PositiveInfinity;
@@ -37,9 +35,9 @@ namespace ENP1
             return error;
         }
 
-        public override void Save()
+        public override void Save(string fileName)
         {
-            throw new NotImplementedException();
+            AccordNetwork.Save(fileName);
         }
     }
 }

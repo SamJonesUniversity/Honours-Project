@@ -6,32 +6,30 @@ using Encog.Neural.Networks;
 using Encog.Neural.Networks.Layers;
 using Encog.Neural.Networks.Training.Propagation.Back;
 using System;
+using System.IO;
 
 namespace ENP1
 {
-    class EncogNetwork : NeuralNetwork
+    class EncogNeuralNetwork : NeuralNetwork
     {
-        public BasicNetwork network;
-
         public override void Create(int input, int output)
         {
             //Setup network, parameters (Activation, bias, number of neurons).
-            network = new BasicNetwork();
-            network.AddLayer(new BasicLayer(null, true, input)); //Input.
-            network.AddLayer(new BasicLayer(new ActivationSigmoid(), true, 10)); //Hidden.
-            network.AddLayer(new BasicLayer(new ActivationSigmoid(), true, 10)); //Hidden.
-            network.AddLayer(new BasicLayer(new ActivationSigmoid(), false, output)); //Output.
-            network.Structure.FinalizeStructure();
-            network.Reset();
+            EncogNetwork = new BasicNetwork();
+            EncogNetwork.AddLayer(new BasicLayer(null, true, input)); //Input.
+            EncogNetwork.AddLayer(new BasicLayer(new ActivationSigmoid(), true, 10)); //Hidden.
+            EncogNetwork.AddLayer(new BasicLayer(new ActivationSigmoid(), true, 10)); //Hidden.
+            EncogNetwork.AddLayer(new BasicLayer(new ActivationSigmoid(), false, output)); //Output.
+            EncogNetwork.Structure.FinalizeStructure();
+            EncogNetwork.Reset();
         }
 
-        public override double Train(data info, float lr, float mom)
+        public override double Train(Data info, float lr, float mom)
         {
             IMLDataSet data = new BasicMLDataSet(info.InputData, info.OutputData);
-            IMLDataSet sampleData = new BasicMLDataSet(info.InputDataSample, info.OutputDataSample);
 
             //Train network on data set, parameters (Network, dataset, learning rate, momentum).
-            IMLTrain learner = new Backpropagation(network, data, lr, mom);
+            IMLTrain learner = new Backpropagation(EncogNetwork, data, lr, mom);
 
             //Recording time per tick.
             DateTime start = DateTime.Now;
@@ -47,9 +45,10 @@ namespace ENP1
             return learner.Error;
         }
 
-        public override void Save()
+        public override void Save(string fileName)
         {
-            throw new NotImplementedException();
+            FileInfo networkFile = new FileInfo(fileName);
+            Encog.Persist.EncogDirectoryPersistence.SaveObject(networkFile, EncogNetwork);
         }
     }
 }

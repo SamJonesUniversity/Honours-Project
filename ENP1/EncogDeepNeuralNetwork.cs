@@ -12,10 +12,8 @@ using System;
 
 namespace ENP1
 {
-    class EncogDeepNetwork : NeuralNetwork
+    class EncogDeepNeuralNetwork : EncogNeuralNetwork
     {
-        public BasicNetwork network;
-
         public override void Create(int input, int output)
         {
             //Setup network, parameters (Activation, bias, number of neurons).
@@ -28,20 +26,19 @@ namespace ENP1
 
             elman.AddHiddenLayer(5);
 
-            network = (BasicNetwork)elman.Generate();
+            EncogNetwork = (BasicNetwork)elman.Generate();
         }
 
-        public override double Train(data info, float lr, float mom)
+        public override double Train(Data info, float lr, float mom)
         {
             IMLDataSet data = new BasicMLDataSet(info.InputData, info.OutputData);
-            IMLDataSet sampleData = new BasicMLDataSet(info.InputDataSample, info.OutputDataSample);
 
             //Train network on data set, parameters (Network, dataset, learning rate, momentum).
             ICalculateScore score = new TrainingSetScore(data);
-            IMLTrain trainAlt = new NeuralSimulatedAnnealing(network, score, 10, 2, 1000);
+            IMLTrain trainAlt = new NeuralSimulatedAnnealing(EncogNetwork, score, 10, 2, 1000);
             IMLTrain learner;
 
-            learner = new LevenbergMarquardtTraining(network, data);
+            learner = new LevenbergMarquardtTraining(EncogNetwork, data);
 
             var stop = new StopTrainingStrategy();
             learner.AddStrategy(new Greedy());
@@ -55,11 +52,6 @@ namespace ENP1
             } while (!stop.ShouldStop());
 
             return learner.Error;
-        }
-
-        public override void Save()
-        {
-            throw new NotImplementedException();
         }
     }
 }
