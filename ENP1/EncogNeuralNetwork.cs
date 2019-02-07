@@ -1,4 +1,5 @@
-﻿using Encog.Engine.Network.Activation;
+﻿using Accord.Neuro;
+using Encog.Engine.Network.Activation;
 using Encog.ML.Data;
 using Encog.ML.Data.Basic;
 using Encog.ML.Train;
@@ -49,6 +50,12 @@ namespace ENP1
         {
             FileInfo networkFile = new FileInfo(fileName);
             Encog.Persist.EncogDirectoryPersistence.SaveObject(networkFile, EncogNetwork);
+        }
+		
+		public override void Load(string fileName)
+        {
+            FileInfo networkFile = new FileInfo(fileName);
+            EncogNetwork = (BasicNetwork) Encog.Persist.EncogDirectoryPersistence.LoadObject(networkFile);
         }
     }
 }

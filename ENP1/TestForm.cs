@@ -1,25 +1,23 @@
 ﻿//System/Form libraries.
-using System;
-using System.Windows.Forms;
-using System.IO;
-using System.Collections.Generic;
-using Newtonsoft.Json;
-
-//Engoc libraries.
-using Encog.Neural.Networks;
-using Encog.Neural.Networks.Layers;
-using Encog.Engine.Network.Activation;
-using Encog.ML.Data;
-using Encog.Neural.Networks.Training.Propagation.Back;
-using Encog.ML.Train;
-using Encog.ML.Data.Basic;
-using Encog.Util.CSV;
-using Encog.App.Analyst;
-using Encog.App.Analyst.CSV.Normalize;
-
 //Accord libraries.
 using Accord.Neuro;
 using Accord.Neuro.Learning;
+using Encog.App.Analyst;
+using Encog.App.Analyst.CSV.Normalize;
+using Encog.Engine.Network.Activation;
+using Encog.ML.Data;
+using Encog.ML.Data.Basic;
+using Encog.ML.Train;
+//Engoc libraries.
+using Encog.Neural.Networks;
+using Encog.Neural.Networks.Layers;
+using Encog.Neural.Networks.Training.Propagation.Back;
+using Encog.Util.CSV;
+using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Windows.Forms;
 
 namespace ENP1
 {
@@ -30,35 +28,30 @@ namespace ENP1
             InitializeComponent();
         }
 
-        //Global path variable for working directory.
-        public string path;
-        public string dataFile;
-
-        /// <summary> need comments </summary>
+        /// <summary> Form load. </summary>
         private void Form1_Load(object sender, EventArgs e) { }
 
         /// Buttons ///
 
-        /// <summary> need comments </summary>
-        private List<string> GetFile(bool titleType)
+        private List<string> GetFile(bool titleType, ref string path, ref string dataFile, int outputs)
         {
             //Reset paths.
             path = null; dataFile = null;
 
-            if((int)(outputsUpDown.Value) == 0)
+            if (outputs == 0)
             {
                 MessageBox.Show("You must have at least 1 output", "Output Error.");
                 return null;
             }
 
-            //Get csv path and create normalized version path.
+            //Get csv path.
             openFileDialog1.Filter = "csv files (*.csv)|*.csv";
             DialogResult dialogResult = openFileDialog1.ShowDialog();
-            
+
             //Exit function if file selection was cancelled.
             if (dialogResult == DialogResult.Cancel)
             {
-                Output.Text += "Cancelling File Selection. . .\n";
+                output.Text += "Cancelling File Selection. . .\n";
                 return null;
             }
 
@@ -72,18 +65,23 @@ namespace ENP1
             //Setup paths from file.
             dataFile = openFileDialog1.SafeFileName;
             path = openFileDialog1.FileName.Replace(openFileDialog1.SafeFileName, "");
-            var sourcefile = new FileInfo(openFileDialog1.FileName);
-            var normalfile = new FileInfo(openFileDialog1.FileName.Replace(".csv", "Normal.csv"));
+            var sourceFile = new FileInfo(openFileDialog1.FileName);
+            var normalFile = new FileInfo(openFileDialog1.FileName.Replace(".csv", "Normal.csv"));
 
-            Output.Text += "Loading File: " + dataFile + ". . .\n";
+            output.Text += "Loading File: " + dataFile + ". . .\n";
 
-            return Data.Normalise(sourcefile, normalfile, path, dataFile, (int)(outputsUpDown.Value), titleType);
+            return Data.Normalise(sourceFile, normalFile, path, dataFile, outputs, titleType);
         }
 
-        /// <summary> need comments </summary>
+        /// <summary> Button to test network settings. </summary>
         private void NetworkBtn_Click(object sender, EventArgs e)
         {
-            List<string> outputTitles = GetFile(false);
+			//Setup paths and lists.
+			string dataFile = "";
+			string path = "";
+		
+			//Normalise file.
+            List<string> outputTitles = GetFile(false, ref path, ref dataFile, (int)(outputsUpDown.Value));
 
             if (outputTitles == null)
             {
@@ -101,7 +99,7 @@ namespace ENP1
             {
                 validation = true;
             }
-
+			
             //Setup training dataset.
             Data info = new Data(); info = info.ReturnInfo(path + dataFile.Replace(".csv", "Normal.csv"), outputTitles, sampleBar.Value, validation);
 
@@ -114,18 +112,20 @@ namespace ENP1
             var norm = new AnalystNormalizeCSV();
             norm.Analyze(sourcefile, true, CSVFormat.English, analyst);
 
+			//Setup network.
             NeuralNetwork network;
 
+			//If to decide which network type to use.
             if (radBtnEncog.Checked)
             {
                 if (!deepNetworkBox.Checked)
                 {
-                    Output.Text += ("\n@Encog:\n\n");
+                    output.Text += ("\n@Encog:\n\n");
                     network = new EncogNeuralNetwork();
                 }
                 else
                 {
-                    Output.Text += ("\n@Deep Encog:\n\n");
+                    output.Text += ("\n@Deep Encog:\n\n");
                     network = new EncogDeepNeuralNetwork();
                 }
             }
@@ -133,43 +133,51 @@ namespace ENP1
             {
                 if (!deepNetworkBox.Checked)
                 {
-                    Output.Text += ("\n@Accord:\n\n");
+                    output.Text += ("\n@Accord:\n\n");
                     network = new AccordNeuralNetwork();
                 }
                 else
                 {
-                    Output.Text += ("\n@Deep Accord:\n\n");
+                    output.Text += ("\n@Deep Accord:\n\n");
                     network = new AccordDeepNeuralNetwork();
                 }
             }
 
+			//If using cross-validation.
             if (validation)
             {
-                int poolSize = (info.InputData.Length * sampleBar.Value) / 10;
+                //Setup pool size.
+                decimal tmpPoolSize = info.InputData.Length * decimal.Divide(sampleBar.Value , 100);
+                int poolSize = (int)tmpPoolSize;
 
                 double[][] arrayIn = info.InputData; double[][] arrayOut = info.OutputData;
 
                 info.InputData = Data.CreateArray<double>(poolSize, info.InputData[0].Length);
                 info.OutputData = Data.CreateArray<double>(poolSize, info.OutputData[0].Length);
 
+				//Random to randomise pool selection.
                 Random rnd = new Random();
 
-                int[] index = new int[arrayIn.Length - 1];
+                int[] index = new int[poolSize];
 
+				//Radomly allocate items for training pool.
                 for (int j = 0; j < info.InputData.Length; j++)
                 {
                     index[j] = rnd.Next(0, arrayIn.Length);
                     info.InputData[j] = arrayIn[index[j]]; info.OutputData[j] = arrayOut[index[j]];
                 }
 
+				//Remove pooled items from array.
                 arrayIn = Data.RemoveFromArray(arrayIn, index, poolSize);
                 arrayOut = Data.RemoveFromArray(arrayOut, index, poolSize);
 
-                for (int i = 0; i < arrayIn.Length / poolSize; i++)
+				//Start allocating sample pools.
+                for (int i = 0; i <= arrayIn.Length / poolSize; i++)
                 {
                     info.InputDataSample = Data.CreateArray<double>(poolSize, arrayIn[0].Length);
                     info.OutputDataSample = Data.CreateArray<double>(poolSize, arrayOut[0].Length);
 
+                    //Radomly allocate items for [i] sample pool.
                     for (int j = 0; j < info.InputDataSample.Length; j++)
                     {
                         index[j] = rnd.Next(0, arrayIn.Length);
@@ -179,10 +187,13 @@ namespace ENP1
                     arrayIn = Data.RemoveFromArray(arrayIn, index, poolSize);
                     arrayOut = Data.RemoveFromArray(arrayOut, index, poolSize);
 
-                    Output.Text += "Training complete with an inaccuracy of: " + Math.Round(network.Train(info, ((float)(learningRateBar.Value) / 10), ((float)(momentumBar.Value) / 10)), 10) + "\n\n";
+                    //Create network.
+                    network.Create(info.InputNumber, info.OutputNumber);
+                    output.Text += "Training complete with an inaccuracy of: " + Math.Round(network.Train(info, ((float)(learningRateBar.Value) / 10), ((float)(momentumBar.Value) / 10)), 10) + "\n\n";
 
                     double[][] answers = Data.CreateArray<double>(poolSize, info.InputData[0].Length);
 
+					//Compute outputs.
                     for (int j = 0; j < answers.Length; j++)
                     {
                         if (radBtnAccord.Checked)
@@ -202,16 +213,20 @@ namespace ENP1
                         }
                     }
 
-                    Output.Text += network.Display(answers, info, analyst);
+					//Display network.
+                    output.Text += network.Display(answers, analyst, info, outputTitles, path + dataFile.Replace(".csv", "Normal.csv"));
                 }
             }
+			//Else percentage split.
             else
             {
+				//Create network.
                 network.Create(info.InputNumber, info.OutputNumber);
-                Output.Text += "Training complete with an inaccuracy of: " + Math.Round(network.Train(info, ((float)(learningRateBar.Value) / 10), ((float)(momentumBar.Value) / 10)), 5) + "\n\n";
+                output.Text += "Training complete with an inaccuracy of: " + Math.Round(network.Train(info, ((float)(learningRateBar.Value) / 10), ((float)(momentumBar.Value) / 10)), 5) + "\n\n";
 
                 double[][] answers = Data.CreateArray<double>(info.InputDataSample.Length, info.InputDataSample[0].Length);
 
+				//Compute outputs.
                 for (int i = 0; i < answers.Length; i++)
                 {
                     if (radBtnAccord.Checked)
@@ -231,14 +246,21 @@ namespace ENP1
                     }
                 }
 
-                Output.Text += network.Display(answers, info, analyst);
+                //Display network.
+                output.Text += network.Display(answers, analyst, info, outputTitles, path + dataFile.Replace(".csv", "Normal.csv"));
             }
         }
 
-        /// <summary> need comments </summary>
+		/// This function needs to be re-written ///
+        /// <summary> Test function to iterate through all learning rates and momentums with different numbers of neurons and layers. </summary>
         private void RateTestBtn_Click(object sender, EventArgs e)
         {
-            List<string> outputTitles = GetFile(false);
+            //Setup paths and lists.
+            string dataFile = "";
+            string path = "";
+
+            //Normalise file.
+            List<string> outputTitles = GetFile(false, ref path, ref dataFile, (int)(outputsUpDown.Value));
 
             if (outputTitles == null)
             {
@@ -279,6 +301,7 @@ namespace ENP1
                             Accord.Neuro.IActivationFunction function = new SigmoidFunction();
                             ActivationNetwork networkAccord = new ActivationNetwork(function, info.InputNumber, neurons, info.OutputNumber);
 
+							//Switch to calculate number of layers to use.
                             switch (layers)
                             {
                                 case 2:
@@ -358,9 +381,15 @@ namespace ENP1
             }
         }
 
+		/// <summary> Button to save current network settings </summary>
         private void NetworkSaveBtn_Click(object sender, EventArgs e)
         {
-            List<string> outputTitles = GetFile(false);
+            //Setup paths and lists.
+            string dataFile = "";
+            string path = "";
+
+            //Normalise file.
+            List<string> outputTitles = GetFile(false, ref path, ref dataFile, (int)(outputsUpDown.Value));
             List<string> inputTitles = new List<string>();
 
             if (outputTitles == null)
@@ -371,7 +400,7 @@ namespace ENP1
             //False when percentage split, true when cross validation.
             bool validation = true;
 
-            //Setup training dataset.
+            //Setup dataset.
             Data info = new Data(); info = info.ReturnInfo(path + dataFile.Replace(".csv", "Normal.csv"), outputTitles, sampleBar.Value, validation);
 
             //Load analyst from earlier.
@@ -383,23 +412,26 @@ namespace ENP1
             var norm = new AnalystNormalizeCSV();
             norm.Analyze(sourcefile, true, CSVFormat.English, analyst);
 
+			//Store input headings from analyst.
             for (int i = 0; i < analyst.Script.Fields.Length - outputTitles.Count; i++)
             {
                 inputTitles.Add(analyst.Script.Fields[i].Name);
             }
 
+			//Setup network.
             NeuralNetwork network;
 
+			//If to decide which network type to use.
             if (radBtnEncog.Checked)
             {
                 if (!deepNetworkBox.Checked)
                 {
-                    Output.Text += ("\n@Encog:\n\n");
+                    output.Text += ("\n@Encog:\n\n");
                     network = new EncogNeuralNetwork();
                 }
                 else
                 {
-                    Output.Text += ("\n@Deep Encog:\n\n");
+                    output.Text += ("\n@Deep Encog:\n\n");
                     network = new EncogDeepNeuralNetwork();
                 }
             }
@@ -407,28 +439,39 @@ namespace ENP1
             {
                 if (!deepNetworkBox.Checked)
                 {
-                    Output.Text += ("\n@Accord:\n\n");
+                    output.Text += ("\n@Accord:\n\n");
                     network = new AccordNeuralNetwork();
                 }
                 else
                 {
-                    Output.Text += ("\n@Deep Accord:\n\n");
+                    output.Text += ("\n@Deep Accord:\n\n");
                     network = new AccordNeuralNetwork();
                 }
             }
 
+			//Create network.
             network.Create(info.InputNumber, info.OutputNumber);
 
-            NetworkSaveData networkSave = new NetworkSaveData();
-            networkSave.Inaccuracy = Math.Round(network.Train(info, ((float)(learningRateBar.Value) / 10), ((float)(momentumBar.Value) / 10)), 5) + "\n\n";
-            networkSave.NetworkFile = path + dataFile.Replace(".csv", "");
-            network.Save(path + dataFile.Replace(".csv", ""));
+            //Save network data to object.
+            NetworkSaveData networkSave = new NetworkSaveData
+            {
+                NetworkFile = path + nameTxt.Text,
+                NetworkType = network.GetType().ToString().Replace("ENP1.",""),
+                AnalystFile = path + @"\normalizationData.ega",
+                CsvFile = dataFile,
+                Path = path,
+                InputHeadings = inputTitles,
+                OutputHeadings = outputTitles,
+                Name = nameTxt.Text,
 
-            networkSave.AnalystFile = path + @"\normalizationData" + dataFile.Replace(".csv", "") + ".ega";
-            networkSave.CsvFile = path + dataFile;
-            networkSave.Headings = inputTitles;
-            networkSave.Name = nameTxt.Text;
+                //Train network.
+                Inaccuracy = Math.Round(network.Train(info, ((float)(learningRateBar.Value) / 10), ((float)(momentumBar.Value) / 10)), 5).ToString()
+            };
 
+            //Save network to file.
+            network.Save(path + nameTxt.Text);
+			
+			//Write network object to json file.
             using (var sw = new StreamWriter(path + "networks.json", true))
             using (var jsw = new JsonTextWriter(sw))
             {
@@ -438,10 +481,10 @@ namespace ENP1
                 sw.WriteLine();
             }
 
-            Output.Text += "Successfully saved network " + nameTxt.Text + " with a training inaccuracy of: " + networkSave.Inaccuracy;
+            output.Text += "Successfully saved network " + nameTxt.Text + " with a training inaccuracy of: " + networkSave.Inaccuracy;
         }
 
-        /// <summary> need comments </summary>
+        /// <summary> Button to hide and show advanced network settings. </summary>
         private void AdvancedBtn_Click(object sender, EventArgs e)
         {
             if (learningRateBar.Visible)
@@ -468,26 +511,33 @@ namespace ENP1
 
         /// Scroll bars. ///
 
-        /// <summary> need comments </summary>
+        /// <summary> Scroll bar to select pools size for cross-validation or percentage split size. </summary>
         private void SampleBar_Scroll(object sender, EventArgs e)
         {
-            if(radBtnSplit.Checked)
+            if (sampleBar.Value % sampleBar.SmallChange != 0)
             {
-                sampleLbl.Text = String.Format("Sample Data: " + (sampleBar.Value * 10).ToString() + "%");
+                int trackValue = (sampleBar.Value / sampleBar.SmallChange) * sampleBar.SmallChange;
+
+                sampleBar.Value = trackValue;
+            }
+
+            if (radBtnSplit.Checked)
+            {
+                sampleLbl.Text = String.Format("Sample Data: " + (sampleBar.Value).ToString() + "%");
             }
             else
             {
-                sampleLbl.Text = String.Format("Pool Size: " + (sampleBar.Value * 10).ToString() + "%");
+                sampleLbl.Text = String.Format("Pool Size: " + (sampleBar.Value).ToString() + "%");
             }
         }
 
-        /// <summary> need comments </summary>
+        /// <summary> Scroll bar to select network learning rate. </summary>
         private void LearningRateBar_Scroll(object sender, EventArgs e)
         {
             learningRateLbl.Text = String.Format("Learning Rate: " + ((float)(learningRateBar.Value) / 10).ToString());
         }
 
-        /// <summary> need comments </summary>
+        /// <summary> Scroll bar to select network momentum. </summary>
         private void MomentumBar_Scroll(object sender, EventArgs e)
         {
             momentumLbl.Text = String.Format("Momentum: " + ((float)(momentumBar.Value) / 10).ToString());
@@ -495,16 +545,28 @@ namespace ENP1
         
         /// Radio buttons ///
 
-        /// <summary> need comments </summary>
+        /// <summary> Percentage split radio button. </summary>
         private void RadBtnSplit_CheckedChanged(object sender, EventArgs e)
         {
-            sampleLbl.Text = String.Format("Sample Data: " + (sampleBar.Value * 10).ToString() + "%");
+            sampleBar.Maximum = 100;
+            sampleBar.Minimum = 10;
+            sampleBar.SmallChange = 10;
+            sampleBar.LargeChange = 10;
+            sampleBar.TickFrequency = 10;
+            sampleBar.Value = 10;
+            sampleLbl.Text = String.Format("Sample Data: " + (sampleBar.Value).ToString() + "%");
         }
 
-        /// <summary> need comments </summary>
+        /// <summary> Cross-validation radio button. </summary>
         private void RadBtnCrossVal_CheckedChanged(object sender, EventArgs e)
         {
-            sampleLbl.Text = String.Format("Pool Size: " + (sampleBar.Value * 10).ToString() + "%");
+            sampleBar.Maximum = 30;
+            sampleBar.Minimum = 5;
+            sampleBar.SmallChange = 5;
+            sampleBar.LargeChange = 10;
+            sampleBar.TickFrequency = 5;
+            sampleBar.Value = 5;
+            sampleLbl.Text = String.Format("Pool Size: " + (sampleBar.Value).ToString() + "%");
         }
     }
 }

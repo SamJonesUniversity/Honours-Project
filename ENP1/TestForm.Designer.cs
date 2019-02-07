@@ -40,7 +40,7 @@
             this.deepNetworkBox = new System.Windows.Forms.CheckBox();
             this.advancedBtn = new System.Windows.Forms.Button();
             this.advancedLbl = new System.Windows.Forms.Label();
-            this.Output = new System.Windows.Forms.RichTextBox();
+            this.output = new System.Windows.Forms.RichTextBox();
             this.radBtnCrossVal = new System.Windows.Forms.RadioButton();
             this.radBtnSplit = new System.Windows.Forms.RadioButton();
             this.radBtnEncog = new System.Windows.Forms.RadioButton();
@@ -51,8 +51,8 @@
             this.fileBox = new System.Windows.Forms.GroupBox();
             this.networkBox = new System.Windows.Forms.GroupBox();
             this.additionalBox = new System.Windows.Forms.GroupBox();
-            this.nameTxt = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
+            this.nameTxt = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.sampleBar)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.learningRateBar)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.momentumBar)).BeginInit();
@@ -78,13 +78,15 @@
             // 
             // sampleBar
             // 
-            this.sampleBar.LargeChange = 1;
             this.sampleBar.Location = new System.Drawing.Point(3, 78);
-            this.sampleBar.Minimum = 1;
+            this.sampleBar.Maximum = 100;
+            this.sampleBar.Minimum = 10;
             this.sampleBar.Name = "sampleBar";
             this.sampleBar.Size = new System.Drawing.Size(104, 45);
+            this.sampleBar.SmallChange = 10;
             this.sampleBar.TabIndex = 4;
-            this.sampleBar.Value = 1;
+            this.sampleBar.TickFrequency = 10;
+            this.sampleBar.Value = 10;
             this.sampleBar.Scroll += new System.EventHandler(this.SampleBar_Scroll);
             // 
             // sampleLbl
@@ -180,17 +182,17 @@
             this.advancedLbl.TabIndex = 15;
             this.advancedLbl.Text = "Advanced Settings";
             // 
-            // Output
+            // output
             // 
-            this.Output.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.Output.Cursor = System.Windows.Forms.Cursors.Default;
-            this.Output.Font = new System.Drawing.Font("Adobe Fangsong Std R", 20.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.Output.Location = new System.Drawing.Point(12, 12);
-            this.Output.Name = "Output";
-            this.Output.ReadOnly = true;
-            this.Output.Size = new System.Drawing.Size(932, 399);
-            this.Output.TabIndex = 16;
-            this.Output.Text = "";
+            this.output.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.output.Cursor = System.Windows.Forms.Cursors.Default;
+            this.output.Font = new System.Drawing.Font("Adobe Fangsong Std R", 20.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.output.Location = new System.Drawing.Point(12, 12);
+            this.output.Name = "output";
+            this.output.ReadOnly = true;
+            this.output.Size = new System.Drawing.Size(932, 399);
+            this.output.TabIndex = 16;
+            this.output.Text = "";
             // 
             // radBtnCrossVal
             // 
@@ -311,13 +313,6 @@
             this.additionalBox.TabStop = false;
             this.additionalBox.Text = "Additional Settings:";
             // 
-            // nameTxt
-            // 
-            this.nameTxt.Location = new System.Drawing.Point(94, 21);
-            this.nameTxt.Name = "nameTxt";
-            this.nameTxt.Size = new System.Drawing.Size(82, 20);
-            this.nameTxt.TabIndex = 30;
-            // 
             // label1
             // 
             this.label1.AutoSize = true;
@@ -327,12 +322,19 @@
             this.label1.TabIndex = 31;
             this.label1.Text = "Network Name:";
             // 
+            // nameTxt
+            // 
+            this.nameTxt.Location = new System.Drawing.Point(94, 21);
+            this.nameTxt.Name = "nameTxt";
+            this.nameTxt.Size = new System.Drawing.Size(82, 20);
+            this.nameTxt.TabIndex = 30;
+            // 
             // TestForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(950, 563);
-            this.Controls.Add(this.Output);
+            this.Controls.Add(this.output);
             this.Controls.Add(this.fileBox);
             this.Controls.Add(this.networkBox);
             this.Controls.Add(this.additionalBox);
@@ -366,7 +368,7 @@
         private System.Windows.Forms.CheckBox deepNetworkBox;
         private System.Windows.Forms.Button advancedBtn;
         private System.Windows.Forms.Label advancedLbl;
-        private System.Windows.Forms.RichTextBox Output;
+        private System.Windows.Forms.RichTextBox output;
         private System.Windows.Forms.RadioButton radBtnCrossVal;
         private System.Windows.Forms.RadioButton radBtnSplit;
         private System.Windows.Forms.RadioButton radBtnEncog;

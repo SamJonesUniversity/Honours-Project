@@ -35,6 +35,8 @@
             this.inputTxt = new System.Windows.Forms.TextBox();
             this.networkListBox = new System.Windows.Forms.ListBox();
             this.networkBtn = new System.Windows.Forms.Button();
+            this.csvBox = new System.Windows.Forms.CheckBox();
+            this.output = new System.Windows.Forms.RichTextBox();
             this.SuspendLayout();
             // 
             // fileBtn
@@ -93,13 +95,33 @@
             this.networkBtn.TabIndex = 7;
             this.networkBtn.Text = "Compute";
             this.networkBtn.UseVisualStyleBackColor = true;
-            this.networkBtn.Click += new System.EventHandler(this.networkBtn_Click);
+            this.networkBtn.Click += new System.EventHandler(this.NetworkBtn_Click);
+            // 
+            // csvBox
+            // 
+            this.csvBox.AutoSize = true;
+            this.csvBox.Location = new System.Drawing.Point(833, 125);
+            this.csvBox.Name = "csvBox";
+            this.csvBox.Size = new System.Drawing.Size(80, 17);
+            this.csvBox.TabIndex = 8;
+            this.csvBox.Text = "checkBox1";
+            this.csvBox.UseVisualStyleBackColor = true;
+            // 
+            // output
+            // 
+            this.output.Location = new System.Drawing.Point(792, 229);
+            this.output.Name = "output";
+            this.output.Size = new System.Drawing.Size(208, 168);
+            this.output.TabIndex = 9;
+            this.output.Text = "";
             // 
             // InputForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1042, 537);
+            this.Controls.Add(this.output);
+            this.Controls.Add(this.csvBox);
             this.Controls.Add(this.networkBtn);
             this.Controls.Add(this.networkListBox);
             this.Controls.Add(this.inputTxt);
@@ -122,5 +144,7 @@
         private System.Windows.Forms.TextBox inputTxt;
         private System.Windows.Forms.ListBox networkListBox;
         private System.Windows.Forms.Button networkBtn;
+        private System.Windows.Forms.CheckBox csvBox;
+        private System.Windows.Forms.RichTextBox output;
     }
 }

@@ -76,5 +76,10 @@ namespace ENP1
         {
             DeepAccordNetwork.Save(fileName);
         }
+
+        public override void Load(string fileName)
+        {
+            DeepAccordNetwork = (DeepBeliefNetwork)Network.Load(fileName);
+        }
     }
 }

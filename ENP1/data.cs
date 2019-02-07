@@ -1,5 +1,6 @@
 ﻿using Encog.App.Analyst;
 using Encog.App.Analyst.CSV.Normalize;
+using Encog.App.Analyst.Missing;
 using Encog.App.Analyst.Script.Normalize;
 using Encog.App.Analyst.Wizard;
 using Encog.Util.CSV;
@@ -52,14 +53,20 @@ namespace ENP1
         {
             List<List<T>> tmp = new List<List<T>>();
 
-            foreach (T[] entry in input)
+            for (int i = 0; i < input.Length; i++)
             {
-                tmp.Add(new List<T>(entry));
+                tmp.Add(new List<T>(input[i]));
             }
 
             for (int i = 0; i < count; i++)
             {
-                tmp.RemoveAt(index[i] - i);
+                int id = index[i] - i;
+                if(id < 0)
+                {
+                    id = 0;
+                }
+                   
+                tmp.RemoveAt(id);
             }
 
             T[][] array = Data.CreateArray<T>(tmp.Count, tmp[0].Count);
@@ -74,6 +81,9 @@ namespace ENP1
             return array;
         }
 
+		/// <summary> need comments </summary>
+        
+		
         public static List<string> Normalise(FileInfo sourceFile, FileInfo normalFile, string path, string dataFile, int outputs, bool inputs)
         {
             List<string> titles = new List<string>();
@@ -97,9 +107,12 @@ namespace ENP1
             foreach (AnalystField field in analyst.Script.Normalize.NormalizedFields)
             {
                 field.NormalizedHigh = 1;
-                field.NormalizedLow = 0;
+                field.NormalizedLow = -1;
                 //field.Action = Encog.Util.Arrayutil.NormalizationAction.OneOf; //Use this to change normalizaiton type.
             }
+
+            IHandleMissingValues missing = new NegateMissing();
+            analyst.Script.Normalize.MissingValues = missing;
 
             //Normalization.
             var norm = new AnalystNormalizeCSV();
@@ -123,7 +136,7 @@ namespace ENP1
             }
 
             //Save configuration to be used later.
-            analyst.Save(new FileInfo(path + @"\normalizationData" + dataFile.Replace(".csv", "") + ".ega"));
+            analyst.Save(new FileInfo(path + @"\normalizationData" + dataFile.Replace(".csv", ".ega")));
 
             return titles;
         }
@@ -151,13 +164,14 @@ namespace ENP1
                             if (values[v].Contains(titles[k]))
                             {
                                 outputNumber++;
-                            }
-                            else if (!updated)
-                            {
-                                inputNumber++;
                                 updated = true;
                             }
-                        } 
+                        }
+
+                        if (!updated)
+                        {
+                            inputNumber++;
+                        }
                     }
                 }
 
@@ -175,20 +189,35 @@ namespace ENP1
             int numOfSamples = 0;
             int sampleCount = 0;
 
-            sampleNumber = (csvLength - 1) / (((csvLength - 1) / 10) * (sampleNumber + 1)) + 1;
-            
+            if (!validation)
+            {
+                if (csvLength - 1 <= 1)
+                {
+                    MessageBox.Show("The file you have selected does not have enough rows to use a sample size.", "Input Size Error");
+                }
+                else
+                {
+                    decimal tmpSampleNumber = csvLength * decimal.Divide(sampleNumber, 100); //(csvLength - 1) / (((csvLength - 1) / 10) * (sampleNumber + 1)) + 1;
+                    sampleNumber = (int)tmpSampleNumber;
+                }
+            }
+
             //Local InputData and OutputData
             double[][] inputData = CreateArray<double>(csvLength - 1, inputNumber);
             double[][] outputData = CreateArray<double>(csvLength - 1, outputNumber);
 
             //Local InputDataSample and OutputDataSample
-            double[][] inputDataSample = CreateArray<double>((csvLength - 1) / sampleNumber, inputNumber);
-            double[][] outputDataSample = CreateArray<double>((csvLength - 1) / sampleNumber, outputNumber);
+            double[][] inputDataSample = CreateArray<double>(sampleNumber, inputNumber);
+            double[][] outputDataSample = CreateArray<double>(sampleNumber, outputNumber);
 
             if (validation)
             {
                 inputDataSample = null;
                 outputDataSample = null;
+            }
+            else
+            {
+                sampleNumber = csvLength / sampleNumber;
             }
 
             //Read CSV and assign data to arrays.

@@ -39,5 +39,10 @@ namespace ENP1
         {
             AccordNetwork.Save(fileName);
         }
+		
+		public override void Load(string fileName)
+        {
+            AccordNetwork = (ActivationNetwork) Network.Load(fileName);
+        }
     }
 }
