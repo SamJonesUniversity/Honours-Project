@@ -21,6 +21,8 @@ namespace ENP1
         public double[][] InputData { get; set; }
         /// <summary> Training data output array. </summary>
         public double[][] OutputData { get; set; }
+        /// <summary> Training data output array. </summary>
+        public double[][] Prediction { get; set; }
 
         /// <summary> Sample data input array. </summary>
         public double[][] InputDataSample { get; set; }
@@ -118,9 +120,19 @@ namespace ENP1
             var norm = new AnalystNormalizeCSV();
             norm.Analyze(sourceFile, true, CSVFormat.English, analyst);
             norm.ProduceOutputHeaders = true;
-            norm.Normalize(normalFile);
 
-            if(!inputs)
+            try
+            {
+                norm.Normalize(normalFile);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message.ToString() + "\n\nUnknown application failure, please report this bug with a screenshot of" +
+                    " the message to the relevant engineer.", "Normalisation Failure");
+                return null;
+            }
+
+            if (!inputs)
             {
                 for (int i = outputs; i + analyst.Script.Fields.Length > analyst.Script.Fields.Length; i--)
                 {
@@ -136,7 +148,7 @@ namespace ENP1
             }
 
             //Save configuration to be used later.
-            analyst.Save(new FileInfo(path + @"\normalizationData" + dataFile.Replace(".csv", ".ega")));
+            analyst.Save(new FileInfo(path + @"\normal\" + "normalizationData" + dataFile.Replace(".csv", ".ega")));
 
             return titles;
         }
@@ -200,11 +212,16 @@ namespace ENP1
                     decimal tmpSampleNumber = csvLength * decimal.Divide(sampleNumber, 100); //(csvLength - 1) / (((csvLength - 1) / 10) * (sampleNumber + 1)) + 1;
                     sampleNumber = (int)tmpSampleNumber;
                 }
+
+                //while ((csvLength - 1) % sampleNumber > (csvLength - 1) / sampleNumber)
+                {
+                    //sampleNumber--;
+                }
             }
 
             //Local InputData and OutputData
-            double[][] inputData = CreateArray<double>(csvLength - 1, inputNumber);
-            double[][] outputData = CreateArray<double>(csvLength - 1, outputNumber);
+            double[][] inputData = CreateArray<double>(csvLength - 1 - sampleNumber, inputNumber);
+            double[][] outputData = CreateArray<double>(csvLength - 1 - sampleNumber, outputNumber);
 
             //Local InputDataSample and OutputDataSample
             double[][] inputDataSample = CreateArray<double>(sampleNumber, inputNumber);
@@ -217,7 +234,7 @@ namespace ENP1
             }
             else
             {
-                sampleNumber = csvLength / sampleNumber;
+                sampleNumber = (csvLength - 1) / sampleNumber;
             }
 
             //Read CSV and assign data to arrays.
@@ -235,28 +252,28 @@ namespace ENP1
                         //Input array assigning.
                         for (int j = 0; j < inputNumber; j++)
                         {
-                            if (sampleCount == sampleNumber && inputDataSample != null)
+                            if (sampleCount == sampleNumber && inputDataSample != null && numOfSamples < inputDataSample.Length)
                             {
                                 inputDataSample[numOfSamples][j] = Convert.ToDouble(values[j]);
                                 passed = true;
                             }
                             else
                             {
-                                inputData[i - 1][j] = Convert.ToDouble(values[j]);
+                                inputData[i - 1 - numOfSamples][j] = Convert.ToDouble(values[j]);
                             }
                         }
 
                         //Output array assigning.
                         for (int j = 0; j < outputNumber; j++)
                         {
-                            if (sampleCount == sampleNumber && outputDataSample != null)
+                            if (sampleCount == sampleNumber && outputDataSample != null && numOfSamples < inputDataSample.Length)
                             {
                                 outputDataSample[numOfSamples][j] = Convert.ToDouble(values[inputNumber + j]);
                                 passed = true;
                             }
                             else
                             {
-                                outputData[i - 1][j] = Convert.ToDouble(values[inputNumber + j]);
+                                outputData[i - 1 - numOfSamples][j] = Convert.ToDouble(values[inputNumber + j]);
                             }
                         }
                         

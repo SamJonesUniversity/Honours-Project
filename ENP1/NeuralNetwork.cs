@@ -88,14 +88,14 @@ namespace ENP1
 
                         for (int c = 0; c < count[j]; c++)
                         {
-                            temp[c] = info.OutputDataSample[j][c];
+                            temp[c] = info.OutputDataSample[i][c];
                         }
 
                         outpt = analyst.Script.Normalize.NormalizedFields[analyst.Script.Normalize.NormalizedFields.Count + j - count.Count].DetermineClass(temp).Name;
 
                         for (int c = 0; c < count[j]; c++)
                         {
-                            temp[c] = answers[j][c];
+                            temp[c] = answers[i][c];
                         }
 
                         prediction = analyst.Script.Normalize.NormalizedFields[analyst.Script.Normalize.NormalizedFields.Count + j - count.Count].DetermineClass(temp).Name;
@@ -177,7 +177,7 @@ namespace ENP1
 
                         for (int c = 0; c < count[j]; c++)
                         {
-                            temp[c] = answers[j][c];
+                            temp[c] = answers[i][c];
                         }
 
                         prediction = analyst.Script.Normalize.NormalizedFields[analyst.Script.Normalize.NormalizedFields.Count + j - count.Count].DetermineClass(temp).Name;

@@ -66,7 +66,13 @@ namespace ENP1
             dataFile = openFileDialog1.SafeFileName;
             path = openFileDialog1.FileName.Replace(openFileDialog1.SafeFileName, "");
             var sourceFile = new FileInfo(openFileDialog1.FileName);
-            var normalFile = new FileInfo(openFileDialog1.FileName.Replace(".csv", "Normal.csv"));
+
+            if(!Directory.Exists(openFileDialog1.FileName.Replace(openFileDialog1.SafeFileName, "normal")))
+            {
+                Directory.CreateDirectory(openFileDialog1.FileName.Replace(openFileDialog1.SafeFileName, "normal"));
+            }
+
+            var normalFile = new FileInfo(openFileDialog1.FileName.Replace(openFileDialog1.SafeFileName, @"normal\" + openFileDialog1.SafeFileName.Replace(".csv", "Normal.csv")));
 
             output.Text += "Loading File: " + dataFile + ". . .\n";
 
@@ -101,11 +107,11 @@ namespace ENP1
             }
 			
             //Setup training dataset.
-            Data info = new Data(); info = info.ReturnInfo(path + dataFile.Replace(".csv", "Normal.csv"), outputTitles, sampleBar.Value, validation);
+            Data info = new Data(); info = info.ReturnInfo(path + @"normal\" + dataFile.Replace(".csv", "Normal.csv"), outputTitles, sampleBar.Value, validation);
 
             //Load analyst from earlier.
             var analyst = new EncogAnalyst();
-            analyst.Load(new FileInfo(path + @"\normalizationData" + dataFile.Replace(".csv", "") + ".ega"));
+            analyst.Load(new FileInfo(path + @"normal\" + "normalizationData" + dataFile.Replace(".csv", "") + ".ega"));
 
             var sourcefile = new FileInfo(path + dataFile);
 
@@ -247,7 +253,7 @@ namespace ENP1
                 }
 
                 //Display network.
-                output.Text += network.Display(answers, analyst, info, outputTitles, path + dataFile.Replace(".csv", "Normal.csv"));
+                output.Text += network.Display(answers, analyst, info, outputTitles, path + @"normal\" + dataFile.Replace(".csv", "Normal.csv"));
             }
         }
 
@@ -295,7 +301,7 @@ namespace ENP1
                         for (double m = 0.1; m <= 1; m += 0.1)
                         {
                             // initialize input and output values.
-                            Data info = new Data(); info = info.ReturnInfo(path + dataFile.Replace(".csv", "Normal.csv"), outputTitles, sampleBar.Value, validation);
+                            Data info = new Data(); info = info.ReturnInfo(path + @"normal\" + dataFile.Replace(".csv", "Normal.csv"), outputTitles, sampleBar.Value, validation);
 
                             //Setup network
                             Accord.Neuro.IActivationFunction function = new SigmoidFunction();
@@ -401,11 +407,11 @@ namespace ENP1
             bool validation = true;
 
             //Setup dataset.
-            Data info = new Data(); info = info.ReturnInfo(path + dataFile.Replace(".csv", "Normal.csv"), outputTitles, sampleBar.Value, validation);
+            Data info = new Data(); info = info.ReturnInfo(path + @"normal\" + dataFile.Replace(".csv", "Normal.csv"), outputTitles, 0, validation);
 
             //Load analyst from earlier.
             var analyst = new EncogAnalyst();
-            analyst.Load(new FileInfo(path + @"\normalizationData" + dataFile.Replace(".csv", "") + ".ega"));
+            analyst.Load(new FileInfo(path + @"normal\" + "normalizationData" + dataFile.Replace(".csv", "") + ".ega"));
 
             var sourcefile = new FileInfo(path + dataFile);
 
@@ -445,7 +451,7 @@ namespace ENP1
                 else
                 {
                     output.Text += ("\n@Deep Accord:\n\n");
-                    network = new AccordNeuralNetwork();
+                    network = new AccordDeepNeuralNetwork();
                 }
             }
 
@@ -455,9 +461,9 @@ namespace ENP1
             //Save network data to object.
             NetworkSaveData networkSave = new NetworkSaveData
             {
-                NetworkFile = path + nameTxt.Text,
+                NetworkFile = path + @"networks\" + nameTxt.Text,
                 NetworkType = network.GetType().ToString().Replace("ENP1.",""),
-                AnalystFile = path + @"\normalizationData.ega",
+                AnalystFile = path + @"normal\" + "normalizationData.ega",
                 CsvFile = dataFile,
                 Path = path,
                 InputHeadings = inputTitles,
@@ -469,10 +475,15 @@ namespace ENP1
             };
 
             //Save network to file.
-            network.Save(path + nameTxt.Text);
-			
-			//Write network object to json file.
-            using (var sw = new StreamWriter(path + "networks.json", true))
+            if (!Directory.Exists(path + "networks"))
+            {
+                Directory.CreateDirectory(path + "networks");
+            }
+
+            network.Save(path + @"networks\" + nameTxt.Text);
+
+            //Write network object to json file.
+            using (var sw = new StreamWriter(path + @"networks\networks.json", true))
             using (var jsw = new JsonTextWriter(sw))
             {
                 //jsw.Formatting = Formatting.Indented;
