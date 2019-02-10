@@ -473,6 +473,7 @@ namespace ENP1
                     }
 
                     sw.WriteLine(outString);
+                    outString = "";
                 }
             }
         }
