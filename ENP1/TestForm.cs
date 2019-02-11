@@ -386,11 +386,18 @@ namespace ENP1
                 return;
             }
 
+            if (nameTxt.Text?.Length == 0)
+            {
+                MessageBox.Show("You must give your network a name.", "No Network Name.");
+                return;
+            }
+
             //False when percentage split, true when cross validation.
             const bool validation = true;
 
             //Setup dataset.
-            Data info = new Data(); info = info.ReturnInfo(path + @"normal\" + dataFile.Replace(".csv", "Normal.csv"), outputTitles, 0, validation);
+            Data info = new Data();
+            info = info.ReturnInfo(path + @"normal\" + dataFile.Replace(".csv", "Normal.csv"), outputTitles, 0, validation);
 
             //Load analyst from earlier.
             var analyst = new EncogAnalyst();

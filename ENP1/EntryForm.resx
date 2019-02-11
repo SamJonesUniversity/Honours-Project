@@ -118,7 +118,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="label2.Text" xml:space="preserve">
-    <value> o Network Creater:
+    <value> o Network Creator:
      o Here you can test and save networks with the input of a csv file.
      o There are two libraries for neural networks: Encog and Accord.Net.
      o Each library contains a standard Feed-Forward neural network and 
@@ -129,7 +129,7 @@
          validation are available.</value>
   </data>
   <data name="label3.Text" xml:space="preserve">
-    <value> o Output Predicter:
+    <value> o Output Predictor:
      o Here you can predict outputs using networks you have saved
          from the network creater section.
      o Input is accepted in the form of manually entering the values

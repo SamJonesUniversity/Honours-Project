@@ -150,6 +150,7 @@
             this.rateTestBtn.TabIndex = 11;
             this.rateTestBtn.Text = "Test Rates";
             this.rateTestBtn.UseVisualStyleBackColor = true;
+            this.rateTestBtn.Visible = false;
             this.rateTestBtn.Click += new System.EventHandler(this.RateTestBtn_Click);
             // 
             // deepNetworkBox

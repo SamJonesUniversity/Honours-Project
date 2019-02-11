@@ -42,7 +42,7 @@
             this.testBtn.Name = "testBtn";
             this.testBtn.Size = new System.Drawing.Size(96, 23);
             this.testBtn.TabIndex = 0;
-            this.testBtn.Text = "Network Creater";
+            this.testBtn.Text = "Network Creator";
             this.testBtn.UseVisualStyleBackColor = true;
             this.testBtn.Click += new System.EventHandler(this.TestBtn_Click);
             // 
@@ -52,7 +52,7 @@
             this.inputBtn.Name = "inputBtn";
             this.inputBtn.Size = new System.Drawing.Size(98, 23);
             this.inputBtn.TabIndex = 1;
-            this.inputBtn.Text = "Output Predicter";
+            this.inputBtn.Text = "Output Predictor";
             this.inputBtn.UseVisualStyleBackColor = true;
             this.inputBtn.Click += new System.EventHandler(this.InputBtn_Click);
             // 

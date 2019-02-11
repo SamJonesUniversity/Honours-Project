@@ -81,7 +81,7 @@ namespace ENP1
 
                 foreach (string heading in item.InputHeadings)
                 {
-                    vs.Add(null);
+                    vs.Add("");
                 }
 
                 items.Add(new List<string>(vs));
@@ -102,7 +102,10 @@ namespace ENP1
 		/// <summary> Save input for each heading in each saved network. </summary>
         private void InputTxt_TextChanged(object sender, EventArgs e)
         {
-            items[selectedNetwork][inputListBox.SelectedIndex] = inputTxt.Text;
+            if (networkSaveDataList.Count > 0)
+            {
+                items[selectedNetwork][inputListBox.SelectedIndex] = inputTxt.Text;
+            }
         }
 
 		/// <summary> Display stored input for each heading in each saved network. </summary>
@@ -188,9 +191,9 @@ namespace ENP1
             analyst = new EncogAnalyst();
             analyst.Load(new FileInfo(path + @"normal\normalizationData" + dataFile.Replace(".csv", ".ega")));
 
-            var sourcefile = new FileInfo(path + dataFile);
+            FileInfo sourcefile = new FileInfo(path + dataFile);
 
-            var norm = new AnalystNormalizeCSV();
+            AnalystNormalizeCSV norm = new AnalystNormalizeCSV();
             //norm.InputHeadings = networkSaveDataList[selectedNetwork].Headings.ToArray();
             network.Load(networkSaveDataList[selectedNetwork].NetworkFile);
 
@@ -209,10 +212,7 @@ namespace ENP1
 
                 for (int i = 0; i < items[selectedNetwork].Count; i++)
                 {
-                    if (items[selectedNetwork][i]?.Length == 0)
-                    {
-                        notIncluded[0][i] = true;
-                    }
+                    notIncluded[0][i] = string.IsNullOrWhiteSpace(items[selectedNetwork][i]);
 
                     outString += items[selectedNetwork][i] + ",";
                 }
@@ -261,7 +261,7 @@ namespace ENP1
                 {
                     MessageBox.Show(ex.Message + "\n\nThe inputs you have entered do not correctly follow the current normalisation data. This may because you " +
                         "have entered values above or below the currently stored highs and lows for numbers. It is also possible you have " +
-                        "entered a textual word that has not been used before. Finally it is possible that you are have not used the correct" +
+                        "entered a textual word that has not been used before. Finally it is possible that you are have not used the correct " +
                         "case for a word as they are case sensitive.", "Normalisation Failure");
                     return;
                 }
@@ -339,7 +339,7 @@ namespace ENP1
 
                         for (int i = 0; i < notIncluded[0].Count; i++)
                         {
-                            notIncluded[lineNo][i] = values[i]?.Length == 0;
+                            notIncluded[lineNo][i] = string.IsNullOrWhiteSpace(values[i]);
                         }
 
                         lineNo++;
@@ -379,6 +379,18 @@ namespace ENP1
 
         private void SaveBtn_Click(object sender, EventArgs e)
         {
+            if (networkSaveDataList.Count == 0)
+            {
+                MessageBox.Show("You must select a network file first. If you do not have one you can create one in the network creater window", "No Network File Error");
+                return;
+            }
+
+            if (info.InputData == null)
+            {
+                MessageBox.Show("You must predict an output before you try to save the results", "No Predicted Output.");
+                return;
+            }
+
             string dataFile = networkSaveDataList[selectedNetwork].CsvFile;
             string path = networkSaveDataList[selectedNetwork].Path;
 
