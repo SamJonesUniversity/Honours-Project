@@ -11,7 +11,7 @@ using System.IO;
 
 namespace ENP1
 {
-    class EncogNeuralNetwork : NeuralNetwork
+    internal class EncogNeuralNetwork : NeuralNetwork
     {
         public override void Create(int input, int output)
         {
@@ -41,7 +41,7 @@ namespace ENP1
                 learner.Iteration();
                 end = DateTime.Now;
 
-            } while ((((end.Hour * 60 * 60) + end.Minute * 60) + end.Second) - (((start.Hour * 60 * 60) + start.Minute * 60) + start.Second) < 10);
+            } while (((end.Hour * 60 * 60) + (end.Minute * 60) + end.Second) - ((start.Hour * 60 * 60) + (start.Minute * 60) + start.Second) < 10);
 
             return learner.Error;
         }
@@ -51,7 +51,7 @@ namespace ENP1
             FileInfo networkFile = new FileInfo(fileName);
             Encog.Persist.EncogDirectoryPersistence.SaveObject(networkFile, EncogNetwork);
         }
-		
+
 		public override void Load(string fileName)
         {
             FileInfo networkFile = new FileInfo(fileName);

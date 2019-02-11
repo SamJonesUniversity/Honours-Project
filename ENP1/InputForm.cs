@@ -19,11 +19,12 @@ namespace ENP1
         }
 
         //Global path variable for working directory.
-        List<List<string>> items = new List<List<string>>();
-        List<NetworkSaveData> networkSaveDataList = new List<NetworkSaveData>();
-        int selectedNetwork = 0;
-        Data info = new Data();
-        EncogAnalyst analyst = new EncogAnalyst();
+        private readonly List<List<string>> items = new List<List<string>>();
+        private readonly List<NetworkSaveData> networkSaveDataList = new List<NetworkSaveData>();
+        private List<List<bool>> notIncluded = new List<List<bool>>();
+        private int selectedNetwork;
+        private Data info = new Data();
+        private EncogAnalyst analyst = new EncogAnalyst();
 
         /// <summary> Select json for stored networks. </summary>
         private void FileBtn_Click(object sender, EventArgs e)
@@ -83,9 +84,9 @@ namespace ENP1
                     vs.Add(null);
                 }
 
-                items.Add(vs);
+                items.Add(new List<string>(vs));
             }
-            
+
             //Populate lists with headings.
             foreach (string item in networkSaveDataList[selectedNetwork].InputHeadings)
             {
@@ -126,7 +127,7 @@ namespace ENP1
             inputListBox.SelectedIndex = 0;
         }
 
-		/// <summary> Predict network outputs. </summary>
+        /// <summary> Predict network outputs. </summary>
         private void NetworkBtn_Click(object sender, EventArgs e)
         {
             if (networkSaveDataList.Count == 0)
@@ -135,39 +136,41 @@ namespace ENP1
                 return;
             }
 
+            notIncluded.Clear();
+
             //Setup network.
             NeuralNetwork network;
-			
-			//Switch to set network type based on type stored in json file.
+
+            //Switch to set network type based on type stored in json file.
             switch (networkSaveDataList[selectedNetwork].NetworkType)
             {
                 case "EncogNeuralNetwork":
-                {
-                    network = new EncogNeuralNetwork();
-					break;
-                }
+                    {
+                        network = new EncogNeuralNetwork();
+                        break;
+                    }
                 case "EncogDeepNeuralNetwork":
-                {
-                    network = new EncogDeepNeuralNetwork();
-					break;
-                }
+                    {
+                        network = new EncogDeepNeuralNetwork();
+                        break;
+                    }
                 case "AccordNeuralNetwork":
-                {
-                    network = new AccordNeuralNetwork();
-					break;
-                }
+                    {
+                        network = new AccordNeuralNetwork();
+                        break;
+                    }
                 default:
-                {
-                    network = new AccordDeepNeuralNetwork();
-					break;
-                }
+                    {
+                        network = new AccordDeepNeuralNetwork();
+                        break;
+                    }
             }
 
             //Initialize variables
             info = new Data();
             string dataFile = networkSaveDataList[selectedNetwork].CsvFile;
-			string path = networkSaveDataList[selectedNetwork].Path;
-			double[][] answers;
+            string path = networkSaveDataList[selectedNetwork].Path;
+            double[][] answers;
 
             if (!Directory.Exists(path + "normal"))
             {
@@ -191,12 +194,26 @@ namespace ENP1
             //norm.InputHeadings = networkSaveDataList[selectedNetwork].Headings.ToArray();
             network.Load(networkSaveDataList[selectedNetwork].NetworkFile);
 
+            List<bool> vb = new List<bool>();
+
+            foreach (string heading in networkSaveDataList[selectedNetwork].InputHeadings)
+            {
+                vb.Add(false);
+            }
+
+            notIncluded.Add(vb);
+
             if (!csvBox.Checked)
-			{
+            {
                 string outString = "";
 
                 for (int i = 0; i < items[selectedNetwork].Count; i++)
                 {
+                    if (items[selectedNetwork][i]?.Length == 0)
+                    {
+                        notIncluded[0][i] = true;
+                    }
+
                     outString += items[selectedNetwork][i] + ",";
                 }
 
@@ -242,18 +259,18 @@ namespace ENP1
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show(ex.Message.ToString() + "\n\nThe inputs you have entered do not correctly follow the current normalisation data. This may because you " +
+                    MessageBox.Show(ex.Message + "\n\nThe inputs you have entered do not correctly follow the current normalisation data. This may because you " +
                         "have entered values above or below the currently stored highs and lows for numbers. It is also possible you have " +
                         "entered a textual word that has not been used before. Finally it is possible that you are have not used the correct" +
                         "case for a word as they are case sensitive.", "Normalisation Failure");
                     return;
                 }
-                
+
                 info = info.ReturnInfo(path + @"normal\" + dataFile.Replace(".csv", "TempNormal.csv"), networkSaveDataList[selectedNetwork].OutputHeadings, 0, true);
                 answers = Data.CreateArray<double>(1, info.OutputNumber);
             }
-			else
-			{
+            else
+            {
                 //Reset paths.
                 path = null; dataFile = null;
 
@@ -293,7 +310,7 @@ namespace ENP1
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show(ex.Message.ToString() + "\n\nThe inputs you have entered do not correctly follow the current normalisation data. This may because you " +
+                    MessageBox.Show(ex.Message + "\n\nThe inputs you have entered do not correctly follow the current normalisation data. This may because you " +
                         "have entered values above or below the currently stored highs and lows for numbers. It is also possible you have " +
                         "entered a textual word that has not been used before. Finally it is possible that you are have not used the correct" +
                         "case for a word as they are case sensitive.", "Normalisation Failure");
@@ -302,30 +319,55 @@ namespace ENP1
 
                 info = info.ReturnInfo(path + @"normal\" + dataFile.Replace(".csv", "Normal.csv"), networkSaveDataList[selectedNetwork].OutputHeadings, 0, true);
 
-                answers = Data.CreateArray<double>(info.InputData.Length, info.InputData[0].Length);
+                answers = Data.CreateArray<double>(info.InputData.Length, networkSaveDataList[selectedNetwork].OutputHeadings.Count);
+
+                //Get length of CSV, Inputs and Outputs.
+                using (var reader = new StreamReader(openFileDialog1.FileName))
+                {
+                    reader.ReadLine();
+                    int lineNo = 0;
+
+                    while (!reader.EndOfStream)
+                    {
+                        var line = reader.ReadLine();
+                        var values = line.Split(',');
+
+                        if (lineNo > 0)
+                        {
+                            notIncluded.Add(new List<bool>(vb));
+                        }
+
+                        for (int i = 0; i < notIncluded[0].Count; i++)
+                        {
+                            notIncluded[lineNo][i] = values[i]?.Length == 0;
+                        }
+
+                        lineNo++;
+                    }
+                }
             }
-			
-			//Compute network predictions.
-			for (int i = 0; i < answers.Length; i++)
-			{
+
+            //Compute network predictions.
+            for (int i = 0; i < answers.Length; i++)
+            {
                 //Switch to set network type based on type stored in json file.
                 switch (networkSaveDataList[selectedNetwork].NetworkType)
                 {
                     case "AccordNeuralNetwork":
-                    {
-                        answers[i] = network.AccordNetwork.Compute(info.InputData[i]);
-                        break;
-                    }
+                        {
+                            answers[i] = network.AccordNetwork.Compute(info.InputData[i]);
+                            break;
+                        }
                     case "AccordDeepNeuralNetwork":
-                    {
-                        answers[i] = network.DeepAccordNetwork.Compute(info.InputData[i]);
-                        break;
-                    }
+                        {
+                            answers[i] = network.DeepAccordNetwork.Compute(info.InputData[i]);
+                            break;
+                        }
                     default:
-                    {
-                        network.EncogNetwork.Compute(info.InputData[i], answers[i]);
-                        break;
-                    }
+                        {
+                            network.EncogNetwork.Compute(info.InputData[i], answers[i]);
+                            break;
+                        }
                 }
             }
 
@@ -414,62 +456,82 @@ namespace ENP1
 
                 for (int i = 0; i < info.InputData.Length; i++)
                 {
+                    int valuesPassed = 0;
+
                     for (int j = 0; j < countIn.Count; j++)
                     {
                         string prediction = "";
 
-                        if (countIn[j] == 1)
+                        if (!notIncluded[i][j])
                         {
-                            try
+                            if (countIn[j] == 1)
                             {
-                                double[] temp = new double[1];
-                                temp[0] = info.InputData[i][j + countIn[j - 1] - 1];
+                                try
+                                {
+                                    double[] temp = new double[1];
+                                    temp[0] = info.InputData[i][valuesPassed];
+                                    prediction = analyst.Script.Normalize.NormalizedFields[analyst.Script.Normalize.NormalizedFields.Count + j - countIn.Count - countOut.Count].DetermineClass(temp).Name;
+                                }
+                                catch
+                                {
+                                    prediction = Math.Round(analyst.Script.Normalize.NormalizedFields[analyst.Script.Normalize.NormalizedFields.Count + j - countIn.Count - countOut.Count].DeNormalize(info.InputData[i][valuesPassed]), 1).ToString();
+                                }
+                            }
+                            else
+                            {
+                                double[] temp = new double[countIn[j]];
+
+                                for (int c = 0; c < countIn[j]; c++)
+                                {
+                                    temp[c] = info.InputData[i][c + valuesPassed];
+                                }
+
                                 prediction = analyst.Script.Normalize.NormalizedFields[analyst.Script.Normalize.NormalizedFields.Count + j - countIn.Count - countOut.Count].DetermineClass(temp).Name;
                             }
-                            catch
-                            {
-                                prediction = Math.Round(analyst.Script.Normalize.NormalizedFields[analyst.Script.Normalize.NormalizedFields.Count + j - countIn.Count - countOut.Count].DeNormalize(info.InputData[i][j + countIn[j - 1] - 1]), 1).ToString();
-                            }
-                        }
-                        else
-                        {
-                            double[] temp = new double[countIn[j]];
-
-                            for (int c = 0; c < countIn[j]; c++)
-                            {
-                                temp[c] = info.InputData[i][c];
-                            }
-
-                            prediction = analyst.Script.Normalize.NormalizedFields[analyst.Script.Normalize.NormalizedFields.Count + j - countIn.Count - countOut.Count].DetermineClass(temp).Name;
                         }
 
                         outString += prediction + ",";
+                        valuesPassed += countIn[j];
                     }
 
                     sw.Write(outString);
                     outString = "";
+                    valuesPassed = 0;
 
                     for (int j = 0; j < countOut.Count; j++)
                     {
                         string prediction = "";
 
-                        if (countOut[j] == 1)
+                        if (!notIncluded[i][j])
                         {
-                            prediction = Math.Round(analyst.Script.Normalize.NormalizedFields[analyst.Script.Normalize.NormalizedFields.Count + j - countOut.Count].DeNormalize(info.Prediction[i][j]), 1).ToString();
-                        }
-                        else
-                        {
-                            double[] temp = new double[countOut[j]];
-
-                            for (int c = 0; c < countOut[j]; c++)
+                            if (countOut[j] == 1)
                             {
-                                temp[c] = info.Prediction[i][c];
+                                try
+                                {
+                                    double[] temp = new double[1];
+                                    temp[0] = info.Prediction[i][valuesPassed];
+                                    prediction = analyst.Script.Normalize.NormalizedFields[analyst.Script.Normalize.NormalizedFields.Count + j - countOut.Count].DetermineClass(temp).Name;
+                                }
+                                catch
+                                {
+                                    prediction = Math.Round(analyst.Script.Normalize.NormalizedFields[analyst.Script.Normalize.NormalizedFields.Count + j - countOut.Count].DeNormalize(info.Prediction[i][valuesPassed]), 1).ToString();
+                                }
                             }
+                            else
+                            {
+                                double[] temp = new double[countOut[j]];
 
-                            prediction = analyst.Script.Normalize.NormalizedFields[analyst.Script.Normalize.NormalizedFields.Count + j - countOut.Count].DetermineClass(temp).Name;
+                                for (int c = 0; c < countOut[j]; c++)
+                                {
+                                    temp[c] = info.Prediction[i][c];
+                                }
+
+                                prediction = analyst.Script.Normalize.NormalizedFields[analyst.Script.Normalize.NormalizedFields.Count + j - countOut.Count].DetermineClass(temp).Name;
+                            }
                         }
 
                         outString += prediction + ",";
+                        valuesPassed += countOut[j];
                     }
 
                     sw.WriteLine(outString);

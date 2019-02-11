@@ -15,22 +15,26 @@ namespace ENP1
     /// Data class used to load and validate CSV files.
     /// This data is then stored as a data object.
     /// </summary>
-    class Data
+    internal class Data
     {
         /// <summary> Training data input array. </summary>
         public double[][] InputData { get; set; }
+
         /// <summary> Training data output array. </summary>
         public double[][] OutputData { get; set; }
+
         /// <summary> Training data output array. </summary>
         public double[][] Prediction { get; set; }
 
         /// <summary> Sample data input array. </summary>
         public double[][] InputDataSample { get; set; }
+
         /// <summary> Sample data output array. </summary>
         public double[][] OutputDataSample { get; set; }
 
         ///<summary> Count of inputs </summary>
         public int InputNumber;
+
         ///<summary> Count of outputs </summary>
         public int OutputNumber;
 
@@ -67,7 +71,7 @@ namespace ENP1
                 {
                     id = 0;
                 }
-                   
+
                 tmp.RemoveAt(id);
             }
 
@@ -84,8 +88,6 @@ namespace ENP1
         }
 
 		/// <summary> need comments </summary>
-        
-		
         public static List<string> Normalise(FileInfo sourceFile, FileInfo normalFile, string path, string dataFile, int outputs, bool inputs)
         {
             List<string> titles = new List<string>();
@@ -113,8 +115,7 @@ namespace ENP1
                 //field.Action = Encog.Util.Arrayutil.NormalizationAction.OneOf; //Use this to change normalizaiton type.
             }
 
-            IHandleMissingValues missing = new NegateMissing();
-            analyst.Script.Normalize.MissingValues = missing;
+            analyst.Script.Normalize.MissingValues = new NegateMissing();
 
             //Normalization.
             var norm = new AnalystNormalizeCSV();
@@ -127,7 +128,7 @@ namespace ENP1
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message.ToString() + "\n\nUnknown application failure, please report this bug with a screenshot of" +
+                MessageBox.Show(ex.Message + "\n\nUnknown application failure, please report this bug with a screenshot of" +
                     " the message to the relevant engineer.", "Normalisation Failure");
                 return null;
             }
@@ -245,7 +246,7 @@ namespace ENP1
                 {
                     var line = reader.ReadLine();
                     var values = line.Split(',');
-                    
+
                     //Skips first line with headings.
                     if (i >= 1)
                     {
@@ -276,9 +277,9 @@ namespace ENP1
                                 outputData[i - 1 - numOfSamples][j] = Convert.ToDouble(values[inputNumber + j]);
                             }
                         }
-                        
+
                         //Reset logic.
-                        if (passed == true)
+                        if (passed)
                         {
                             sampleCount = 0;
                             numOfSamples++;

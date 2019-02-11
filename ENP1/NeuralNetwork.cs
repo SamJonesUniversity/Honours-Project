@@ -9,7 +9,7 @@ using System.IO;
 namespace ENP1
 {
     /// <summary> Abstract NeuralNetwork class. </summary>
-    abstract class NeuralNetwork
+    internal abstract class NeuralNetwork
     {
         public BasicNetwork EncogNetwork;
         public DeepBeliefNetwork DeepAccordNetwork;
@@ -110,7 +110,7 @@ namespace ENP1
 
             return item;
         }
-		
+
 		/// <summary> Returns string to display current neural network. </summary>
         public string Display(double[][] answers, EncogAnalyst analyst, List<string> titles, string path)
         {
@@ -143,21 +143,6 @@ namespace ENP1
 
             for (int i = 0; i < answers.Length; i++)
             {
-                /*for (int j = 0; j < info.InputDataSample[0].Length; j++)
-                {
-                    double input = Math.Round(analyst.Script.Normalize.NormalizedFields[count].DeNormalize(info.InputDataSample[i][j]), 2);
-
-                    if (input > 0)
-                    {
-                        item += String.Format(
-                        "Input {0}: [{1}] ", j + 1,
-                        input
-                        );
-
-                        count++;
-                    }
-                }*/
-
                 item += String.Format(
                         "Prediction Number: {0}\n\n",
                         i + 1

@@ -33,6 +33,7 @@ namespace ENP1
 
         /// Buttons ///
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "System.Windows.Forms.Control.set_Text(System.String)")]
         private List<string> GetFile(bool titleType, ref string path, ref string dataFile, int outputs)
         {
             //Reset paths.
@@ -85,7 +86,7 @@ namespace ENP1
 			//Setup paths and lists.
 			string dataFile = "";
 			string path = "";
-		
+
 			//Normalise file.
             List<string> outputTitles = GetFile(false, ref path, ref dataFile, (int)(outputsUpDown.Value));
 
@@ -95,17 +96,8 @@ namespace ENP1
             }
 
             //False when percentage split, true when cross validation.
-            bool validation;
+            bool validation = !radBtnSplit.Checked;
 
-            if (radBtnSplit.Checked)
-            {
-                validation = false;
-            }
-            else
-            {
-                validation = true;
-            }
-			
             //Setup training dataset.
             Data info = new Data(); info = info.ReturnInfo(path + @"normal\" + dataFile.Replace(".csv", "Normal.csv"), outputTitles, sampleBar.Value, validation);
 
@@ -126,12 +118,12 @@ namespace ENP1
             {
                 if (!deepNetworkBox.Checked)
                 {
-                    output.Text += ("\n@Encog:\n\n");
+                    output.Text += "\n@Encog:\n\n";
                     network = new EncogNeuralNetwork();
                 }
                 else
                 {
-                    output.Text += ("\n@Deep Encog:\n\n");
+                    output.Text += "\n@Deep Encog:\n\n";
                     network = new EncogDeepNeuralNetwork();
                 }
             }
@@ -139,12 +131,12 @@ namespace ENP1
             {
                 if (!deepNetworkBox.Checked)
                 {
-                    output.Text += ("\n@Accord:\n\n");
+                    output.Text += "\n@Accord:\n\n";
                     network = new AccordNeuralNetwork();
                 }
                 else
                 {
-                    output.Text += ("\n@Deep Accord:\n\n");
+                    output.Text += "\n@Deep Accord:\n\n";
                     network = new AccordDeepNeuralNetwork();
                 }
             }
@@ -195,7 +187,7 @@ namespace ENP1
 
                     //Create network.
                     network.Create(info.InputNumber, info.OutputNumber);
-                    output.Text += "Training complete with an inaccuracy of: " + Math.Round(network.Train(info, ((float)(learningRateBar.Value) / 10), ((float)(momentumBar.Value) / 10)), 10) + "\n\n";
+                    output.Text += "Training complete with an inaccuracy of: " + Math.Round(network.Train(info, (float)(learningRateBar.Value) / 10, (float)(momentumBar.Value) / 10), 10) + "\n\n";
 
                     double[][] answers = Data.CreateArray<double>(poolSize, info.InputData[0].Length);
 
@@ -228,7 +220,7 @@ namespace ENP1
             {
 				//Create network.
                 network.Create(info.InputNumber, info.OutputNumber);
-                output.Text += "Training complete with an inaccuracy of: " + Math.Round(network.Train(info, ((float)(learningRateBar.Value) / 10), ((float)(momentumBar.Value) / 10)), 5) + "\n\n";
+                output.Text += "Training complete with an inaccuracy of: " + Math.Round(network.Train(info, (float)(learningRateBar.Value) / 10, (float)(momentumBar.Value) / 10), 5) + "\n\n";
 
                 double[][] answers = Data.CreateArray<double>(info.InputDataSample.Length, info.InputDataSample[0].Length);
 
@@ -274,16 +266,7 @@ namespace ENP1
             }
 
             //False when percentage split, true when cross validation.
-            bool validation = false;
-
-            if (radBtnSplit.Checked)
-            {
-                validation = false;
-            }
-            else
-            {
-                validation = true;
-            }
+            bool validation = !radBtnSplit.Checked;
 
             string header = path + "Results.csv";
 
@@ -346,7 +329,7 @@ namespace ENP1
                                 error = teacher.RunEpoch(info.InputData, info.OutputData);
                                 end = DateTime.Now;
 
-                            } while ((((end.Hour * 60 * 60) + end.Minute * 60) + end.Second) - (((start.Hour * 60 * 60) + start.Minute * 60) + start.Second) < 1);
+                            } while (((end.Hour * 60 * 60) + (end.Minute * 60) + end.Second) - ((start.Hour * 60 * 60) + (start.Minute * 60) + start.Second) < 1);
 
                             IMLDataSet data = new BasicMLDataSet(info.InputData, info.OutputData);
                             IMLDataSet sampleData = new BasicMLDataSet(info.InputDataSample, info.OutputDataSample);
@@ -374,7 +357,7 @@ namespace ENP1
                                 learner.Iteration();
                                 end = DateTime.Now;
 
-                            } while ((((end.Hour * 60 * 60) + end.Minute * 60) + end.Second) - (((start.Hour * 60 * 60) + start.Minute * 60) + start.Second) < 1);
+                            } while (((end.Hour * 60 * 60) + (end.Minute * 60) + end.Second) - ((start.Hour * 60 * 60) + (start.Minute * 60) + start.Second) < 1);
 
                             using (StreamWriter sw = new StreamWriter(path + "Results.csv", true))
                             {
@@ -404,7 +387,7 @@ namespace ENP1
             }
 
             //False when percentage split, true when cross validation.
-            bool validation = true;
+            const bool validation = true;
 
             //Setup dataset.
             Data info = new Data(); info = info.ReturnInfo(path + @"normal\" + dataFile.Replace(".csv", "Normal.csv"), outputTitles, 0, validation);
@@ -432,12 +415,12 @@ namespace ENP1
             {
                 if (!deepNetworkBox.Checked)
                 {
-                    output.Text += ("\n@Encog:\n\n");
+                    output.Text += "\n@Encog:\n\n";
                     network = new EncogNeuralNetwork();
                 }
                 else
                 {
-                    output.Text += ("\n@Deep Encog:\n\n");
+                    output.Text += "\n@Deep Encog:\n\n";
                     network = new EncogDeepNeuralNetwork();
                 }
             }
@@ -445,12 +428,12 @@ namespace ENP1
             {
                 if (!deepNetworkBox.Checked)
                 {
-                    output.Text += ("\n@Accord:\n\n");
+                    output.Text += "\n@Accord:\n\n";
                     network = new AccordNeuralNetwork();
                 }
                 else
                 {
-                    output.Text += ("\n@Deep Accord:\n\n");
+                    output.Text += "\n@Deep Accord:\n\n";
                     network = new AccordDeepNeuralNetwork();
                 }
             }
@@ -471,7 +454,7 @@ namespace ENP1
                 Name = nameTxt.Text,
 
                 //Train network.
-                Inaccuracy = Math.Round(network.Train(info, ((float)(learningRateBar.Value) / 10), ((float)(momentumBar.Value) / 10)), 5).ToString()
+                Inaccuracy = Math.Round(network.Train(info, (float)(learningRateBar.Value) / 10, (float)(momentumBar.Value) / 10), 5).ToString()
             };
 
             //Save network to file.
@@ -484,12 +467,14 @@ namespace ENP1
 
             //Write network object to json file.
             using (var sw = new StreamWriter(path + @"networks\networks.json", true))
-            using (var jsw = new JsonTextWriter(sw))
             {
-                //jsw.Formatting = Formatting.Indented;
-                JsonSerializer serial = new JsonSerializer();
-                serial.Serialize(jsw, networkSave);
-                sw.WriteLine();
+                using (var jsw = new JsonTextWriter(sw))
+                {
+                    //jsw.Formatting = Formatting.Indented;
+                    JsonSerializer serial = new JsonSerializer();
+                    serial.Serialize(jsw, networkSave);
+                    sw.WriteLine();
+                }
             }
 
             output.Text += "Successfully saved network " + nameTxt.Text + " with a training inaccuracy of: " + networkSave.Inaccuracy;
@@ -553,7 +538,7 @@ namespace ENP1
         {
             momentumLbl.Text = String.Format("Momentum: " + ((float)(momentumBar.Value) / 10).ToString());
         }
-        
+
         /// Radio buttons ///
 
         /// <summary> Percentage split radio button. </summary>

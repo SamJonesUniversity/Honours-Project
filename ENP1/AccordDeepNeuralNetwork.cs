@@ -7,7 +7,7 @@ using System;
 
 namespace ENP1
 {
-    class AccordDeepNeuralNetwork : NeuralNetwork
+    internal class AccordDeepNeuralNetwork : NeuralNetwork
     {
         public override void Create(int input, int output)
         {
@@ -25,7 +25,7 @@ namespace ENP1
             //Setup trainer using backpropagation.
             DeepBeliefNetworkLearning teacher = new DeepBeliefNetworkLearning(DeepAccordNetwork)
             {
-                Algorithm = (h, v, i) => new ContrastiveDivergenceLearning(h, v)
+                Algorithm = (h, v, _) => new ContrastiveDivergenceLearning(h, v)
                 {
                     LearningRate = lr,
                     Momentum = mom,
@@ -41,7 +41,7 @@ namespace ENP1
             // Learning data for the specified layer.
             double[][][] layerData;
 
-            double unsupervisedError = 0.0;
+            double error = 0.0;
 
             // Unsupervised learning on each hidden layer, except for the output.
             for (int layerIndex = 0; layerIndex < DeepAccordNetwork.Machines.Count - 1; layerIndex++)
@@ -50,7 +50,7 @@ namespace ENP1
                 layerData = teacher.GetLayerInput(batches);
                 for (int i = 0; i < 10000; i++)
                 {
-                    unsupervisedError = teacher.RunEpoch(layerData) / info.InputData.Length;
+                    error = teacher.RunEpoch(layerData) / info.InputData.Length;
                 }
             }
 
@@ -60,8 +60,6 @@ namespace ENP1
                 LearningRate = lr,
                 Momentum = mom
             };
-
-            double error = 0.0;
 
             // Run supervised learning.
             for (int i = 0; i < 100000; i++)
