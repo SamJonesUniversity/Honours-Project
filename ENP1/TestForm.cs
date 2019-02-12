@@ -212,7 +212,7 @@ namespace ENP1
                     }
 
 					//Display network.
-                    output.Text += network.Display(answers, analyst, info, outputTitles, path + dataFile.Replace(".csv", "Normal.csv"));
+                    output.Text += network.Display(answers, analyst, info, outputTitles, path + @"normal\" + dataFile.Replace(".csv", "Normal.csv"));
                 }
             }
 			//Else percentage split.

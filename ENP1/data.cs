@@ -107,6 +107,12 @@ namespace ENP1
                 return null;
             }
 
+            if (analyst.Script.Fields.Length - 1 < outputs)
+            {
+                MessageBox.Show("You have specified " + outputs + " outputs but there are only " + analyst.Script.Fields.Length + " headings in the file.", "Too Many Outputs Error");
+                return null;
+            }
+
             //Setup max and min range for normalization.
             foreach (AnalystField field in analyst.Script.Normalize.NormalizedFields)
             {
@@ -200,7 +206,7 @@ namespace ENP1
             //Logic for allocating the correct amount of sample data.
             bool passed = false;
             int numOfSamples = 0;
-            int sampleCount = 0;
+            int sampleCount = 1;
 
             if (!validation)
             {
@@ -214,15 +220,15 @@ namespace ENP1
                     sampleNumber = (int)tmpSampleNumber;
                 }
 
-                //while ((csvLength - 1) % sampleNumber > (csvLength - 1) / sampleNumber)
+                while ((csvLength - 1) % sampleNumber > (csvLength - 1) / sampleNumber)
                 {
-                    //sampleNumber--;
+                    sampleNumber--;
                 }
             }
 
             //Local InputData and OutputData
-            double[][] inputData = CreateArray<double>(csvLength - 1 - sampleNumber, inputNumber);
-            double[][] outputData = CreateArray<double>(csvLength - 1 - sampleNumber, outputNumber);
+            double[][] inputData = CreateArray<double>(0, 0);
+            double[][] outputData = CreateArray<double>(0, 0);
 
             //Local InputDataSample and OutputDataSample
             double[][] inputDataSample = CreateArray<double>(sampleNumber, inputNumber);
@@ -232,9 +238,15 @@ namespace ENP1
             {
                 inputDataSample = null;
                 outputDataSample = null;
+
+                inputData = CreateArray<double>(csvLength - 1, inputNumber);
+                outputData = CreateArray<double>(csvLength - 1, outputNumber);
             }
             else
             {
+                inputData = CreateArray<double>(csvLength - 1 - sampleNumber, inputNumber);
+                outputData = CreateArray<double>(csvLength - 1 - sampleNumber, outputNumber);
+
                 sampleNumber = (csvLength - 1) / sampleNumber;
             }
 

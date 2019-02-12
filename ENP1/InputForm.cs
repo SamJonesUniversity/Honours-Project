@@ -21,7 +21,7 @@ namespace ENP1
         //Global path variable for working directory.
         private readonly List<List<string>> items = new List<List<string>>();
         private readonly List<NetworkSaveData> networkSaveDataList = new List<NetworkSaveData>();
-        private List<List<bool>> notIncluded = new List<List<bool>>();
+        private readonly List<List<bool>> notIncluded = new List<List<bool>>();
         private int selectedNetwork;
         private Data info = new Data();
         private EncogAnalyst analyst = new EncogAnalyst();

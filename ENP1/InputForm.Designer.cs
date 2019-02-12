@@ -103,7 +103,7 @@
             // csvBox
             // 
             this.csvBox.AutoSize = true;
-            this.csvBox.Location = new System.Drawing.Point(104, 507);
+            this.csvBox.Location = new System.Drawing.Point(777, 507);
             this.csvBox.Name = "csvBox";
             this.csvBox.Size = new System.Drawing.Size(69, 17);
             this.csvBox.TabIndex = 8;
