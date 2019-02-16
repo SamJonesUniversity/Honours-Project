@@ -213,6 +213,7 @@ namespace ENP1
                 if (csvLength - 1 <= 1)
                 {
                     MessageBox.Show("The file you have selected does not have enough rows to use a sample size.", "Input Size Error");
+                    return null;
                 }
                 else
                 {

@@ -101,6 +101,11 @@ namespace ENP1
             //Setup training dataset.
             Data info = new Data(); info = info.ReturnInfo(path + @"normal\" + dataFile.Replace(".csv", "Normal.csv"), outputTitles, sampleBar.Value, validation);
 
+            if (info == null)
+            {
+                return;
+            }
+
             //Load analyst from earlier.
             var analyst = new EncogAnalyst();
             analyst.Load(new FileInfo(path + @"normal\" + "normalizationData" + dataFile.Replace(".csv", "") + ".ega"));
@@ -392,6 +397,17 @@ namespace ENP1
                 return;
             }
 
+            char[] dirty = Path.GetInvalidFileNameChars();
+
+            foreach (char c in dirty)
+            {
+                if (nameTxt.Text.Contains(c.ToString()))
+                {
+                    MessageBox.Show("Your name contains invalid characters. Error at character " + c, "Invalid Network Name.");
+                    return;
+                }
+            }
+
             //False when percentage split, true when cross validation.
             const bool validation = true;
 
@@ -448,6 +464,24 @@ namespace ENP1
 			//Create network.
             network.Create(info.InputNumber, info.OutputNumber);
 
+            //Save network to file.
+            if (!Directory.Exists(path + "networks"))
+            {
+                Directory.CreateDirectory(path + "networks");
+            }
+
+            //network.Save(path + @"networks\" + nameTxt.Text);
+
+            if ((path + @"networks\" + nameTxt.Text)?.Length < 260)
+            {
+                network.Save(path + @"networks\" + nameTxt.Text);
+            }
+            else
+            {
+                MessageBox.Show("Your file name or total file path is too long for the windows limit of 260.", "Invalid Network Name Size.");
+                return;
+            }
+
             //Save network data to object.
             NetworkSaveData networkSave = new NetworkSaveData
             {
@@ -463,14 +497,6 @@ namespace ENP1
                 //Train network.
                 Inaccuracy = Math.Round(network.Train(info, (float)(learningRateBar.Value) / 10, (float)(momentumBar.Value) / 10), 5).ToString()
             };
-
-            //Save network to file.
-            if (!Directory.Exists(path + "networks"))
-            {
-                Directory.CreateDirectory(path + "networks");
-            }
-
-            network.Save(path + @"networks\" + nameTxt.Text);
 
             //Write network object to json file.
             using (var sw = new StreamWriter(path + @"networks\networks.json", true))

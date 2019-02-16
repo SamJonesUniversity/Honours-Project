@@ -32,7 +32,7 @@ namespace ENP1
             networkSaveDataList.Clear(); items.Clear(); inputListBox.Items.Clear(); networkListBox.Items.Clear();
 
             //Get csv path and create normalized version path.
-            openFileDialog1.Filter = "csv files (*.json)|*.json";
+            openFileDialog1.Filter = "json files (*.json)|*.json";
             DialogResult dialogResult = openFileDialog1.ShowDialog();
 
             //Exit function if file selection was cancelled.
