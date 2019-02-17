@@ -15,8 +15,288 @@ namespace ENP1
         public DeepBeliefNetwork DeepAccordNetwork;
         public ActivationNetwork AccordNetwork;
 
+        private BestNetwork BestMomentum(Data info, string path, int layers, int neurons, float lr)
+        {
+            bool complete = false;
+            bool firstPass = true;
+            bool increase = true;
+
+            BestNetwork best = new BestNetwork
+            {
+                Momentum = 0.1F,
+                LearningRate = lr,
+                Neurons = neurons,
+                Layers = layers
+            };
+
+            best.Error = Train(info, lr, best.Momentum);
+
+            while (!complete)
+            {
+                if (firstPass)
+                {
+                    best.Momentum = 0.5F;
+                }
+                else if (increase)
+                {
+                    best.Momentum += 0.1F;
+                }
+                else
+                {
+                    best.Momentum -= 0.1F;
+                }
+
+                if(Math.Round(best.Momentum, 1) == 0.1F || Math.Round(best.Momentum, 1) == 1.0F)
+                {
+                    complete = true;
+                }
+
+                double newest = Train(info, lr, best.Momentum);
+
+                if (firstPass)
+                {
+                    if (newest < best.Error)
+                    {
+                        best.Error = newest;
+                        increase = true;
+                    }
+                    else if (newest == best.Error)
+                    {
+                        complete = true;
+                    }
+                    else
+                    {
+                        increase = false;
+                    }
+
+                    firstPass = false;
+                }
+                else
+                {
+                    if (newest < best.Error)
+                    {
+                        best.Error = newest;
+                    }
+                    else
+                    {
+                        complete = true;
+                    }
+                }
+            }
+
+            using (StreamWriter sw = new StreamWriter(path, true))
+            {
+                sw.WriteLine(String.Format(
+                    "{0},{1},{2},{3},{4},{5}", best.Error, GetType().ToString().Replace("ENP1.", ""), layers, neurons, Math.Round(lr, 1), Math.Round(best.Momentum, 1))); //"ENP1" must change to reflect solution name (name.) if ever changed.
+            }
+
+            return best;
+        }
+
+        private BestNetwork BestLearningRate(Data info, string path, int layers, int neurons)
+        {
+            float lr = 0.1F;
+            bool complete = false;
+            bool firstPass = true;
+            bool increase = true;
+
+            BestNetwork best = BestMomentum(info, path, layers, neurons, lr);
+
+            while (!complete)
+            {
+                if (firstPass)
+                {
+                    lr = 0.5F;
+                }
+                else if (increase)
+                {
+                    lr += 0.1F;
+                }
+                else
+                {
+                    lr -= 0.1F;
+                }
+
+                if (Math.Round(lr, 1) == 0.1F || Math.Round(lr, 1) == 1.0F)
+                {
+                    complete = true;
+                }
+
+                BestNetwork newest = BestMomentum(info, path, layers, neurons, lr);
+
+                if (firstPass)
+                {
+                    if (newest.Error < best.Error)
+                    {
+                        best = newest;
+                        increase = true;
+                    }
+                    else if (newest.Error == best.Error)
+                    {
+                        complete = true;
+                    }
+                    else
+                    {
+                        increase = false;
+                    }
+
+                    firstPass = false;
+                }
+                else
+                {
+                    if (newest.Error < best.Error)
+                    {
+                        best = newest;
+                    }
+                    else
+                    {
+                        complete = true;
+                    }
+                }
+            }
+
+            return best;
+        }
+
+        private BestNetwork BestNeurons(Data info, string path, int layers)
+        {
+            int neurons = 5;
+            bool complete = false;
+            bool firstPass = true;
+            bool increase = true;
+
+            Create(info.InputNumber, layers, neurons, info.OutputNumber);
+            BestNetwork best = BestLearningRate(info, path, layers, neurons);
+
+            while (!complete)
+            {
+                if (firstPass)
+                {
+                    neurons = 25;
+                }
+                else if (increase)
+                {
+                    neurons += 5;
+                }
+                else
+                {
+                    neurons -= 5;
+                }
+
+                if (neurons == 5 || neurons == 50)
+                {
+                    complete = true;
+                }
+
+                Create(info.InputNumber, layers, neurons, info.OutputNumber);
+                BestNetwork newest = BestLearningRate(info, path, layers, neurons);
+
+                if (firstPass)
+                {
+                    if (newest.Error < best.Error)
+                    {
+                        best = newest;
+                        increase = true;
+                    }
+                    else if (newest.Error == best.Error)
+                    {
+                        complete = true;
+                    }
+                    else
+                    {
+                        increase = false;
+                    }
+
+                    firstPass = false;
+                }
+                else
+                {
+                    if (newest.Error < best.Error)
+                    {
+                        best = newest;
+                    }
+                    else
+                    {
+                        complete = true;
+                    }
+                }
+            }
+
+            return best;
+        }
+
+        public BestNetwork CalculateBest(Data info, string path)
+        {
+            int layers = 1;
+            bool complete = false;
+            bool firstPass = true;
+            bool increase = true;
+            
+            BestNetwork best = BestNeurons(info, path, layers); ;
+
+            if(GetType().ToString().Replace("ENP1.", "") == "EncogDeepNeuralNetwork")
+            {
+                return best;
+            }
+
+            while (!complete)
+            {
+                if (firstPass)
+                {
+                    layers = 2;
+                }
+                else if (increase)
+                {
+                    layers += 1;
+                }
+                else
+                {
+                    layers -= 1;
+                }
+
+                if (layers == 1 || layers == 5)
+                {
+                    complete = true;
+                }
+
+                BestNetwork newest = BestNeurons(info, path, layers);
+
+                if (firstPass)
+                {
+                    if (newest.Error < best.Error)
+                    {
+                        best = newest;
+                        increase = true;
+                    }
+                    else if (newest.Error == best.Error)
+                    {
+                        complete = true;
+                    }
+                    else
+                    {
+                        increase = false;
+                    }
+
+                    firstPass = false;
+                }
+                else
+                {
+                    if (newest.Error < best.Error)
+                    {
+                        best = newest;
+                    }
+                    else
+                    {
+                        complete = true;
+                    }
+                }
+            }
+
+            return best;
+        }
+
         /// <summary> Creates a new neural network. </summary>
-        public abstract void Create(int input, int output);
+        public abstract void Create(int input, int layers, int neurons, int output);
 
 		/// <summary> Trains current neural network. </summary>
         public abstract double Train(Data info, float lr, float mom);

@@ -50,6 +50,10 @@
             this.networkSaveBtn = new System.Windows.Forms.Button();
             this.fileBox = new System.Windows.Forms.GroupBox();
             this.networkBox = new System.Windows.Forms.GroupBox();
+            this.neuronsBar = new System.Windows.Forms.TrackBar();
+            this.layersBar = new System.Windows.Forms.TrackBar();
+            this.neuronsLbl = new System.Windows.Forms.Label();
+            this.layersLbl = new System.Windows.Forms.Label();
             this.additionalBox = new System.Windows.Forms.GroupBox();
             this.label1 = new System.Windows.Forms.Label();
             this.nameTxt = new System.Windows.Forms.TextBox();
@@ -59,6 +63,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.outputsUpDown)).BeginInit();
             this.fileBox.SuspendLayout();
             this.networkBox.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.neuronsBar)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.layersBar)).BeginInit();
             this.additionalBox.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -144,13 +150,12 @@
             // 
             // rateTestBtn
             // 
-            this.rateTestBtn.Location = new System.Drawing.Point(285, 112);
+            this.rateTestBtn.Location = new System.Drawing.Point(181, 112);
             this.rateTestBtn.Name = "rateTestBtn";
             this.rateTestBtn.Size = new System.Drawing.Size(83, 22);
             this.rateTestBtn.TabIndex = 11;
             this.rateTestBtn.Text = "Test Rates";
             this.rateTestBtn.UseVisualStyleBackColor = true;
-            this.rateTestBtn.Visible = false;
             this.rateTestBtn.Click += new System.EventHandler(this.RateTestBtn_Click);
             // 
             // deepNetworkBox
@@ -163,6 +168,7 @@
             this.deepNetworkBox.Text = "Deep Learning";
             this.deepNetworkBox.UseVisualStyleBackColor = true;
             this.deepNetworkBox.Visible = false;
+            this.deepNetworkBox.CheckedChanged += new System.EventHandler(this.DeepNetworkBox_CheckedChanged);
             // 
             // advancedBtn
             // 
@@ -188,10 +194,10 @@
             this.output.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.output.Cursor = System.Windows.Forms.Cursors.Default;
             this.output.Font = new System.Drawing.Font("Adobe Fangsong Std R", 20.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.output.Location = new System.Drawing.Point(12, 12);
+            this.output.Location = new System.Drawing.Point(6, 12);
             this.output.Name = "output";
             this.output.ReadOnly = true;
-            this.output.Size = new System.Drawing.Size(932, 399);
+            this.output.Size = new System.Drawing.Size(1043, 696);
             this.output.TabIndex = 16;
             this.output.Text = "";
             // 
@@ -230,6 +236,7 @@
             this.radBtnEncog.TabStop = true;
             this.radBtnEncog.Text = "Encog";
             this.radBtnEncog.UseVisualStyleBackColor = true;
+            this.radBtnEncog.CheckedChanged += new System.EventHandler(this.RadBtnEncog_CheckedChanged);
             // 
             // radBtnAccord
             // 
@@ -259,7 +266,7 @@
             // 
             // networkSaveBtn
             // 
-            this.networkSaveBtn.Location = new System.Drawing.Point(182, 20);
+            this.networkSaveBtn.Location = new System.Drawing.Point(181, 18);
             this.networkSaveBtn.Name = "networkSaveBtn";
             this.networkSaveBtn.Size = new System.Drawing.Size(83, 22);
             this.networkSaveBtn.TabIndex = 29;
@@ -275,7 +282,7 @@
             this.fileBox.Controls.Add(this.sampleLbl);
             this.fileBox.Controls.Add(this.radBtnSplit);
             this.fileBox.Controls.Add(this.radBtnCrossVal);
-            this.fileBox.Location = new System.Drawing.Point(5, 417);
+            this.fileBox.Location = new System.Drawing.Point(6, 714);
             this.fileBox.Name = "fileBox";
             this.fileBox.Size = new System.Drawing.Size(231, 141);
             this.fileBox.TabIndex = 30;
@@ -284,6 +291,10 @@
             // 
             // networkBox
             // 
+            this.networkBox.Controls.Add(this.neuronsBar);
+            this.networkBox.Controls.Add(this.layersBar);
+            this.networkBox.Controls.Add(this.neuronsLbl);
+            this.networkBox.Controls.Add(this.layersLbl);
             this.networkBox.Controls.Add(this.radBtnAccord);
             this.networkBox.Controls.Add(this.radBtnEncog);
             this.networkBox.Controls.Add(this.networkBtn);
@@ -294,12 +305,59 @@
             this.networkBox.Controls.Add(this.learningRateLbl);
             this.networkBox.Controls.Add(this.deepNetworkBox);
             this.networkBox.Controls.Add(this.momentumLbl);
-            this.networkBox.Location = new System.Drawing.Point(242, 417);
+            this.networkBox.Location = new System.Drawing.Point(243, 714);
             this.networkBox.Name = "networkBox";
-            this.networkBox.Size = new System.Drawing.Size(323, 141);
+            this.networkBox.Size = new System.Drawing.Size(529, 141);
             this.networkBox.TabIndex = 31;
             this.networkBox.TabStop = false;
             this.networkBox.Text = "Network Settings:";
+            // 
+            // neuronsBar
+            // 
+            this.neuronsBar.Location = new System.Drawing.Point(317, 19);
+            this.neuronsBar.Maximum = 50;
+            this.neuronsBar.Minimum = 5;
+            this.neuronsBar.Name = "neuronsBar";
+            this.neuronsBar.Size = new System.Drawing.Size(104, 45);
+            this.neuronsBar.SmallChange = 5;
+            this.neuronsBar.TabIndex = 27;
+            this.neuronsBar.TickFrequency = 5;
+            this.neuronsBar.Value = 5;
+            this.neuronsBar.Visible = false;
+            this.neuronsBar.Scroll += new System.EventHandler(this.NeuronsBar_Scroll);
+            // 
+            // layersBar
+            // 
+            this.layersBar.LargeChange = 1;
+            this.layersBar.Location = new System.Drawing.Point(317, 58);
+            this.layersBar.Maximum = 5;
+            this.layersBar.Minimum = 1;
+            this.layersBar.Name = "layersBar";
+            this.layersBar.Size = new System.Drawing.Size(104, 45);
+            this.layersBar.TabIndex = 28;
+            this.layersBar.Value = 1;
+            this.layersBar.Visible = false;
+            this.layersBar.Scroll += new System.EventHandler(this.LayersBar_Scroll);
+            // 
+            // neuronsLbl
+            // 
+            this.neuronsLbl.AutoSize = true;
+            this.neuronsLbl.Location = new System.Drawing.Point(427, 19);
+            this.neuronsLbl.Name = "neuronsLbl";
+            this.neuronsLbl.Size = new System.Drawing.Size(59, 13);
+            this.neuronsLbl.TabIndex = 29;
+            this.neuronsLbl.Text = "Neurons: 1";
+            this.neuronsLbl.Visible = false;
+            // 
+            // layersLbl
+            // 
+            this.layersLbl.AutoSize = true;
+            this.layersLbl.Location = new System.Drawing.Point(427, 63);
+            this.layersLbl.Name = "layersLbl";
+            this.layersLbl.Size = new System.Drawing.Size(50, 13);
+            this.layersLbl.TabIndex = 30;
+            this.layersLbl.Text = "Layers: 1";
+            this.layersLbl.Visible = false;
             // 
             // additionalBox
             // 
@@ -307,9 +365,9 @@
             this.additionalBox.Controls.Add(this.nameTxt);
             this.additionalBox.Controls.Add(this.networkSaveBtn);
             this.additionalBox.Controls.Add(this.rateTestBtn);
-            this.additionalBox.Location = new System.Drawing.Point(571, 417);
+            this.additionalBox.Location = new System.Drawing.Point(778, 714);
             this.additionalBox.Name = "additionalBox";
-            this.additionalBox.Size = new System.Drawing.Size(374, 141);
+            this.additionalBox.Size = new System.Drawing.Size(271, 141);
             this.additionalBox.TabIndex = 32;
             this.additionalBox.TabStop = false;
             this.additionalBox.Text = "Additional Settings:";
@@ -317,7 +375,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(7, 23);
+            this.label1.Location = new System.Drawing.Point(8, 22);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(81, 13);
             this.label1.TabIndex = 31;
@@ -325,7 +383,7 @@
             // 
             // nameTxt
             // 
-            this.nameTxt.Location = new System.Drawing.Point(94, 21);
+            this.nameTxt.Location = new System.Drawing.Point(93, 19);
             this.nameTxt.Name = "nameTxt";
             this.nameTxt.Size = new System.Drawing.Size(82, 20);
             this.nameTxt.TabIndex = 30;
@@ -334,7 +392,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(950, 563);
+            this.ClientSize = new System.Drawing.Size(1056, 861);
             this.Controls.Add(this.output);
             this.Controls.Add(this.fileBox);
             this.Controls.Add(this.networkBox);
@@ -350,6 +408,8 @@
             this.fileBox.PerformLayout();
             this.networkBox.ResumeLayout(false);
             this.networkBox.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.neuronsBar)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.layersBar)).EndInit();
             this.additionalBox.ResumeLayout(false);
             this.additionalBox.PerformLayout();
             this.ResumeLayout(false);
@@ -382,6 +442,10 @@
         private System.Windows.Forms.GroupBox additionalBox;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.TextBox nameTxt;
+        private System.Windows.Forms.TrackBar neuronsBar;
+        private System.Windows.Forms.TrackBar layersBar;
+        private System.Windows.Forms.Label neuronsLbl;
+        private System.Windows.Forms.Label layersLbl;
     }
 }
 

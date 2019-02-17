@@ -13,13 +13,17 @@ namespace ENP1
 {
     internal class EncogNeuralNetwork : NeuralNetwork
     {
-        public override void Create(int input, int output)
+        public override void Create(int input, int layers, int neurons, int output)
         {
             //Setup network, parameters (Activation, bias, number of neurons).
             EncogNetwork = new BasicNetwork();
             EncogNetwork.AddLayer(new BasicLayer(null, true, input)); //Input.
-            EncogNetwork.AddLayer(new BasicLayer(new ActivationSigmoid(), true, 10)); //Hidden.
-            EncogNetwork.AddLayer(new BasicLayer(new ActivationSigmoid(), true, 10)); //Hidden.
+
+            for (int i = 0; i < layers; i++)
+            {
+                EncogNetwork.AddLayer(new BasicLayer(new ActivationSigmoid(), true, neurons)); //Hidden.
+            }
+
             EncogNetwork.AddLayer(new BasicLayer(new ActivationSigmoid(), false, output)); //Output.
             EncogNetwork.Structure.FinalizeStructure();
             EncogNetwork.Reset();
@@ -31,17 +35,24 @@ namespace ENP1
 
             //Train network on data set, parameters (Network, dataset, learning rate, momentum).
             IMLTrain learner = new Backpropagation(EncogNetwork, data, lr, mom);
-
-            //Recording time per tick.
-            DateTime start = DateTime.Now;
-            DateTime end;
+            double lastError = double.PositiveInfinity;
 
             do
             {
-                learner.Iteration();
-                end = DateTime.Now;
+                if (learner.Error != 0)
+                {
+                    lastError = learner.Error;
+                }
 
-            } while (((end.Hour * 60 * 60) + (end.Minute * 60) + end.Second) - ((start.Hour * 60 * 60) + (start.Minute * 60) + start.Second) < 10);
+                int i = 0;
+
+                while (i < 1000)
+                {
+                    learner.Iteration();
+                    i++;
+                }
+
+            } while (lastError - learner.Error > 0.0000001);
 
             return learner.Error;
         }

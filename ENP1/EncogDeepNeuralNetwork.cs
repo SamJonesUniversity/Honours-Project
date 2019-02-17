@@ -14,7 +14,7 @@ namespace ENP1
 {
     class EncogDeepNeuralNetwork : EncogNeuralNetwork
     {
-        public override void Create(int input, int output)
+        public override void Create(int input, int layers, int neurons, int output)
         {
             //Setup network, parameters (Activation, bias, number of neurons).
             var elman = new ElmanPattern()
@@ -23,8 +23,8 @@ namespace ENP1
                 InputNeurons = input,
                 OutputNeurons = output
             };
-
-            elman.AddHiddenLayer(5);
+            
+            elman.AddHiddenLayer(neurons);
 
             EncogNetwork = (BasicNetwork)elman.Generate();
         }
@@ -43,13 +43,20 @@ namespace ENP1
             var stop = new StopTrainingStrategy();
             learner.AddStrategy(new Greedy());
             learner.AddStrategy(new HybridStrategy(trainAlt));
-            learner.AddStrategy(stop);
+
+            //Train network on data set.
+            double lastError = double.PositiveInfinity;
 
             do
             {
+                if (learner.Error != 0)
+                {
+                    lastError = learner.Error;
+                }
+
                 learner.Iteration();
 
-            } while (!stop.ShouldStop());
+            } while (lastError - learner.Error > 0.0000001);
 
             return learner.Error;
         }

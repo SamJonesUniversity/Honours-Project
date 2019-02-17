@@ -6,11 +6,33 @@ namespace ENP1
 {
     class AccordNeuralNetwork : NeuralNetwork
     {
-        public override void Create(int input, int output)
+        public override void Create(int input, int layers, int neurons, int output)
         {
             //Setup network
             IActivationFunction function = new SigmoidFunction();
-            AccordNetwork = new ActivationNetwork(function, input, 5, output); //Activation function, input, hidden, hidden, output.
+
+            switch (layers)
+            {
+                case 1:
+                    AccordNetwork = new ActivationNetwork(function, input, neurons, output); //Activation function, input, hidden, hidden, output.
+                    break;
+
+                case 2:
+                    AccordNetwork = new ActivationNetwork(function, input, neurons, neurons, output); //Activation function, input, hidden, hidden, output.
+                    break;
+
+                case 3:
+                    AccordNetwork = new ActivationNetwork(function, input, neurons, neurons, neurons, output); //Activation function, input, hidden, hidden, output.
+                    break;
+
+                case 4:
+                    AccordNetwork = new ActivationNetwork(function, input, neurons, neurons, neurons, neurons, output); //Activation function, input, hidden, hidden, output.
+                    break;
+
+                case 5:
+                    AccordNetwork = new ActivationNetwork(function, input, neurons, neurons, neurons, neurons, neurons, output); //Activation function, input, hidden, hidden, output.
+                    break;
+            }
         }
 
         public override double Train(Data info, float lr, float mom)
@@ -21,16 +43,21 @@ namespace ENP1
             //Train network on data set.
             double error = double.PositiveInfinity;
 
-            //Recording time per tick.
-            DateTime start = DateTime.Now;
-            DateTime end;
+            double lastError;
 
             do
             {
-                error = teacher.RunEpoch(info.InputData, info.OutputData);
-                end = DateTime.Now;
+                lastError = error;
+                int i = 0;
 
-            } while ((((end.Hour * 60 * 60) + end.Minute * 60) + end.Second) - (((start.Hour * 60 * 60) + start.Minute * 60) + start.Second) < 10);
+                while (i < 1000)
+                {
+                    error = teacher.RunEpoch(info.InputData, info.OutputData);
+                    i++;
+                }
+
+            } while (lastError - error > 0.0000001);
+            
 
             return error;
         }

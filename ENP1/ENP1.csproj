@@ -102,6 +102,7 @@
   <ItemGroup>
     <Compile Include="AccordDeepNeuralNetwork.cs" />
     <Compile Include="AccordNeuralNetwork.cs" />
+    <Compile Include="BestNetwork.cs" />
     <Compile Include="data.cs" />
     <Compile Include="EncogDeepNeuralNetwork.cs" />
     <Compile Include="EncogNeuralNetwork.cs" />

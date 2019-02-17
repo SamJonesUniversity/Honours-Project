@@ -1,17 +1,5 @@
-﻿//System/Form libraries.
-//Accord libraries.
-using Accord.Neuro;
-using Accord.Neuro.Learning;
-using Encog.App.Analyst;
+﻿using Encog.App.Analyst;
 using Encog.App.Analyst.CSV.Normalize;
-using Encog.Engine.Network.Activation;
-using Encog.ML.Data;
-using Encog.ML.Data.Basic;
-using Encog.ML.Train;
-//Engoc libraries.
-using Encog.Neural.Networks;
-using Encog.Neural.Networks.Layers;
-using Encog.Neural.Networks.Training.Propagation.Back;
 using Encog.Util.CSV;
 using Newtonsoft.Json;
 using System;
@@ -191,7 +179,7 @@ namespace ENP1
                     arrayOut = Data.RemoveFromArray(arrayOut, index, poolSize);
 
                     //Create network.
-                    network.Create(info.InputNumber, info.OutputNumber);
+                    network.Create(info.InputNumber, layersBar.Value, neuronsBar.Value, info.OutputNumber);
                     output.Text += "Training complete with an inaccuracy of: " + Math.Round(network.Train(info, (float)(learningRateBar.Value) / 10, (float)(momentumBar.Value) / 10), 10) + "\n\n";
 
                     double[][] answers = Data.CreateArray<double>(poolSize, info.InputData[0].Length);
@@ -224,7 +212,7 @@ namespace ENP1
             else
             {
 				//Create network.
-                network.Create(info.InputNumber, info.OutputNumber);
+                network.Create(info.InputNumber, layersBar.Value, neuronsBar.Value, info.OutputNumber);
                 output.Text += "Training complete with an inaccuracy of: " + Math.Round(network.Train(info, (float)(learningRateBar.Value) / 10, (float)(momentumBar.Value) / 10), 5) + "\n\n";
 
                 double[][] answers = Data.CreateArray<double>(info.InputDataSample.Length, info.InputDataSample[0].Length);
@@ -253,8 +241,7 @@ namespace ENP1
                 output.Text += network.Display(answers, analyst, info, outputTitles, path + @"normal\" + dataFile.Replace(".csv", "Normal.csv"));
             }
         }
-
-		/// This function needs to be re-written ///
+        
         /// <summary> Test function to iterate through all learning rates and momentums with different numbers of neurons and layers. </summary>
         private void RateTestBtn_Click(object sender, EventArgs e)
         {
@@ -271,108 +258,65 @@ namespace ENP1
             }
 
             //False when percentage split, true when cross validation.
-            bool validation = !radBtnSplit.Checked;
+            bool validation = true;
 
-            string header = path + "Results.csv";
+            //Save network to file.
+            if (!Directory.Exists(path + "tests"))
+            {
+                Directory.CreateDirectory(path + "tests");
+            }
+
+            string header = path + "tests" + @"\Results" + dataFile;
 
             using (StreamWriter sw = new StreamWriter(header))
             {
-                sw.WriteLine(String.Format("Encog Error,Accord Error,Learning Rate,Momentum,Neurons,Layers"));
+                sw.WriteLine(String.Format("Error,Network Type,Layers,Neurons,Learning Rate,Momentum"));
             }
 
-            for (int layers = 1; layers <= 4; layers++)
+            // initialize input and output values.
+            Data info = new Data(); info = info.ReturnInfo(path + @"normal\" + dataFile.Replace(".csv", "Normal.csv"), outputTitles, sampleBar.Value, validation);
+
+            if (info == null)
             {
-                for (int neurons = 5; neurons <= 15; neurons += 5)
-                {
-                    for (double lr = 0.1; lr <= 1; lr += 0.1)
-                    {
-                        for (double m = 0.1; m <= 1; m += 0.1)
-                        {
-                            // initialize input and output values.
-                            Data info = new Data(); info = info.ReturnInfo(path + @"normal\" + dataFile.Replace(".csv", "Normal.csv"), outputTitles, sampleBar.Value, validation);
-
-                            //Setup network
-                            Accord.Neuro.IActivationFunction function = new SigmoidFunction();
-                            ActivationNetwork networkAccord = new ActivationNetwork(function, info.InputNumber, neurons, info.OutputNumber);
-
-							//Switch to calculate number of layers to use.
-                            switch (layers)
-                            {
-                                case 2:
-                                    networkAccord = new ActivationNetwork(function, info.InputNumber, neurons, neurons, info.OutputNumber); //Activation function, input, hidden, hidden, output.
-                                    break;
-
-                                case 3:
-                                    networkAccord = new ActivationNetwork(function, info.InputNumber, neurons, neurons, neurons, info.OutputNumber); //Activation function, input, hidden, hidden, output.
-                                    break;
-
-                                case 4:
-                                    networkAccord = new ActivationNetwork(function, info.InputNumber, neurons, neurons, neurons, neurons, info.OutputNumber); //Activation function, input, hidden, hidden, output.
-                                    break;
-
-                                case 5:
-                                    networkAccord = new ActivationNetwork(function, info.InputNumber, neurons, neurons, neurons, neurons, neurons, info.OutputNumber); //Activation function, input, hidden, hidden, output.
-                                    break;
-                            }
-
-                            //Setup trainer using backpropagation.
-                            BackPropagationLearning teacher = new BackPropagationLearning(networkAccord)
-                            {
-                                LearningRate = lr,
-                                Momentum = m
-                            };
-
-                            //Train network on data set.
-                            double error = double.PositiveInfinity;
-
-                            //Recording time per tick.
-                            DateTime start = DateTime.Now;
-                            DateTime end;
-
-                            do
-                            {
-                                error = teacher.RunEpoch(info.InputData, info.OutputData);
-                                end = DateTime.Now;
-
-                            } while (((end.Hour * 60 * 60) + (end.Minute * 60) + end.Second) - ((start.Hour * 60 * 60) + (start.Minute * 60) + start.Second) < 1);
-
-                            IMLDataSet data = new BasicMLDataSet(info.InputData, info.OutputData);
-                            IMLDataSet sampleData = new BasicMLDataSet(info.InputDataSample, info.OutputDataSample);
-
-                            //Setup network, parameters (Activation, bias, number of neurons).
-                            BasicNetwork networkEncog = new BasicNetwork();
-                            networkEncog.AddLayer(new BasicLayer(null, true, info.InputNumber)); //Input.
-
-                            for(int i = 0; i < layers; i++)
-                            {
-                                networkEncog.AddLayer(new BasicLayer(new ActivationSigmoid(), true, neurons)); //Hidden.
-                            }
-
-                            networkEncog.AddLayer(new BasicLayer(new ActivationSigmoid(), false, info.OutputNumber)); //Output.
-                            networkEncog.Structure.FinalizeStructure();
-                            networkEncog.Reset();
-
-                            //Train network on data set, parameters (Network, dataset, learning rate, momentum).
-                            IMLTrain learner = new Backpropagation(networkEncog, data, lr, m);
-
-                            start = DateTime.Now;
-
-                            do
-                            {
-                                learner.Iteration();
-                                end = DateTime.Now;
-
-                            } while (((end.Hour * 60 * 60) + (end.Minute * 60) + end.Second) - ((start.Hour * 60 * 60) + (start.Minute * 60) + start.Second) < 1);
-
-                            using (StreamWriter sw = new StreamWriter(path + "Results.csv", true))
-                            {
-                                sw.WriteLine(String.Format(
-                                    "{0},{1},{2},{3},{4},{5}", learner.Error, error, lr, m, neurons, layers));
-                            }
-                        }
-                    }
-                }
+                return;
             }
+
+            //Setup network.
+            List<NeuralNetwork> networkList = new List<NeuralNetwork>
+            {
+                new EncogNeuralNetwork(),
+                new EncogDeepNeuralNetwork(),
+                new AccordNeuralNetwork(),
+                new AccordDeepNeuralNetwork()
+            };
+
+            List<BestNetwork> bestList = new List<BestNetwork>();
+
+            foreach (NeuralNetwork network in networkList)
+            {
+                bestList.Add(network.CalculateBest(info, header));
+            }
+
+            BestNetwork best = bestList[0];
+
+            int index = 0;
+            int count = 0;
+            foreach (BestNetwork b in bestList)
+            {
+                double error = b.Error;
+
+                if (error < best.Error)
+                {
+                    best = b;
+                    index = count;
+                }
+
+                count++;
+            }
+
+            output.Text += "The best netork is: " + networkList[index].GetType().ToString().Replace("ENP1.", "") 
+                + "\nLayers: " + best.Layers + "\nNeurons: " + best.Neurons + "\nLearning Rate: " + best.LearningRate
+                + "\nMomentum: " + best.Momentum + "\nInaccuracy: " + best.Error;
         }
 
 		/// <summary> Button to save current network settings </summary>
@@ -462,7 +406,7 @@ namespace ENP1
             }
 
 			//Create network.
-            network.Create(info.InputNumber, info.OutputNumber);
+            network.Create(info.InputNumber, layersBar.Value, neuronsBar.Value, info.OutputNumber);
 
             //Save network to file.
             if (!Directory.Exists(path + "networks"))
@@ -486,7 +430,7 @@ namespace ENP1
             NetworkSaveData networkSave = new NetworkSaveData
             {
                 NetworkFile = path + @"networks\" + nameTxt.Text,
-                NetworkType = network.GetType().ToString().Replace("ENP1.",""),
+                NetworkType = network.GetType().ToString().Replace("ENP1.", ""), //"ENP1" must change to reflect solution name (name.) if ever changed.
                 AnalystFile = path + @"normal\" + "normalizationData.ega",
                 CsvFile = dataFile,
                 Path = path,
@@ -519,26 +463,53 @@ namespace ENP1
             if (learningRateBar.Visible)
             {
                 learningRateBar.Hide();
-                momentumBar.Hide();
                 learningRateLbl.Hide();
+
+                momentumBar.Hide();
                 momentumLbl.Hide();
+
+                neuronsBar.Hide();
+                neuronsLbl.Hide();
+
+                layersBar.Hide();
+                layersLbl.Hide();
+
                 deepNetworkBox.Hide();
+
                 advancedLbl.Text = "Advanced Settings";
                 advancedBtn.Text = "+";
             }
             else
             {
                 learningRateBar.Show();
-                momentumBar.Show();
                 learningRateLbl.Show();
+
+                momentumBar.Show();
                 momentumLbl.Show();
+
+                neuronsBar.Show();
+                neuronsLbl.Show();
+                
+                layersBar.Show();
+                layersLbl.Show();
+
+                if(deepNetworkBox.Checked && radBtnEncog.Checked)
+                {
+                    layersBar.Enabled = false;
+                }
+                else
+                {
+                    layersBar.Enabled = true;
+                }
+
                 deepNetworkBox.Show();
+
                 advancedLbl.Text = "Close";
                 advancedBtn.Text = "-";
             }
         }
 
-        /// Scroll bars. ///
+        /// Scroll bars ///
 
         /// <summary> Scroll bar to select pools size for cross-validation or percentage split size. </summary>
         private void SampleBar_Scroll(object sender, EventArgs e)
@@ -572,6 +543,18 @@ namespace ENP1
             momentumLbl.Text = String.Format("Momentum: " + ((float)(momentumBar.Value) / 10).ToString());
         }
 
+        /// <summary> Scroll bar to select network neuron amount. </summary>
+        private void NeuronsBar_Scroll(object sender, EventArgs e)
+        {
+            neuronsLbl.Text = String.Format("Neurons: " + neuronsBar.Value).ToString();
+        }
+
+        /// <summary> Scroll bar to select network layer amount. </summary>
+        private void LayersBar_Scroll(object sender, EventArgs e)
+        {
+            layersLbl.Text = String.Format("Layers: " + layersBar.Value).ToString();
+        }
+
         /// Radio buttons ///
 
         /// <summary> Percentage split radio button. </summary>
@@ -596,6 +579,33 @@ namespace ENP1
             sampleBar.TickFrequency = 5;
             sampleBar.Value = 5;
             sampleLbl.Text = String.Format("Pool Size: " + (sampleBar.Value).ToString() + "%");
+        }
+
+        private void RadBtnEncog_CheckedChanged(object sender, EventArgs e)
+        {
+            if (radBtnEncog.Checked && deepNetworkBox.Checked)
+            {
+                layersBar.Enabled = false;
+            }
+            else
+            {
+                layersBar.Enabled = true;
+            }
+        }
+        
+        /// Check Boxes ///
+
+        /// <summary> Check box for deep networks. </summary>
+        private void DeepNetworkBox_CheckedChanged(object sender, EventArgs e)
+        {
+            if (radBtnEncog.Checked && deepNetworkBox.Checked)
+            {
+                layersBar.Enabled = false;
+            }
+            else
+            {
+                layersBar.Enabled = true;
+            }
         }
     }
 }
