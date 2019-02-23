@@ -88,7 +88,7 @@ namespace ENP1
         }
 
 		/// <summary> need comments </summary>
-        public static List<string> Normalise(FileInfo sourceFile, FileInfo normalFile, string path, string dataFile, int outputs, bool inputs)
+        public static List<string> Normalise(FileInfo sourceFile, FileInfo normalFile, string path, string dataFile, int outputs)
         {
             List<string> titles = new List<string>();
 
@@ -138,20 +138,10 @@ namespace ENP1
                     " the message to the relevant engineer.", "Normalisation Failure");
                 return null;
             }
-
-            if (!inputs)
+            
+            for (int i = outputs; i + analyst.Script.Fields.Length > analyst.Script.Fields.Length; i--)
             {
-                for (int i = outputs; i + analyst.Script.Fields.Length > analyst.Script.Fields.Length; i--)
-                {
-                    titles.Add(analyst.Script.Fields[analyst.Script.Fields.Length - i].Name);
-                }
-            }
-            else
-            {
-                for (int i = 0; i < analyst.Script.Fields.Length - outputs; i++)
-                {
-                    titles.Add(analyst.Script.Fields[i].Name);
-                }
+                titles.Add(analyst.Script.Fields[analyst.Script.Fields.Length - i].Name);
             }
 
             //Save configuration to be used later.

@@ -62,7 +62,7 @@
             // 
             // fileBtn
             // 
-            this.fileBtn.Location = new System.Drawing.Point(139, 77);
+            this.fileBtn.Location = new System.Drawing.Point(147, 77);
             this.fileBtn.Name = "fileBtn";
             this.fileBtn.Size = new System.Drawing.Size(86, 23);
             this.fileBtn.TabIndex = 0;
@@ -120,8 +120,12 @@
             // 
             // output
             // 
+            this.output.BackColor = System.Drawing.Color.White;
+            this.output.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.output.Font = new System.Drawing.Font("Adobe Fangsong Std R", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.output.Location = new System.Drawing.Point(16, 28);
             this.output.Name = "output";
+            this.output.ReadOnly = true;
             this.output.Size = new System.Drawing.Size(517, 274);
             this.output.TabIndex = 9;
             this.output.Text = "";
@@ -296,7 +300,7 @@
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.fileLbl);
             this.Name = "InputForm";
-            this.Text = "InputForm";
+            this.Text = "Output Predictor";
             this.Load += new System.EventHandler(this.InputForm_Load);
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();

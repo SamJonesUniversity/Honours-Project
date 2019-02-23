@@ -125,7 +125,6 @@
     <Compile Include="EntryForm.Designer.cs">
       <DependentUpon>EntryForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="NetworkSaveData.cs" />
     <Compile Include="NeuralNetwork.cs" />
     <Compile Include="TestForm.cs">

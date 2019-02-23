@@ -120,4 +120,11 @@
   <metadata name="openFileDialog1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>17, 17</value>
   </metadata>
+  <data name="label5.Text" xml:space="preserve">
+    <value>Network Settings
+
+Please select your desired network settings by using the controls bellow. If you wish to automatically
+determine the best settings for your network ou can press the "Determine Best" button. This process will 
+take approximately one hour.</value>
+  </data>
 </root>

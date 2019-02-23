@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TestForm));
             this.networkBtn = new System.Windows.Forms.Button();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.sampleBar = new System.Windows.Forms.TrackBar();
@@ -48,33 +49,42 @@
             this.outputsUpDown = new System.Windows.Forms.NumericUpDown();
             this.label2 = new System.Windows.Forms.Label();
             this.networkSaveBtn = new System.Windows.Forms.Button();
-            this.fileBox = new System.Windows.Forms.GroupBox();
-            this.networkBox = new System.Windows.Forms.GroupBox();
             this.neuronsBar = new System.Windows.Forms.TrackBar();
             this.layersBar = new System.Windows.Forms.TrackBar();
             this.neuronsLbl = new System.Windows.Forms.Label();
             this.layersLbl = new System.Windows.Forms.Label();
-            this.additionalBox = new System.Windows.Forms.GroupBox();
             this.label1 = new System.Windows.Forms.Label();
             this.nameTxt = new System.Windows.Forms.TextBox();
+            this.panel1 = new System.Windows.Forms.Panel();
+            this.fileBtn = new System.Windows.Forms.Button();
+            this.panel2 = new System.Windows.Forms.Panel();
+            this.panel3 = new System.Windows.Forms.Panel();
+            this.backBtn = new System.Windows.Forms.Button();
+            this.loadedLbl = new System.Windows.Forms.Label();
+            this.label3 = new System.Windows.Forms.Label();
+            this.label4 = new System.Windows.Forms.Label();
+            this.label5 = new System.Windows.Forms.Label();
+            this.panel4 = new System.Windows.Forms.Panel();
+            this.trainingLbl = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.sampleBar)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.learningRateBar)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.momentumBar)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.outputsUpDown)).BeginInit();
-            this.fileBox.SuspendLayout();
-            this.networkBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.neuronsBar)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.layersBar)).BeginInit();
-            this.additionalBox.SuspendLayout();
+            this.panel1.SuspendLayout();
+            this.panel2.SuspendLayout();
+            this.panel3.SuspendLayout();
+            this.panel4.SuspendLayout();
             this.SuspendLayout();
             // 
             // networkBtn
             // 
-            this.networkBtn.Location = new System.Drawing.Point(6, 62);
+            this.networkBtn.Location = new System.Drawing.Point(454, 230);
             this.networkBtn.Name = "networkBtn";
-            this.networkBtn.Size = new System.Drawing.Size(75, 22);
+            this.networkBtn.Size = new System.Drawing.Size(83, 22);
             this.networkBtn.TabIndex = 1;
-            this.networkBtn.Text = "Test";
+            this.networkBtn.Text = "Continue";
             this.networkBtn.UseVisualStyleBackColor = true;
             this.networkBtn.Click += new System.EventHandler(this.NetworkBtn_Click);
             // 
@@ -84,7 +94,7 @@
             // 
             // sampleBar
             // 
-            this.sampleBar.Location = new System.Drawing.Point(3, 78);
+            this.sampleBar.Location = new System.Drawing.Point(10, 95);
             this.sampleBar.Maximum = 100;
             this.sampleBar.Minimum = 10;
             this.sampleBar.Name = "sampleBar";
@@ -98,7 +108,7 @@
             // sampleLbl
             // 
             this.sampleLbl.AutoSize = true;
-            this.sampleLbl.Location = new System.Drawing.Point(112, 78);
+            this.sampleLbl.Location = new System.Drawing.Point(119, 95);
             this.sampleLbl.Name = "sampleLbl";
             this.sampleLbl.Size = new System.Drawing.Size(94, 13);
             this.sampleLbl.TabIndex = 7;
@@ -107,7 +117,7 @@
             // learningRateBar
             // 
             this.learningRateBar.LargeChange = 1;
-            this.learningRateBar.Location = new System.Drawing.Point(106, 20);
+            this.learningRateBar.Location = new System.Drawing.Point(121, 111);
             this.learningRateBar.Minimum = 1;
             this.learningRateBar.Name = "learningRateBar";
             this.learningRateBar.Size = new System.Drawing.Size(104, 45);
@@ -119,7 +129,7 @@
             // momentumBar
             // 
             this.momentumBar.LargeChange = 1;
-            this.momentumBar.Location = new System.Drawing.Point(106, 59);
+            this.momentumBar.Location = new System.Drawing.Point(121, 150);
             this.momentumBar.Minimum = 1;
             this.momentumBar.Name = "momentumBar";
             this.momentumBar.Size = new System.Drawing.Size(104, 45);
@@ -131,7 +141,7 @@
             // learningRateLbl
             // 
             this.learningRateLbl.AutoSize = true;
-            this.learningRateLbl.Location = new System.Drawing.Point(216, 20);
+            this.learningRateLbl.Location = new System.Drawing.Point(231, 111);
             this.learningRateLbl.Name = "learningRateLbl";
             this.learningRateLbl.Size = new System.Drawing.Size(95, 13);
             this.learningRateLbl.TabIndex = 9;
@@ -141,7 +151,7 @@
             // momentumLbl
             // 
             this.momentumLbl.AutoSize = true;
-            this.momentumLbl.Location = new System.Drawing.Point(216, 64);
+            this.momentumLbl.Location = new System.Drawing.Point(231, 155);
             this.momentumLbl.Name = "momentumLbl";
             this.momentumLbl.Size = new System.Drawing.Size(80, 13);
             this.momentumLbl.TabIndex = 10;
@@ -150,7 +160,7 @@
             // 
             // rateTestBtn
             // 
-            this.rateTestBtn.Location = new System.Drawing.Point(181, 112);
+            this.rateTestBtn.Location = new System.Drawing.Point(365, 230);
             this.rateTestBtn.Name = "rateTestBtn";
             this.rateTestBtn.Size = new System.Drawing.Size(83, 22);
             this.rateTestBtn.TabIndex = 11;
@@ -161,7 +171,7 @@
             // deepNetworkBox
             // 
             this.deepNetworkBox.AutoSize = true;
-            this.deepNetworkBox.Location = new System.Drawing.Point(114, 106);
+            this.deepNetworkBox.Location = new System.Drawing.Point(129, 197);
             this.deepNetworkBox.Name = "deepNetworkBox";
             this.deepNetworkBox.Size = new System.Drawing.Size(96, 17);
             this.deepNetworkBox.TabIndex = 12;
@@ -172,7 +182,7 @@
             // 
             // advancedBtn
             // 
-            this.advancedBtn.Location = new System.Drawing.Point(6, 94);
+            this.advancedBtn.Location = new System.Drawing.Point(21, 185);
             this.advancedBtn.Name = "advancedBtn";
             this.advancedBtn.Size = new System.Drawing.Size(20, 22);
             this.advancedBtn.TabIndex = 14;
@@ -183,7 +193,7 @@
             // advancedLbl
             // 
             this.advancedLbl.AutoSize = true;
-            this.advancedLbl.Location = new System.Drawing.Point(27, 99);
+            this.advancedLbl.Location = new System.Drawing.Point(42, 190);
             this.advancedLbl.Name = "advancedLbl";
             this.advancedLbl.Size = new System.Drawing.Size(97, 13);
             this.advancedLbl.TabIndex = 15;
@@ -191,20 +201,21 @@
             // 
             // output
             // 
+            this.output.BackColor = System.Drawing.Color.White;
             this.output.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.output.Cursor = System.Windows.Forms.Cursors.Default;
             this.output.Font = new System.Drawing.Font("Adobe Fangsong Std R", 20.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.output.Location = new System.Drawing.Point(6, 12);
+            this.output.Location = new System.Drawing.Point(3, 3);
             this.output.Name = "output";
             this.output.ReadOnly = true;
-            this.output.Size = new System.Drawing.Size(1043, 696);
+            this.output.Size = new System.Drawing.Size(1193, 534);
             this.output.TabIndex = 16;
             this.output.Text = "";
             // 
             // radBtnCrossVal
             // 
             this.radBtnCrossVal.AutoSize = true;
-            this.radBtnCrossVal.Location = new System.Drawing.Point(114, 55);
+            this.radBtnCrossVal.Location = new System.Drawing.Point(121, 72);
             this.radBtnCrossVal.Name = "radBtnCrossVal";
             this.radBtnCrossVal.Size = new System.Drawing.Size(100, 17);
             this.radBtnCrossVal.TabIndex = 17;
@@ -216,7 +227,7 @@
             // 
             this.radBtnSplit.AutoSize = true;
             this.radBtnSplit.Checked = true;
-            this.radBtnSplit.Location = new System.Drawing.Point(9, 55);
+            this.radBtnSplit.Location = new System.Drawing.Point(16, 72);
             this.radBtnSplit.Name = "radBtnSplit";
             this.radBtnSplit.Size = new System.Drawing.Size(103, 17);
             this.radBtnSplit.TabIndex = 18;
@@ -229,7 +240,7 @@
             // 
             this.radBtnEncog.AutoSize = true;
             this.radBtnEncog.Checked = true;
-            this.radBtnEncog.Location = new System.Drawing.Point(6, 20);
+            this.radBtnEncog.Location = new System.Drawing.Point(21, 111);
             this.radBtnEncog.Name = "radBtnEncog";
             this.radBtnEncog.Size = new System.Drawing.Size(56, 17);
             this.radBtnEncog.TabIndex = 25;
@@ -241,7 +252,7 @@
             // radBtnAccord
             // 
             this.radBtnAccord.AutoSize = true;
-            this.radBtnAccord.Location = new System.Drawing.Point(6, 39);
+            this.radBtnAccord.Location = new System.Drawing.Point(21, 130);
             this.radBtnAccord.Name = "radBtnAccord";
             this.radBtnAccord.Size = new System.Drawing.Size(59, 17);
             this.radBtnAccord.TabIndex = 26;
@@ -250,7 +261,7 @@
             // 
             // outputsUpDown
             // 
-            this.outputsUpDown.Location = new System.Drawing.Point(101, 25);
+            this.outputsUpDown.Location = new System.Drawing.Point(109, 26);
             this.outputsUpDown.Name = "outputsUpDown";
             this.outputsUpDown.Size = new System.Drawing.Size(36, 20);
             this.outputsUpDown.TabIndex = 27;
@@ -258,7 +269,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(6, 28);
+            this.label2.Location = new System.Drawing.Point(14, 29);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(90, 13);
             this.label2.TabIndex = 28;
@@ -266,7 +277,7 @@
             // 
             // networkSaveBtn
             // 
-            this.networkSaveBtn.Location = new System.Drawing.Point(181, 18);
+            this.networkSaveBtn.Location = new System.Drawing.Point(1101, 559);
             this.networkSaveBtn.Name = "networkSaveBtn";
             this.networkSaveBtn.Size = new System.Drawing.Size(83, 22);
             this.networkSaveBtn.TabIndex = 29;
@@ -274,47 +285,9 @@
             this.networkSaveBtn.UseVisualStyleBackColor = true;
             this.networkSaveBtn.Click += new System.EventHandler(this.NetworkSaveBtn_Click);
             // 
-            // fileBox
-            // 
-            this.fileBox.Controls.Add(this.label2);
-            this.fileBox.Controls.Add(this.outputsUpDown);
-            this.fileBox.Controls.Add(this.sampleBar);
-            this.fileBox.Controls.Add(this.sampleLbl);
-            this.fileBox.Controls.Add(this.radBtnSplit);
-            this.fileBox.Controls.Add(this.radBtnCrossVal);
-            this.fileBox.Location = new System.Drawing.Point(6, 714);
-            this.fileBox.Name = "fileBox";
-            this.fileBox.Size = new System.Drawing.Size(231, 141);
-            this.fileBox.TabIndex = 30;
-            this.fileBox.TabStop = false;
-            this.fileBox.Text = "File Setup:";
-            // 
-            // networkBox
-            // 
-            this.networkBox.Controls.Add(this.neuronsBar);
-            this.networkBox.Controls.Add(this.layersBar);
-            this.networkBox.Controls.Add(this.neuronsLbl);
-            this.networkBox.Controls.Add(this.layersLbl);
-            this.networkBox.Controls.Add(this.radBtnAccord);
-            this.networkBox.Controls.Add(this.radBtnEncog);
-            this.networkBox.Controls.Add(this.networkBtn);
-            this.networkBox.Controls.Add(this.learningRateBar);
-            this.networkBox.Controls.Add(this.advancedLbl);
-            this.networkBox.Controls.Add(this.momentumBar);
-            this.networkBox.Controls.Add(this.advancedBtn);
-            this.networkBox.Controls.Add(this.learningRateLbl);
-            this.networkBox.Controls.Add(this.deepNetworkBox);
-            this.networkBox.Controls.Add(this.momentumLbl);
-            this.networkBox.Location = new System.Drawing.Point(243, 714);
-            this.networkBox.Name = "networkBox";
-            this.networkBox.Size = new System.Drawing.Size(529, 141);
-            this.networkBox.TabIndex = 31;
-            this.networkBox.TabStop = false;
-            this.networkBox.Text = "Network Settings:";
-            // 
             // neuronsBar
             // 
-            this.neuronsBar.Location = new System.Drawing.Point(317, 19);
+            this.neuronsBar.Location = new System.Drawing.Point(332, 110);
             this.neuronsBar.Maximum = 50;
             this.neuronsBar.Minimum = 5;
             this.neuronsBar.Name = "neuronsBar";
@@ -329,7 +302,7 @@
             // layersBar
             // 
             this.layersBar.LargeChange = 1;
-            this.layersBar.Location = new System.Drawing.Point(317, 58);
+            this.layersBar.Location = new System.Drawing.Point(332, 149);
             this.layersBar.Maximum = 5;
             this.layersBar.Minimum = 1;
             this.layersBar.Name = "layersBar";
@@ -342,7 +315,7 @@
             // neuronsLbl
             // 
             this.neuronsLbl.AutoSize = true;
-            this.neuronsLbl.Location = new System.Drawing.Point(427, 19);
+            this.neuronsLbl.Location = new System.Drawing.Point(442, 110);
             this.neuronsLbl.Name = "neuronsLbl";
             this.neuronsLbl.Size = new System.Drawing.Size(59, 13);
             this.neuronsLbl.TabIndex = 29;
@@ -352,30 +325,17 @@
             // layersLbl
             // 
             this.layersLbl.AutoSize = true;
-            this.layersLbl.Location = new System.Drawing.Point(427, 63);
+            this.layersLbl.Location = new System.Drawing.Point(442, 154);
             this.layersLbl.Name = "layersLbl";
             this.layersLbl.Size = new System.Drawing.Size(50, 13);
             this.layersLbl.TabIndex = 30;
             this.layersLbl.Text = "Layers: 1";
             this.layersLbl.Visible = false;
             // 
-            // additionalBox
-            // 
-            this.additionalBox.Controls.Add(this.label1);
-            this.additionalBox.Controls.Add(this.nameTxt);
-            this.additionalBox.Controls.Add(this.networkSaveBtn);
-            this.additionalBox.Controls.Add(this.rateTestBtn);
-            this.additionalBox.Location = new System.Drawing.Point(778, 714);
-            this.additionalBox.Name = "additionalBox";
-            this.additionalBox.Size = new System.Drawing.Size(271, 141);
-            this.additionalBox.TabIndex = 32;
-            this.additionalBox.TabStop = false;
-            this.additionalBox.Text = "Additional Settings:";
-            // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(8, 22);
+            this.label1.Location = new System.Drawing.Point(928, 563);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(81, 13);
             this.label1.TabIndex = 31;
@@ -383,35 +343,162 @@
             // 
             // nameTxt
             // 
-            this.nameTxt.Location = new System.Drawing.Point(93, 19);
+            this.nameTxt.Location = new System.Drawing.Point(1013, 560);
             this.nameTxt.Name = "nameTxt";
             this.nameTxt.Size = new System.Drawing.Size(82, 20);
             this.nameTxt.TabIndex = 30;
+            // 
+            // panel1
+            // 
+            this.panel1.Controls.Add(this.label4);
+            this.panel1.Controls.Add(this.label3);
+            this.panel1.Controls.Add(this.fileBtn);
+            this.panel1.Controls.Add(this.label2);
+            this.panel1.Controls.Add(this.outputsUpDown);
+            this.panel1.Controls.Add(this.radBtnCrossVal);
+            this.panel1.Controls.Add(this.sampleBar);
+            this.panel1.Controls.Add(this.radBtnSplit);
+            this.panel1.Controls.Add(this.sampleLbl);
+            this.panel1.Location = new System.Drawing.Point(12, 12);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(232, 177);
+            this.panel1.TabIndex = 33;
+            // 
+            // fileBtn
+            // 
+            this.fileBtn.Location = new System.Drawing.Point(146, 144);
+            this.fileBtn.Name = "fileBtn";
+            this.fileBtn.Size = new System.Drawing.Size(75, 23);
+            this.fileBtn.TabIndex = 29;
+            this.fileBtn.Text = "Upload File";
+            this.fileBtn.UseVisualStyleBackColor = true;
+            this.fileBtn.Click += new System.EventHandler(this.FileBtn_Click);
+            // 
+            // panel2
+            // 
+            this.panel2.Controls.Add(this.label5);
+            this.panel2.Controls.Add(this.loadedLbl);
+            this.panel2.Controls.Add(this.neuronsBar);
+            this.panel2.Controls.Add(this.networkBtn);
+            this.panel2.Controls.Add(this.rateTestBtn);
+            this.panel2.Controls.Add(this.layersBar);
+            this.panel2.Controls.Add(this.momentumLbl);
+            this.panel2.Controls.Add(this.neuronsLbl);
+            this.panel2.Controls.Add(this.deepNetworkBox);
+            this.panel2.Controls.Add(this.layersLbl);
+            this.panel2.Controls.Add(this.learningRateLbl);
+            this.panel2.Controls.Add(this.radBtnAccord);
+            this.panel2.Controls.Add(this.advancedBtn);
+            this.panel2.Controls.Add(this.radBtnEncog);
+            this.panel2.Controls.Add(this.momentumBar);
+            this.panel2.Controls.Add(this.advancedLbl);
+            this.panel2.Controls.Add(this.learningRateBar);
+            this.panel2.Location = new System.Drawing.Point(250, 12);
+            this.panel2.Name = "panel2";
+            this.panel2.Size = new System.Drawing.Size(546, 262);
+            this.panel2.TabIndex = 34;
+            // 
+            // panel3
+            // 
+            this.panel3.Controls.Add(this.label1);
+            this.panel3.Controls.Add(this.nameTxt);
+            this.panel3.Controls.Add(this.networkSaveBtn);
+            this.panel3.Controls.Add(this.output);
+            this.panel3.Location = new System.Drawing.Point(11, 345);
+            this.panel3.Name = "panel3";
+            this.panel3.Size = new System.Drawing.Size(1199, 592);
+            this.panel3.TabIndex = 35;
+            // 
+            // backBtn
+            // 
+            this.backBtn.Location = new System.Drawing.Point(802, 12);
+            this.backBtn.Name = "backBtn";
+            this.backBtn.Size = new System.Drawing.Size(75, 23);
+            this.backBtn.TabIndex = 36;
+            this.backBtn.Text = "Back";
+            this.backBtn.UseVisualStyleBackColor = true;
+            this.backBtn.Click += new System.EventHandler(this.BackBtn_Click);
+            // 
+            // loadedLbl
+            // 
+            this.loadedLbl.AutoSize = true;
+            this.loadedLbl.Location = new System.Drawing.Point(21, 92);
+            this.loadedLbl.Name = "loadedLbl";
+            this.loadedLbl.Size = new System.Drawing.Size(0, 13);
+            this.loadedLbl.TabIndex = 31;
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(13, 10);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(64, 13);
+            this.label3.TabIndex = 37;
+            this.label3.Text = "File Settings";
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(14, 56);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(83, 13);
+            this.label4.TabIndex = 37;
+            this.label4.Text = "Validation Type:";
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(18, 10);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(498, 65);
+            this.label5.TabIndex = 32;
+            this.label5.Text = resources.GetString("label5.Text");
+            // 
+            // panel4
+            // 
+            this.panel4.Controls.Add(this.trainingLbl);
+            this.panel4.Location = new System.Drawing.Point(1216, 345);
+            this.panel4.Name = "panel4";
+            this.panel4.Size = new System.Drawing.Size(357, 211);
+            this.panel4.TabIndex = 37;
+            // 
+            // trainingLbl
+            // 
+            this.trainingLbl.AutoSize = true;
+            this.trainingLbl.Font = new System.Drawing.Font("Adobe Fangsong Std R", 20.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.trainingLbl.Location = new System.Drawing.Point(48, 87);
+            this.trainingLbl.Name = "trainingLbl";
+            this.trainingLbl.Size = new System.Drawing.Size(258, 34);
+            this.trainingLbl.TabIndex = 0;
+            this.trainingLbl.Text = "Training Network. . .";
             // 
             // TestForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1056, 861);
-            this.Controls.Add(this.output);
-            this.Controls.Add(this.fileBox);
-            this.Controls.Add(this.networkBox);
-            this.Controls.Add(this.additionalBox);
+            this.ClientSize = new System.Drawing.Size(1685, 945);
+            this.Controls.Add(this.panel4);
+            this.Controls.Add(this.backBtn);
+            this.Controls.Add(this.panel3);
+            this.Controls.Add(this.panel2);
+            this.Controls.Add(this.panel1);
             this.Name = "TestForm";
-            this.Text = "Test Window";
+            this.Text = "Network Creator";
             this.Load += new System.EventHandler(this.Form1_Load);
             ((System.ComponentModel.ISupportInitialize)(this.sampleBar)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.learningRateBar)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.momentumBar)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.outputsUpDown)).EndInit();
-            this.fileBox.ResumeLayout(false);
-            this.fileBox.PerformLayout();
-            this.networkBox.ResumeLayout(false);
-            this.networkBox.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.neuronsBar)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.layersBar)).EndInit();
-            this.additionalBox.ResumeLayout(false);
-            this.additionalBox.PerformLayout();
+            this.panel1.ResumeLayout(false);
+            this.panel1.PerformLayout();
+            this.panel2.ResumeLayout(false);
+            this.panel2.PerformLayout();
+            this.panel3.ResumeLayout(false);
+            this.panel3.PerformLayout();
+            this.panel4.ResumeLayout(false);
+            this.panel4.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -437,15 +524,23 @@
         private System.Windows.Forms.NumericUpDown outputsUpDown;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Button networkSaveBtn;
-        private System.Windows.Forms.GroupBox fileBox;
-        private System.Windows.Forms.GroupBox networkBox;
-        private System.Windows.Forms.GroupBox additionalBox;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.TextBox nameTxt;
         private System.Windows.Forms.TrackBar neuronsBar;
         private System.Windows.Forms.TrackBar layersBar;
         private System.Windows.Forms.Label neuronsLbl;
         private System.Windows.Forms.Label layersLbl;
+        private System.Windows.Forms.Panel panel1;
+        private System.Windows.Forms.Panel panel2;
+        private System.Windows.Forms.Panel panel3;
+        private System.Windows.Forms.Button backBtn;
+        private System.Windows.Forms.Button fileBtn;
+        private System.Windows.Forms.Label loadedLbl;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.Panel panel4;
+        private System.Windows.Forms.Label trainingLbl;
     }
 }
 

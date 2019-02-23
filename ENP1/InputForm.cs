@@ -267,6 +267,7 @@ namespace ENP1
                         if (i != networkSaveDataList[selectedNetwork].OutputHeadings.Count - 1)
                         {
                             sw.Write(networkSaveDataList[selectedNetwork].OutputHeadings[i] + ",");
+                            outString += ",";
                         }
                         else
                         {
@@ -329,7 +330,7 @@ namespace ENP1
 
                 output.Text += "Loading File: " + dataFile + ". . .\n";
 
-                Data.Normalise(sourceFile, normalFile, path, dataFile, networkSaveDataList[selectedNetwork].OutputHeadings.Count, false);
+                Data.Normalise(sourceFile, normalFile, path, dataFile, networkSaveDataList[selectedNetwork].OutputHeadings.Count);
 
                 norm.Analyze(sourceFile, true, CSVFormat.English, analyst);
 
