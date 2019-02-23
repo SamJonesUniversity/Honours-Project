@@ -333,21 +333,6 @@ namespace ENP1
 
             for (int i = 0; i < info.OutputDataSample.Length; i++)
             {
-                /*for (int j = 0; j < info.InputDataSample[0].Length; j++)
-                {
-                    double input = Math.Round(analyst.Script.Normalize.NormalizedFields[count].DeNormalize(info.InputDataSample[i][j]), 2);
-
-                    if (input > 0)
-                    {
-                        item += String.Format(
-                        "Input {0}: [{1}] ", j + 1,
-                        input
-                        );
-
-                        count++;
-                    }
-                }*/
-
                 item += String.Format(
                         "Prediction Number: {0}\n\n",
                         i + 1
@@ -355,12 +340,13 @@ namespace ENP1
 
                 for (int j = 0; j < count.Count; j++)
                 {
-                    string prediction = "";
+                    string prediction = analyst.Script.Normalize.NormalizedFields[analyst.Script.Normalize.NormalizedFields.Count + j - count.Count].Name + ": ";
                     string outpt = "";
+
                     if (count[j] == 1)
                     {
-                        outpt = Math.Round(analyst.Script.Normalize.NormalizedFields[analyst.Script.Normalize.NormalizedFields.Count + j - count.Count].DeNormalize(info.OutputDataSample[i][j]), 1).ToString();
-                        prediction = Math.Round(analyst.Script.Normalize.NormalizedFields[analyst.Script.Normalize.NormalizedFields.Count + j - count.Count].DeNormalize(answers[i][j]), 1).ToString();
+                        outpt += Math.Round(analyst.Script.Normalize.NormalizedFields[analyst.Script.Normalize.NormalizedFields.Count + j - count.Count].DeNormalize(info.OutputDataSample[i][j]), 1).ToString();
+                        prediction += Math.Round(analyst.Script.Normalize.NormalizedFields[analyst.Script.Normalize.NormalizedFields.Count + j - count.Count].DeNormalize(answers[i][j]), 1).ToString();
                     }
                     else
                     {
@@ -371,18 +357,18 @@ namespace ENP1
                             temp[c] = info.OutputDataSample[i][c];
                         }
 
-                        outpt = analyst.Script.Normalize.NormalizedFields[analyst.Script.Normalize.NormalizedFields.Count + j - count.Count].DetermineClass(temp).Name;
+                        outpt += analyst.Script.Normalize.NormalizedFields[analyst.Script.Normalize.NormalizedFields.Count + j - count.Count].DetermineClass(temp).Name;
 
                         for (int c = 0; c < count[j]; c++)
                         {
                             temp[c] = answers[i][c];
                         }
 
-                        prediction = analyst.Script.Normalize.NormalizedFields[analyst.Script.Normalize.NormalizedFields.Count + j - count.Count].DetermineClass(temp).Name;
+                        prediction += analyst.Script.Normalize.NormalizedFields[analyst.Script.Normalize.NormalizedFields.Count + j - count.Count].DetermineClass(temp).Name;
                     }
 
                     item += String.Format(
-                        "Predicted Output: {0} Correct Output: {1}\n\n",
+                        "Predicted {0} Correct: {1}\n\n",
                         prediction, outpt
                     );
                 }
@@ -430,11 +416,11 @@ namespace ENP1
 
                 for (int j = 0; j < count.Count; j++)
                 {
-                    string prediction = "";
+                    string prediction = analyst.Script.Normalize.NormalizedFields[analyst.Script.Normalize.NormalizedFields.Count + j - count.Count].Name + ": ";
 
                     if (count[j] == 1)
                     {
-                        prediction = Math.Round(analyst.Script.Normalize.NormalizedFields[analyst.Script.Normalize.NormalizedFields.Count + j - count.Count].DeNormalize(answers[i][j]), 1).ToString();
+                        prediction += Math.Round(analyst.Script.Normalize.NormalizedFields[analyst.Script.Normalize.NormalizedFields.Count + j - count.Count].DeNormalize(answers[i][j]), 1).ToString();
                     }
                     else
                     {
@@ -445,11 +431,11 @@ namespace ENP1
                             temp[c] = answers[i][c];
                         }
 
-                        prediction = analyst.Script.Normalize.NormalizedFields[analyst.Script.Normalize.NormalizedFields.Count + j - count.Count].DetermineClass(temp).Name;
+                        prediction += analyst.Script.Normalize.NormalizedFields[analyst.Script.Normalize.NormalizedFields.Count + j - count.Count].DetermineClass(temp).Name;
                     }
 
                     item += String.Format(
-                        "Predicted Output: {0}\n\n",
+                        "Predicted {0}\n\n",
                         prediction
                     );
                 }

@@ -25,6 +25,33 @@ namespace ENP1
         private int selectedNetwork;
         private Data info = new Data();
         private EncogAnalyst analyst = new EncogAnalyst();
+        private bool csvInput = false;
+
+        private void SetPanel(Panel panel)
+        {
+            foreach (Control p in Controls)
+            {
+                if (p is Panel)
+                {
+                    if (panel == p)
+                    {
+                        ClientSize = p.Size;
+                        p.Visible = true;
+                        p.Location = new System.Drawing.Point(0, 0);
+                        backBtn.Location = new System.Drawing.Point(10, p.Height - backBtn.Height - 10);
+                    }
+                    else
+                    {
+                        p.Visible = false;
+                    }
+                }
+            }
+        }
+
+        private void InputForm_Load(object sender, EventArgs e)
+        {
+            SetPanel(panel1);
+        }
 
         /// <summary> Select json for stored networks. </summary>
         private void FileBtn_Click(object sender, EventArgs e)
@@ -97,6 +124,8 @@ namespace ENP1
 
             inputListBox.SelectedIndex = 0;
             networkListBox.SelectedIndex = 0;
+
+            SetPanel(panel2);
         }
 
 		/// <summary> Save input for each heading in each saved network. </summary>
@@ -206,7 +235,7 @@ namespace ENP1
 
             notIncluded.Add(vb);
 
-            if (!csvBox.Checked)
+            if (!csvInput)
             {
                 string outString = "";
 
@@ -375,6 +404,8 @@ namespace ENP1
 
             //Output answers to text box.
             output.Text += network.Display(answers, analyst, networkSaveDataList[selectedNetwork].OutputHeadings, path + @"normal\" + dataFile.Replace(".csv", "Normal.csv"));
+
+            SetPanel(panel5);
         }
 
         private void SaveBtn_Click(object sender, EventArgs e)
@@ -549,6 +580,46 @@ namespace ENP1
                     sw.WriteLine(outString);
                     outString = "";
                 }
+            }
+        }
+
+        private void NetworkSelectedBtn_Click(object sender, EventArgs e)
+        {
+            SetPanel(panel3);
+        }
+
+        private void CsvBtn_Click(object sender, EventArgs e)
+        {
+            csvInput = true;
+            SetPanel(panel5);
+        }
+
+        private void ManualBtn_Click(object sender, EventArgs e)
+        {
+            SetPanel(panel4);
+        }
+
+        private void BackBtn_Click(object sender, EventArgs e)
+        {
+            if (panel1.Visible)
+            {
+                Close();
+            }
+            else if (panel2.Visible)
+            {
+                SetPanel(panel1);
+            }
+            else if (panel3.Visible)
+            {
+                SetPanel(panel2);
+            }
+            else if (panel4.Visible)
+            {
+                SetPanel(panel3);
+            }
+            else if (panel5.Visible)
+            {
+                SetPanel(panel4);
             }
         }
     }
