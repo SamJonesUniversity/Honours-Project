@@ -122,7 +122,6 @@ namespace ENP1
             }
 
             analyst.Script.Normalize.MissingValues = new NegateMissing();
-
             //Normalization.
             var norm = new AnalystNormalizeCSV();
             norm.Analyze(sourceFile, true, CSVFormat.English, analyst);

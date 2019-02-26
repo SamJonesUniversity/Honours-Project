@@ -218,9 +218,11 @@ namespace ENP1
                     //Create network.
                     network.Create(info.InputNumber, layersBar.Value, neuronsBar.Value, info.OutputNumber);
 
+                    float lr = (float)(learningRateBar.Value) / 10; float mom = (float)(momentumBar.Value) / 10;
+
                     Task.Factory.StartNew(() =>
                     {
-                        task.SetResult(Math.Round(network.Train(info, (float)(learningRateBar.Value) / 10, (float)(momentumBar.Value) / 10), 10));
+                        task.SetResult(Math.Round(network.Train(info, lr, mom)));
                     });
 
                     output.Text += "Training complete with an inaccuracy of: " + t1.Result + "\n\n";
@@ -257,9 +259,11 @@ namespace ENP1
 				//Create network.
                 network.Create(info.InputNumber, layersBar.Value, neuronsBar.Value, info.OutputNumber);
 
+                float lr = (float)(learningRateBar.Value) / 10; float mom = (float)(momentumBar.Value) / 10;
+
                 Task.Factory.StartNew(() =>
                 {
-                    task.SetResult(Math.Round(network.Train(info, (float)(learningRateBar.Value) / 10, (float)(momentumBar.Value) / 10), 10));
+                    task.SetResult(Math.Round(network.Train(info, lr, mom)));
                 });
 
                 output.Text += "Training complete with an inaccuracy of: " + t1.Result + "\n\n";
@@ -296,6 +300,12 @@ namespace ENP1
         /// <summary> Test function to iterate through all learning rates and momentums with different numbers of neurons and layers. </summary>
         private void RateTestBtn_Click(object sender, EventArgs e)
         {
+            DialogResult result = MessageBox.Show("This function will take approximately an hour to complete, do you want to proceed?", "Confirmation", MessageBoxButtons.YesNo);
+            if (result == DialogResult.No)
+            {
+                return;
+            }
+
             //False when percentage split, true when cross validation.
             bool validation = true;
 
@@ -446,19 +456,7 @@ namespace ENP1
             {
                 Directory.CreateDirectory(path + "networks");
             }
-
-            //network.Save(path + @"networks\" + nameTxt.Text);
-
-            if ((path + @"networks\" + nameTxt.Text)?.Length < 260)
-            {
-                network.Save(path + @"networks\" + nameTxt.Text);
-            }
-            else
-            {
-                MessageBox.Show("Your file name or total file path is too long for the windows limit of 260.", "Invalid Network Name Size.");
-                return;
-            }
-
+            
             //Save network data to object.
             NetworkSaveData networkSave = new NetworkSaveData
             {
@@ -474,6 +472,16 @@ namespace ENP1
                 //Train network.
                 Inaccuracy = Math.Round(network.Train(info, (float)(learningRateBar.Value) / 10, (float)(momentumBar.Value) / 10), 5).ToString()
             };
+
+            if ((path + @"networks\" + nameTxt.Text)?.Length < 260)
+            {
+                network.Save(path + @"networks\" + nameTxt.Text);
+            }
+            else
+            {
+                MessageBox.Show("Your file name or total file path is too long for the windows limit of 260.", "Invalid Network Name Size.");
+                return;
+            }
 
             //Write network object to json file.
             using (var sw = new StreamWriter(path + @"networks\networks.json", true))

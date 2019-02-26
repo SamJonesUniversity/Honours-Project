@@ -312,6 +312,7 @@ namespace ENP1
                 if (dialogResult == DialogResult.Cancel)
                 {
                     output.Text += "Cancelling File Selection. . .\n";
+                    SetPanel(panel3);
                     return;
                 }
 
@@ -319,31 +320,32 @@ namespace ENP1
                 if (!openFileDialog1.SafeFileName.EndsWith(".csv"))
                 {
                     MessageBox.Show("The file you have selected is not in the correct format (.csv)", "File Access Error");
+                    SetPanel(panel3);
                     return;
                 }
 
                 //Setup paths from file.
                 dataFile = openFileDialog1.SafeFileName;
                 path = openFileDialog1.FileName.Replace(openFileDialog1.SafeFileName, "");
-                var sourceFile = new FileInfo(openFileDialog1.FileName);
-                var normalFile = new FileInfo(openFileDialog1.FileName.Replace(openFileDialog1.SafeFileName, @"normal\" + openFileDialog1.SafeFileName.Replace(".csv", "Normal.csv")));
+                var inputFile = new FileInfo(openFileDialog1.FileName);
+                var inputFileNorm = new FileInfo(openFileDialog1.FileName.Replace(openFileDialog1.SafeFileName, @"normal\" + openFileDialog1.SafeFileName.Replace(".csv", "Normal.csv")));
 
                 output.Text += "Loading File: " + dataFile + ". . .\n";
 
-                Data.Normalise(sourceFile, normalFile, path, dataFile, networkSaveDataList[selectedNetwork].OutputHeadings.Count);
-
-                norm.Analyze(sourceFile, true, CSVFormat.English, analyst);
+                norm.Analyze(inputFile, true, CSVFormat.English, analyst);
 
                 try
                 {
-                    norm.Normalize(normalFile);
+                    norm.Normalize(inputFileNorm);
                 }
                 catch (Exception ex)
                 {
                     MessageBox.Show(ex.Message + "\n\nThe inputs you have entered do not correctly follow the current normalisation data. This may because you " +
                         "have entered values above or below the currently stored highs and lows for numbers. It is also possible you have " +
-                        "entered a textual word that has not been used before. Finally it is possible that you are have not used the correct" +
+                        "entered a textual word that has not been used before. Finally it is possible that you are have not used the correct " +
                         "case for a word as they are case sensitive.", "Normalisation Failure");
+
+                    SetPanel(panel3);
                     return;
                 }
 
@@ -428,6 +430,7 @@ namespace ENP1
 
             bool exists = true;
 
+            //Checked for existing before using stream writer as the stream writer will create the file if it does not exist.
             if (!File.Exists(path + dataFile.Replace(".csv", "Saved.csv")))
             {
                 exists = false;
@@ -582,6 +585,8 @@ namespace ENP1
                     outString = "";
                 }
             }
+
+            output.Text += "\n\n Prediction saved.";
         }
 
         private void NetworkSelectedBtn_Click(object sender, EventArgs e)
@@ -592,11 +597,13 @@ namespace ENP1
         private void CsvBtn_Click(object sender, EventArgs e)
         {
             csvInput = true;
-            SetPanel(panel5);
+            NetworkBtn_Click(sender, e);
+            //SetPanel(panel5);
         }
 
         private void ManualBtn_Click(object sender, EventArgs e)
         {
+            csvInput = false;
             SetPanel(panel4);
         }
 
@@ -618,7 +625,11 @@ namespace ENP1
             {
                 SetPanel(panel3);
             }
-            else if (panel5.Visible)
+            else if (panel5.Visible && csvInput == true)
+            {
+                SetPanel(panel3);
+            }
+            else
             {
                 SetPanel(panel4);
             }

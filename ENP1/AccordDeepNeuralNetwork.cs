@@ -7,10 +7,15 @@ using System;
 
 namespace ENP1
 {
+    /// <summary>
+    /// Neural Network class for the deep learning version of AccordNeuralNetwork.
+    /// </summary>
     internal class AccordDeepNeuralNetwork : NeuralNetwork
     {
+        /// <summary> Create new instance of neural network. </summary>
         public override void Create(int input, int layers, int neurons, int output)
         {
+            //Neuron function.
             IStochasticFunction function = new GaussianFunction();
 
             //Setup network
@@ -37,10 +42,12 @@ namespace ENP1
                     break;
             }
 
+            //Weights.
             new GaussianWeights(DeepAccordNetwork, 0.1).Randomize();
             DeepAccordNetwork.UpdateVisibleWeights();
         }
 
+        /// <summary> Train neural network. </summary>
         public override double Train(Data info, float lr, float mom)
         {
             //Setup trainer using backpropagation.
@@ -92,6 +99,7 @@ namespace ENP1
                 Momentum = mom
             };
 
+            //Supervised training.
             do
             {
                 lastError = error;
@@ -108,11 +116,13 @@ namespace ENP1
             return error;
         }
 
+        /// <summary> Save current neural network. </summary>
         public override void Save(string fileName)
         {
             DeepAccordNetwork.Save(fileName);
         }
 
+        /// <summary> Load existing neural network. </summary>
         public override void Load(string fileName)
         {
             DeepAccordNetwork = (DeepBeliefNetwork)Network.Load(fileName);

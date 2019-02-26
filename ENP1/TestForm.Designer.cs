@@ -56,14 +56,14 @@
             this.label1 = new System.Windows.Forms.Label();
             this.nameTxt = new System.Windows.Forms.TextBox();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.label4 = new System.Windows.Forms.Label();
+            this.label3 = new System.Windows.Forms.Label();
             this.fileBtn = new System.Windows.Forms.Button();
             this.panel2 = new System.Windows.Forms.Panel();
+            this.label5 = new System.Windows.Forms.Label();
+            this.loadedLbl = new System.Windows.Forms.Label();
             this.panel3 = new System.Windows.Forms.Panel();
             this.backBtn = new System.Windows.Forms.Button();
-            this.loadedLbl = new System.Windows.Forms.Label();
-            this.label3 = new System.Windows.Forms.Label();
-            this.label4 = new System.Windows.Forms.Label();
-            this.label5 = new System.Windows.Forms.Label();
             this.panel4 = new System.Windows.Forms.Panel();
             this.trainingLbl = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.sampleBar)).BeginInit();
@@ -80,9 +80,9 @@
             // 
             // networkBtn
             // 
-            this.networkBtn.Location = new System.Drawing.Point(454, 230);
+            this.networkBtn.Location = new System.Drawing.Point(448, 230);
             this.networkBtn.Name = "networkBtn";
-            this.networkBtn.Size = new System.Drawing.Size(83, 22);
+            this.networkBtn.Size = new System.Drawing.Size(89, 22);
             this.networkBtn.TabIndex = 1;
             this.networkBtn.Text = "Continue";
             this.networkBtn.UseVisualStyleBackColor = true;
@@ -160,11 +160,11 @@
             // 
             // rateTestBtn
             // 
-            this.rateTestBtn.Location = new System.Drawing.Point(365, 230);
+            this.rateTestBtn.Location = new System.Drawing.Point(448, 202);
             this.rateTestBtn.Name = "rateTestBtn";
-            this.rateTestBtn.Size = new System.Drawing.Size(83, 22);
+            this.rateTestBtn.Size = new System.Drawing.Size(89, 22);
             this.rateTestBtn.TabIndex = 11;
-            this.rateTestBtn.Text = "Test Rates";
+            this.rateTestBtn.Text = "Determine Best";
             this.rateTestBtn.UseVisualStyleBackColor = true;
             this.rateTestBtn.Click += new System.EventHandler(this.RateTestBtn_Click);
             // 
@@ -204,7 +204,7 @@
             this.output.BackColor = System.Drawing.Color.White;
             this.output.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.output.Cursor = System.Windows.Forms.Cursors.Default;
-            this.output.Font = new System.Drawing.Font("Adobe Fangsong Std R", 20.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.output.Font = new System.Drawing.Font("Microsoft Sans Serif", 20.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.output.Location = new System.Drawing.Point(3, 3);
             this.output.Name = "output";
             this.output.ReadOnly = true;
@@ -364,6 +364,24 @@
             this.panel1.Size = new System.Drawing.Size(232, 177);
             this.panel1.TabIndex = 33;
             // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(14, 56);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(83, 13);
+            this.label4.TabIndex = 37;
+            this.label4.Text = "Validation Type:";
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(13, 10);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(64, 13);
+            this.label3.TabIndex = 37;
+            this.label3.Text = "File Settings";
+            // 
             // fileBtn
             // 
             this.fileBtn.Location = new System.Drawing.Point(146, 144);
@@ -398,6 +416,23 @@
             this.panel2.Size = new System.Drawing.Size(546, 262);
             this.panel2.TabIndex = 34;
             // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(18, 10);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(503, 65);
+            this.label5.TabIndex = 32;
+            this.label5.Text = resources.GetString("label5.Text");
+            // 
+            // loadedLbl
+            // 
+            this.loadedLbl.AutoSize = true;
+            this.loadedLbl.Location = new System.Drawing.Point(21, 92);
+            this.loadedLbl.Name = "loadedLbl";
+            this.loadedLbl.Size = new System.Drawing.Size(0, 13);
+            this.loadedLbl.TabIndex = 31;
+            // 
             // panel3
             // 
             this.panel3.Controls.Add(this.label1);
@@ -419,41 +454,6 @@
             this.backBtn.UseVisualStyleBackColor = true;
             this.backBtn.Click += new System.EventHandler(this.BackBtn_Click);
             // 
-            // loadedLbl
-            // 
-            this.loadedLbl.AutoSize = true;
-            this.loadedLbl.Location = new System.Drawing.Point(21, 92);
-            this.loadedLbl.Name = "loadedLbl";
-            this.loadedLbl.Size = new System.Drawing.Size(0, 13);
-            this.loadedLbl.TabIndex = 31;
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(13, 10);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(64, 13);
-            this.label3.TabIndex = 37;
-            this.label3.Text = "File Settings";
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(14, 56);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(83, 13);
-            this.label4.TabIndex = 37;
-            this.label4.Text = "Validation Type:";
-            // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(18, 10);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(498, 65);
-            this.label5.TabIndex = 32;
-            this.label5.Text = resources.GetString("label5.Text");
-            // 
             // panel4
             // 
             this.panel4.Controls.Add(this.trainingLbl);
@@ -465,10 +465,10 @@
             // trainingLbl
             // 
             this.trainingLbl.AutoSize = true;
-            this.trainingLbl.Font = new System.Drawing.Font("Adobe Fangsong Std R", 20.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.trainingLbl.Font = new System.Drawing.Font("Microsoft Sans Serif", 20.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.trainingLbl.Location = new System.Drawing.Point(48, 87);
             this.trainingLbl.Name = "trainingLbl";
-            this.trainingLbl.Size = new System.Drawing.Size(258, 34);
+            this.trainingLbl.Size = new System.Drawing.Size(258, 31);
             this.trainingLbl.TabIndex = 0;
             this.trainingLbl.Text = "Training Network. . .";
             // 
@@ -476,7 +476,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1685, 945);
+            this.ClientSize = new System.Drawing.Size(1685, 881);
             this.Controls.Add(this.panel4);
             this.Controls.Add(this.backBtn);
             this.Controls.Add(this.panel3);

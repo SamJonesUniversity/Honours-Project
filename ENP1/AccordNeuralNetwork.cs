@@ -4,13 +4,18 @@ using System;
 
 namespace ENP1
 {
+    /// <summary>
+    /// Neural Network class using the Accord library.
+    /// </summary>
     class AccordNeuralNetwork : NeuralNetwork
     {
+        /// <summary> Create new instance of neural network. </summary>
         public override void Create(int input, int layers, int neurons, int output)
         {
-            //Setup network
+            //Function for neurons.
             IActivationFunction function = new SigmoidFunction();
 
+            //Setup network.
             switch (layers)
             {
                 case 1:
@@ -35,6 +40,7 @@ namespace ENP1
             }
         }
 
+        /// <summary>  </summary>
         public override double Train(Data info, float lr, float mom)
         {
             //Setup trainer using backpropagation.
