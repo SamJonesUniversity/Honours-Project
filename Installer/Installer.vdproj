@@ -290,6 +290,14 @@
             "PrerequisitesLocation" = "2:1"
             "Url" = "8:"
             "ComponentsUrl" = "8:"
+                "Items"
+                {
+                    "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:.NETFramework,Version=v4.6.1"
+                    {
+                    "Name" = "8:Microsoft .NET Framework 4.6.1 (x86 and x64)"
+                    "ProductCode" = "8:.NETFramework,Version=v4.6.1"
+                    }
+                }
             }
         }
     }
@@ -738,9 +746,9 @@
         "Product"
         {
         "Name" = "8:Microsoft Visual Studio"
-        "ProductName" = "8:Installer"
+        "ProductName" = "8:ANN Generator and Predictor"
         "ProductCode" = "8:{AEF95FEA-66CA-4823-A45F-C92194D3A079}"
-        "PackageCode" = "8:{C6AA6941-392B-4846-ADC8-F8F0FF0598D5}"
+        "PackageCode" = "8:{5AA06FAD-6D43-49F4-8E8F-B6247902BD61}"
         "UpgradeCode" = "8:{11FC7FA2-F0B0-421F-B4BF-0C60839D4D73}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
