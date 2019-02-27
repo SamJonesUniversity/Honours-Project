@@ -222,7 +222,7 @@ namespace ENP1
 
                     Task.Factory.StartNew(() =>
                     {
-                        task.SetResult(Math.Round(network.Train(info, lr, mom)));
+                        task.SetResult(Math.Round(network.Train(info, lr, mom), 5));
                     });
 
                     output.Text += "Training complete with an inaccuracy of: " + t1.Result + "\n\n";
@@ -263,7 +263,7 @@ namespace ENP1
 
                 Task.Factory.StartNew(() =>
                 {
-                    task.SetResult(Math.Round(network.Train(info, lr, mom)));
+                    task.SetResult(Math.Round(network.Train(info, lr, mom), 5));
                 });
 
                 output.Text += "Training complete with an inaccuracy of: " + t1.Result + "\n\n";
@@ -456,7 +456,18 @@ namespace ENP1
             {
                 Directory.CreateDirectory(path + "networks");
             }
-            
+
+            SetPanel(panel4);
+            TaskCompletionSource<double> task = new TaskCompletionSource<double>();
+            Task<double> t1 = task.Task;
+
+            float lr = (float)(learningRateBar.Value) / 10; float mom = (float)(momentumBar.Value) / 10;
+
+            Task.Factory.StartNew(() =>
+            {
+                task.SetResult(Math.Round(network.Train(info, lr, mom), 5));
+            });
+
             //Save network data to object.
             NetworkSaveData networkSave = new NetworkSaveData
             {
@@ -470,7 +481,7 @@ namespace ENP1
                 Name = nameTxt.Text,
 
                 //Train network.
-                Inaccuracy = Math.Round(network.Train(info, (float)(learningRateBar.Value) / 10, (float)(momentumBar.Value) / 10), 5).ToString()
+                Inaccuracy = t1.Result.ToString()
             };
 
             if ((path + @"networks\" + nameTxt.Text)?.Length < 260)
@@ -496,6 +507,7 @@ namespace ENP1
             }
 
             output.Text += "Successfully saved network " + nameTxt.Text + " with a training inaccuracy of: " + networkSave.Inaccuracy;
+            SetPanel(panel3);
         }
 
         private void BackBtn_Click(object sender, EventArgs e)
@@ -563,6 +575,38 @@ namespace ENP1
 
                 advancedLbl.Text = "Close";
                 advancedBtn.Text = "-";
+            }
+        }
+
+        private void AdvancedFileBtn_Click(object sender, EventArgs e)
+        {
+            if (valtypeLbl.Visible)
+            {
+                radBtnSplit.Hide();
+                radBtnCrossVal.Hide();
+
+                valtypeLbl.Hide();
+
+                sampleBar.Hide();
+
+                sampleLbl.Hide();
+
+                advancedFileLbl.Text = "Advanced Settings";
+                advancedFileBtn.Text = "+";
+            }
+            else
+            {
+                radBtnSplit.Show();
+                radBtnCrossVal.Show();
+
+                valtypeLbl.Show();
+
+                sampleBar.Show();
+
+                sampleLbl.Show();
+
+                advancedFileLbl.Text = "Close";
+                advancedFileBtn.Text = "-";
             }
         }
 
@@ -663,6 +707,16 @@ namespace ENP1
             {
                 layersBar.Enabled = true;
             }
+        }
+
+        private void RecommendedBtn_Click(object sender, EventArgs e)
+        {
+            learningRateBar.Value = 1; LearningRateBar_Scroll(sender, e);
+            momentumBar.Value = 8; MomentumBar_Scroll(sender, e);
+            neuronsBar.Value = 25; NeuronsBar_Scroll(sender, e);
+            layersBar.Value = 3; LayersBar_Scroll(sender, e);
+            deepNetworkBox.Checked = true; DeepNetworkBox_CheckedChanged(sender, e);
+            radBtnAccord.Checked = true;
         }
     }
 }

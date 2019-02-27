@@ -56,10 +56,14 @@
             this.label1 = new System.Windows.Forms.Label();
             this.nameTxt = new System.Windows.Forms.TextBox();
             this.panel1 = new System.Windows.Forms.Panel();
-            this.label4 = new System.Windows.Forms.Label();
+            this.advancedFileBtn = new System.Windows.Forms.Button();
+            this.advancedFileLbl = new System.Windows.Forms.Label();
+            this.valtypeLbl = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.fileBtn = new System.Windows.Forms.Button();
             this.panel2 = new System.Windows.Forms.Panel();
+            this.recommendedBtn = new System.Windows.Forms.Button();
+            this.label6 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
             this.loadedLbl = new System.Windows.Forms.Label();
             this.panel3 = new System.Windows.Forms.Panel();
@@ -80,7 +84,7 @@
             // 
             // networkBtn
             // 
-            this.networkBtn.Location = new System.Drawing.Point(448, 230);
+            this.networkBtn.Location = new System.Drawing.Point(445, 229);
             this.networkBtn.Name = "networkBtn";
             this.networkBtn.Size = new System.Drawing.Size(89, 22);
             this.networkBtn.TabIndex = 1;
@@ -94,7 +98,7 @@
             // 
             // sampleBar
             // 
-            this.sampleBar.Location = new System.Drawing.Point(10, 95);
+            this.sampleBar.Location = new System.Drawing.Point(2, 134);
             this.sampleBar.Maximum = 100;
             this.sampleBar.Minimum = 10;
             this.sampleBar.Name = "sampleBar";
@@ -103,21 +107,23 @@
             this.sampleBar.TabIndex = 4;
             this.sampleBar.TickFrequency = 10;
             this.sampleBar.Value = 10;
+            this.sampleBar.Visible = false;
             this.sampleBar.Scroll += new System.EventHandler(this.SampleBar_Scroll);
             // 
             // sampleLbl
             // 
             this.sampleLbl.AutoSize = true;
-            this.sampleLbl.Location = new System.Drawing.Point(119, 95);
+            this.sampleLbl.Location = new System.Drawing.Point(112, 134);
             this.sampleLbl.Name = "sampleLbl";
             this.sampleLbl.Size = new System.Drawing.Size(94, 13);
             this.sampleLbl.TabIndex = 7;
             this.sampleLbl.Text = "Sample Data: 10%";
+            this.sampleLbl.Visible = false;
             // 
             // learningRateBar
             // 
             this.learningRateBar.LargeChange = 1;
-            this.learningRateBar.Location = new System.Drawing.Point(121, 111);
+            this.learningRateBar.Location = new System.Drawing.Point(109, 111);
             this.learningRateBar.Minimum = 1;
             this.learningRateBar.Name = "learningRateBar";
             this.learningRateBar.Size = new System.Drawing.Size(104, 45);
@@ -129,7 +135,7 @@
             // momentumBar
             // 
             this.momentumBar.LargeChange = 1;
-            this.momentumBar.Location = new System.Drawing.Point(121, 150);
+            this.momentumBar.Location = new System.Drawing.Point(109, 150);
             this.momentumBar.Minimum = 1;
             this.momentumBar.Name = "momentumBar";
             this.momentumBar.Size = new System.Drawing.Size(104, 45);
@@ -141,7 +147,7 @@
             // learningRateLbl
             // 
             this.learningRateLbl.AutoSize = true;
-            this.learningRateLbl.Location = new System.Drawing.Point(231, 111);
+            this.learningRateLbl.Location = new System.Drawing.Point(219, 111);
             this.learningRateLbl.Name = "learningRateLbl";
             this.learningRateLbl.Size = new System.Drawing.Size(95, 13);
             this.learningRateLbl.TabIndex = 9;
@@ -151,7 +157,7 @@
             // momentumLbl
             // 
             this.momentumLbl.AutoSize = true;
-            this.momentumLbl.Location = new System.Drawing.Point(231, 155);
+            this.momentumLbl.Location = new System.Drawing.Point(219, 155);
             this.momentumLbl.Name = "momentumLbl";
             this.momentumLbl.Size = new System.Drawing.Size(80, 13);
             this.momentumLbl.TabIndex = 10;
@@ -160,7 +166,7 @@
             // 
             // rateTestBtn
             // 
-            this.rateTestBtn.Location = new System.Drawing.Point(448, 202);
+            this.rateTestBtn.Location = new System.Drawing.Point(445, 206);
             this.rateTestBtn.Name = "rateTestBtn";
             this.rateTestBtn.Size = new System.Drawing.Size(89, 22);
             this.rateTestBtn.TabIndex = 11;
@@ -171,7 +177,7 @@
             // deepNetworkBox
             // 
             this.deepNetworkBox.AutoSize = true;
-            this.deepNetworkBox.Location = new System.Drawing.Point(129, 197);
+            this.deepNetworkBox.Location = new System.Drawing.Point(117, 197);
             this.deepNetworkBox.Name = "deepNetworkBox";
             this.deepNetworkBox.Size = new System.Drawing.Size(96, 17);
             this.deepNetworkBox.TabIndex = 12;
@@ -182,7 +188,7 @@
             // 
             // advancedBtn
             // 
-            this.advancedBtn.Location = new System.Drawing.Point(21, 185);
+            this.advancedBtn.Location = new System.Drawing.Point(10, 185);
             this.advancedBtn.Name = "advancedBtn";
             this.advancedBtn.Size = new System.Drawing.Size(20, 22);
             this.advancedBtn.TabIndex = 14;
@@ -193,7 +199,7 @@
             // advancedLbl
             // 
             this.advancedLbl.AutoSize = true;
-            this.advancedLbl.Location = new System.Drawing.Point(42, 190);
+            this.advancedLbl.Location = new System.Drawing.Point(32, 190);
             this.advancedLbl.Name = "advancedLbl";
             this.advancedLbl.Size = new System.Drawing.Size(97, 13);
             this.advancedLbl.TabIndex = 15;
@@ -205,42 +211,44 @@
             this.output.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.output.Cursor = System.Windows.Forms.Cursors.Default;
             this.output.Font = new System.Drawing.Font("Microsoft Sans Serif", 20.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.output.Location = new System.Drawing.Point(3, 3);
+            this.output.Location = new System.Drawing.Point(9, 10);
             this.output.Name = "output";
             this.output.ReadOnly = true;
-            this.output.Size = new System.Drawing.Size(1193, 534);
+            this.output.Size = new System.Drawing.Size(1181, 534);
             this.output.TabIndex = 16;
             this.output.Text = "";
             // 
             // radBtnCrossVal
             // 
             this.radBtnCrossVal.AutoSize = true;
-            this.radBtnCrossVal.Location = new System.Drawing.Point(121, 72);
+            this.radBtnCrossVal.Location = new System.Drawing.Point(118, 111);
             this.radBtnCrossVal.Name = "radBtnCrossVal";
             this.radBtnCrossVal.Size = new System.Drawing.Size(100, 17);
             this.radBtnCrossVal.TabIndex = 17;
             this.radBtnCrossVal.Text = "Cross-Validation";
             this.radBtnCrossVal.UseVisualStyleBackColor = true;
+            this.radBtnCrossVal.Visible = false;
             this.radBtnCrossVal.CheckedChanged += new System.EventHandler(this.RadBtnCrossVal_CheckedChanged);
             // 
             // radBtnSplit
             // 
             this.radBtnSplit.AutoSize = true;
             this.radBtnSplit.Checked = true;
-            this.radBtnSplit.Location = new System.Drawing.Point(16, 72);
+            this.radBtnSplit.Location = new System.Drawing.Point(9, 111);
             this.radBtnSplit.Name = "radBtnSplit";
             this.radBtnSplit.Size = new System.Drawing.Size(103, 17);
             this.radBtnSplit.TabIndex = 18;
             this.radBtnSplit.TabStop = true;
             this.radBtnSplit.Text = "Percentage Split";
             this.radBtnSplit.UseVisualStyleBackColor = true;
+            this.radBtnSplit.Visible = false;
             this.radBtnSplit.CheckedChanged += new System.EventHandler(this.RadBtnSplit_CheckedChanged);
             // 
             // radBtnEncog
             // 
             this.radBtnEncog.AutoSize = true;
             this.radBtnEncog.Checked = true;
-            this.radBtnEncog.Location = new System.Drawing.Point(21, 111);
+            this.radBtnEncog.Location = new System.Drawing.Point(10, 111);
             this.radBtnEncog.Name = "radBtnEncog";
             this.radBtnEncog.Size = new System.Drawing.Size(56, 17);
             this.radBtnEncog.TabIndex = 25;
@@ -252,7 +260,7 @@
             // radBtnAccord
             // 
             this.radBtnAccord.AutoSize = true;
-            this.radBtnAccord.Location = new System.Drawing.Point(21, 130);
+            this.radBtnAccord.Location = new System.Drawing.Point(10, 130);
             this.radBtnAccord.Name = "radBtnAccord";
             this.radBtnAccord.Size = new System.Drawing.Size(59, 17);
             this.radBtnAccord.TabIndex = 26;
@@ -261,7 +269,7 @@
             // 
             // outputsUpDown
             // 
-            this.outputsUpDown.Location = new System.Drawing.Point(109, 26);
+            this.outputsUpDown.Location = new System.Drawing.Point(111, 27);
             this.outputsUpDown.Name = "outputsUpDown";
             this.outputsUpDown.Size = new System.Drawing.Size(36, 20);
             this.outputsUpDown.TabIndex = 27;
@@ -269,15 +277,15 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(14, 29);
+            this.label2.Location = new System.Drawing.Point(6, 29);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(90, 13);
+            this.label2.Size = new System.Drawing.Size(99, 13);
             this.label2.TabIndex = 28;
-            this.label2.Text = "Network Outputs:";
+            this.label2.Text = "Number of Outputs:";
             // 
             // networkSaveBtn
             // 
-            this.networkSaveBtn.Location = new System.Drawing.Point(1101, 559);
+            this.networkSaveBtn.Location = new System.Drawing.Point(1104, 559);
             this.networkSaveBtn.Name = "networkSaveBtn";
             this.networkSaveBtn.Size = new System.Drawing.Size(83, 22);
             this.networkSaveBtn.TabIndex = 29;
@@ -287,7 +295,7 @@
             // 
             // neuronsBar
             // 
-            this.neuronsBar.Location = new System.Drawing.Point(332, 110);
+            this.neuronsBar.Location = new System.Drawing.Point(320, 110);
             this.neuronsBar.Maximum = 50;
             this.neuronsBar.Minimum = 5;
             this.neuronsBar.Name = "neuronsBar";
@@ -302,7 +310,7 @@
             // layersBar
             // 
             this.layersBar.LargeChange = 1;
-            this.layersBar.Location = new System.Drawing.Point(332, 149);
+            this.layersBar.Location = new System.Drawing.Point(320, 149);
             this.layersBar.Maximum = 5;
             this.layersBar.Minimum = 1;
             this.layersBar.Name = "layersBar";
@@ -315,7 +323,7 @@
             // neuronsLbl
             // 
             this.neuronsLbl.AutoSize = true;
-            this.neuronsLbl.Location = new System.Drawing.Point(442, 110);
+            this.neuronsLbl.Location = new System.Drawing.Point(430, 110);
             this.neuronsLbl.Name = "neuronsLbl";
             this.neuronsLbl.Size = new System.Drawing.Size(59, 13);
             this.neuronsLbl.TabIndex = 29;
@@ -325,7 +333,7 @@
             // layersLbl
             // 
             this.layersLbl.AutoSize = true;
-            this.layersLbl.Location = new System.Drawing.Point(442, 154);
+            this.layersLbl.Location = new System.Drawing.Point(430, 154);
             this.layersLbl.Name = "layersLbl";
             this.layersLbl.Size = new System.Drawing.Size(50, 13);
             this.layersLbl.TabIndex = 30;
@@ -335,7 +343,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(928, 563);
+            this.label1.Location = new System.Drawing.Point(930, 563);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(81, 13);
             this.label1.TabIndex = 31;
@@ -343,14 +351,16 @@
             // 
             // nameTxt
             // 
-            this.nameTxt.Location = new System.Drawing.Point(1013, 560);
+            this.nameTxt.Location = new System.Drawing.Point(1015, 560);
             this.nameTxt.Name = "nameTxt";
             this.nameTxt.Size = new System.Drawing.Size(82, 20);
             this.nameTxt.TabIndex = 30;
             // 
             // panel1
             // 
-            this.panel1.Controls.Add(this.label4);
+            this.panel1.Controls.Add(this.advancedFileBtn);
+            this.panel1.Controls.Add(this.advancedFileLbl);
+            this.panel1.Controls.Add(this.valtypeLbl);
             this.panel1.Controls.Add(this.label3);
             this.panel1.Controls.Add(this.fileBtn);
             this.panel1.Controls.Add(this.label2);
@@ -361,39 +371,62 @@
             this.panel1.Controls.Add(this.sampleLbl);
             this.panel1.Location = new System.Drawing.Point(12, 12);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(232, 177);
+            this.panel1.Size = new System.Drawing.Size(233, 224);
             this.panel1.TabIndex = 33;
             // 
-            // label4
+            // advancedFileBtn
             // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(14, 56);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(83, 13);
-            this.label4.TabIndex = 37;
-            this.label4.Text = "Validation Type:";
+            this.advancedFileBtn.Location = new System.Drawing.Point(9, 56);
+            this.advancedFileBtn.Name = "advancedFileBtn";
+            this.advancedFileBtn.Size = new System.Drawing.Size(20, 22);
+            this.advancedFileBtn.TabIndex = 38;
+            this.advancedFileBtn.Text = "+";
+            this.advancedFileBtn.UseVisualStyleBackColor = true;
+            this.advancedFileBtn.Click += new System.EventHandler(this.AdvancedFileBtn_Click);
+            // 
+            // advancedFileLbl
+            // 
+            this.advancedFileLbl.AutoSize = true;
+            this.advancedFileLbl.Location = new System.Drawing.Point(34, 61);
+            this.advancedFileLbl.Name = "advancedFileLbl";
+            this.advancedFileLbl.Size = new System.Drawing.Size(97, 13);
+            this.advancedFileLbl.TabIndex = 39;
+            this.advancedFileLbl.Text = "Advanced Settings";
+            // 
+            // valtypeLbl
+            // 
+            this.valtypeLbl.AutoSize = true;
+            this.valtypeLbl.Location = new System.Drawing.Point(6, 95);
+            this.valtypeLbl.Name = "valtypeLbl";
+            this.valtypeLbl.Size = new System.Drawing.Size(83, 13);
+            this.valtypeLbl.TabIndex = 37;
+            this.valtypeLbl.Text = "Validation Type:";
+            this.valtypeLbl.Visible = false;
             // 
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(13, 10);
+            this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label3.Location = new System.Drawing.Point(6, 10);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(64, 13);
+            this.label3.Size = new System.Drawing.Size(77, 15);
             this.label3.TabIndex = 37;
-            this.label3.Text = "File Settings";
+            this.label3.Text = "File Set-up";
             // 
             // fileBtn
             // 
-            this.fileBtn.Location = new System.Drawing.Point(146, 144);
+            this.fileBtn.Location = new System.Drawing.Point(148, 190);
             this.fileBtn.Name = "fileBtn";
             this.fileBtn.Size = new System.Drawing.Size(75, 23);
             this.fileBtn.TabIndex = 29;
-            this.fileBtn.Text = "Upload File";
+            this.fileBtn.Text = "Select File";
             this.fileBtn.UseVisualStyleBackColor = true;
             this.fileBtn.Click += new System.EventHandler(this.FileBtn_Click);
             // 
             // panel2
             // 
+            this.panel2.Controls.Add(this.recommendedBtn);
+            this.panel2.Controls.Add(this.label6);
             this.panel2.Controls.Add(this.label5);
             this.panel2.Controls.Add(this.loadedLbl);
             this.panel2.Controls.Add(this.neuronsBar);
@@ -411,24 +444,44 @@
             this.panel2.Controls.Add(this.momentumBar);
             this.panel2.Controls.Add(this.advancedLbl);
             this.panel2.Controls.Add(this.learningRateBar);
-            this.panel2.Location = new System.Drawing.Point(250, 12);
+            this.panel2.Location = new System.Drawing.Point(251, 12);
             this.panel2.Name = "panel2";
             this.panel2.Size = new System.Drawing.Size(546, 262);
             this.panel2.TabIndex = 34;
             // 
+            // recommendedBtn
+            // 
+            this.recommendedBtn.Location = new System.Drawing.Point(445, 183);
+            this.recommendedBtn.Name = "recommendedBtn";
+            this.recommendedBtn.Size = new System.Drawing.Size(89, 22);
+            this.recommendedBtn.TabIndex = 34;
+            this.recommendedBtn.Text = "Recommended";
+            this.recommendedBtn.UseVisualStyleBackColor = true;
+            this.recommendedBtn.Click += new System.EventHandler(this.RecommendedBtn_Click);
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(7, 29);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(503, 52);
+            this.label6.TabIndex = 33;
+            this.label6.Text = resources.GetString("label6.Text");
+            // 
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(18, 10);
+            this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label5.Location = new System.Drawing.Point(6, 10);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(503, 65);
+            this.label5.Size = new System.Drawing.Size(115, 15);
             this.label5.TabIndex = 32;
-            this.label5.Text = resources.GetString("label5.Text");
+            this.label5.Text = "Network Settings";
             // 
             // loadedLbl
             // 
             this.loadedLbl.AutoSize = true;
-            this.loadedLbl.Location = new System.Drawing.Point(21, 92);
+            this.loadedLbl.Location = new System.Drawing.Point(9, 92);
             this.loadedLbl.Name = "loadedLbl";
             this.loadedLbl.Size = new System.Drawing.Size(0, 13);
             this.loadedLbl.TabIndex = 31;
@@ -439,14 +492,14 @@
             this.panel3.Controls.Add(this.nameTxt);
             this.panel3.Controls.Add(this.networkSaveBtn);
             this.panel3.Controls.Add(this.output);
-            this.panel3.Location = new System.Drawing.Point(11, 345);
+            this.panel3.Location = new System.Drawing.Point(12, 280);
             this.panel3.Name = "panel3";
             this.panel3.Size = new System.Drawing.Size(1199, 592);
             this.panel3.TabIndex = 35;
             // 
             // backBtn
             // 
-            this.backBtn.Location = new System.Drawing.Point(802, 12);
+            this.backBtn.Location = new System.Drawing.Point(803, 12);
             this.backBtn.Name = "backBtn";
             this.backBtn.Size = new System.Drawing.Size(75, 23);
             this.backBtn.TabIndex = 36;
@@ -457,7 +510,7 @@
             // panel4
             // 
             this.panel4.Controls.Add(this.trainingLbl);
-            this.panel4.Location = new System.Drawing.Point(1216, 345);
+            this.panel4.Location = new System.Drawing.Point(1217, 280);
             this.panel4.Name = "panel4";
             this.panel4.Size = new System.Drawing.Size(357, 211);
             this.panel4.TabIndex = 37;
@@ -482,6 +535,7 @@
             this.Controls.Add(this.panel3);
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.panel1);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Name = "TestForm";
             this.Text = "Network Creator";
             this.Load += new System.EventHandler(this.Form1_Load);
@@ -537,10 +591,14 @@
         private System.Windows.Forms.Button fileBtn;
         private System.Windows.Forms.Label loadedLbl;
         private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Label valtypeLbl;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Panel panel4;
         private System.Windows.Forms.Label trainingLbl;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.Button advancedFileBtn;
+        private System.Windows.Forms.Label advancedFileLbl;
+        private System.Windows.Forms.Button recommendedBtn;
     }
 }
 

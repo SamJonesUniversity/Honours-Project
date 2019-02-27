@@ -117,22 +117,24 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="label2.Text" xml:space="preserve">
-    <value> o Network Creator:
-     o Here you can test and save networks with the input of a csv file.
-     o There are two libraries for neural networks: Encog and Accord.Net.
-     o Each library contains a standard Feed-Forward neural network and 
-         an additional deep learning technique.
-     o Networks can be customised with learning rate and momentum by
-         clicking the advanced options button.
-     o In order to test the accuracy of the networks both split and cross-
-         validation are available.</value>
+  <metadata name="toolTip1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>17, 17</value>
+  </metadata>
+  <data name="testBtn.ToolTip" xml:space="preserve">
+    <value>o Here you can test and save networks with the input of a csv file.
+o There are two libraries for neural networks: Encog and Accord.
+o Each library contains a standard Feed-Forward neural network and 
+    an additional deep learning technique activated using the deep 
+    learning check box.
+o Networks can be customised with learning rate, momentum, layers
+    and neurons by clicking the advanced options button.
+o In order to test the accuracy of the networks both split and cross-
+    validation are available.</value>
   </data>
-  <data name="label3.Text" xml:space="preserve">
-    <value> o Output Predictor:
-     o Here you can predict outputs using networks you have saved
-         from the network creater section.
-     o Input is accepted in the form of manually entering the values
-         for each heading, or uploading a csv.</value>
+  <data name="inputBtn.ToolTip" xml:space="preserve">
+    <value>o Here you can predict outputs using networks you have saved
+    from the network creater section.
+o Input is accepted in the form of manually entering the values
+    for each heading, or uploading a csv.</value>
   </data>
 </root>
