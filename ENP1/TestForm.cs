@@ -6,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -18,8 +17,7 @@ namespace ENP1
         {
             InitializeComponent();
         }
-
-        bool training = false;
+        
         string path;
         string dataFile;
         List<string> outputTitles = new List<string>();
@@ -101,6 +99,16 @@ namespace ENP1
 
             var normalFile = new FileInfo(openFileDialog1.FileName.Replace(openFileDialog1.SafeFileName, @"normal\" + openFileDialog1.SafeFileName.Replace(".csv", "Normal.csv")));
 
+            if (Data.IsFileLocked(sourceFile, false))
+            {
+                return;
+            }
+
+            if (Data.IsFileLocked(normalFile, true))
+            {
+                return;
+            }
+
             loadedLbl.Text = "Loaded File: " + dataFile;
 
             outputTitles = Data.Normalise(sourceFile, normalFile, path, dataFile, outputs);
@@ -129,11 +137,24 @@ namespace ENP1
 
             //Load analyst from earlier.
             var analyst = new EncogAnalyst();
-            analyst.Load(new FileInfo(path + @"normal\" + "normalizationData" + dataFile.Replace(".csv", "") + ".ega"));
+            var normalisationData = new FileInfo(path + @"normal\" + "normalizationData" + dataFile.Replace(".csv", "") + ".ega");
+
+            if(Data.IsFileLocked(normalisationData, false))
+            {
+                return;
+            }
+
+            analyst.Load(normalisationData);
 
             var sourcefile = new FileInfo(path + dataFile);
 
             var norm = new AnalystNormalizeCSV();
+
+            if(Data.IsFileLocked(sourcefile, false))
+            {
+                return;
+            }
+
             norm.Analyze(sourcefile, true, CSVFormat.English, analyst);
 
 			//Setup network.
@@ -256,7 +277,7 @@ namespace ENP1
 			//Else percentage split.
             else
             {
-				//Create network.
+                //Create network.
                 network.Create(info.InputNumber, layersBar.Value, neuronsBar.Value, info.OutputNumber);
 
                 float lr = (float)(learningRateBar.Value) / 10; float mom = (float)(momentumBar.Value) / 10;
@@ -296,7 +317,7 @@ namespace ENP1
 
             SetPanel(panel3);
         }
-        
+
         /// <summary> Test function to iterate through all learning rates and momentums with different numbers of neurons and layers. </summary>
         private void RateTestBtn_Click(object sender, EventArgs e)
         {
@@ -316,6 +337,11 @@ namespace ENP1
             }
 
             string header = path + "tests" + @"\Results" + dataFile;
+
+            if (Data.IsFileLocked(new FileInfo(header), true))
+            {
+                return;
+            }
 
             using (StreamWriter sw = new StreamWriter(header))
             {
@@ -341,9 +367,18 @@ namespace ENP1
 
             List<BestNetwork> bestList = new List<BestNetwork>();
 
-            foreach (NeuralNetwork network in networkList)
+            SetPanel(panel4);
+            List<Task<BestNetwork>> taskList = new List<Task<BestNetwork>>();
+
+            var start = DateTime.Now;
+
+            Parallel.ForEach(networkList, network => taskList.Add(Task<BestNetwork>.Factory.StartNew(() => network.CalculateBest(info, header))));
+
+            Task.WaitAll(taskList.ToArray());
+
+            foreach (Task<BestNetwork> doneTask in taskList)
             {
-                bestList.Add(network.CalculateBest(info, header));
+                bestList.Add(doneTask.Result);
             }
 
             BestNetwork best = bestList[0];
@@ -363,9 +398,13 @@ namespace ENP1
                 count++;
             }
 
+            var end = DateTime.Now - start;
+
             MessageBox.Show("The best netork is: " + networkList[index].GetType().ToString().Replace("ENP1.", "") 
                 + "\nLayers: " + best.Layers + "\nNeurons: " + best.Neurons + "\nLearning Rate: " + best.LearningRate
-                + "\nMomentum: " + best.Momentum + "\nInaccuracy: " + best.Error);
+                + "\nMomentum: " + best.Momentum + "\nInaccuracy: " + best.Error + "\nMinutes taken: " + end.TotalMinutes);
+
+            SetPanel(panel2);
         }
 
 		/// <summary> Button to save current network settings </summary>
@@ -404,9 +443,22 @@ namespace ENP1
 
             //Load analyst from earlier.
             var analyst = new EncogAnalyst();
-            analyst.Load(new FileInfo(path + @"normal\" + "normalizationData" + dataFile.Replace(".csv", "") + ".ega"));
+
+            var normalisationData = new FileInfo(path + @"normal\" + "normalizationData" + dataFile.Replace(".csv", "") + ".ega");
+
+            if (Data.IsFileLocked(normalisationData, false))
+            {
+                return;
+            }
+
+            analyst.Load(normalisationData);
 
             var sourcefile = new FileInfo(path + dataFile);
+
+            if (Data.IsFileLocked(sourcefile, false))
+            {
+                return;
+            }
 
             var norm = new AnalystNormalizeCSV();
             norm.Analyze(sourcefile, true, CSVFormat.English, analyst);
@@ -491,6 +543,11 @@ namespace ENP1
             else
             {
                 MessageBox.Show("Your file name or total file path is too long for the windows limit of 260.", "Invalid Network Name Size.");
+                return;
+            }
+
+            if (Data.IsFileLocked(new FileInfo(path + @"networks\networks.json"), true))
+            {
                 return;
             }
 
@@ -610,6 +667,16 @@ namespace ENP1
             }
         }
 
+        private void RecommendedBtn_Click(object sender, EventArgs e)
+        {
+            learningRateBar.Value = 1; LearningRateBar_Scroll(sender, e);
+            momentumBar.Value = 8; MomentumBar_Scroll(sender, e);
+            neuronsBar.Value = 25; NeuronsBar_Scroll(sender, e);
+            layersBar.Value = 3; LayersBar_Scroll(sender, e);
+            deepNetworkBox.Checked = true; DeepNetworkBox_CheckedChanged(sender, e);
+            radBtnAccord.Checked = true;
+        }
+
         /// Scroll bars ///
 
         /// <summary> Scroll bar to select pools size for cross-validation or percentage split size. </summary>
@@ -707,16 +774,6 @@ namespace ENP1
             {
                 layersBar.Enabled = true;
             }
-        }
-
-        private void RecommendedBtn_Click(object sender, EventArgs e)
-        {
-            learningRateBar.Value = 1; LearningRateBar_Scroll(sender, e);
-            momentumBar.Value = 8; MomentumBar_Scroll(sender, e);
-            neuronsBar.Value = 25; NeuronsBar_Scroll(sender, e);
-            layersBar.Value = 3; LayersBar_Scroll(sender, e);
-            deepNetworkBox.Checked = true; DeepNetworkBox_CheckedChanged(sender, e);
-            radBtnAccord.Checked = true;
         }
     }
 }

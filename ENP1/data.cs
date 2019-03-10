@@ -87,7 +87,41 @@ namespace ENP1
             return array;
         }
 
-		/// <summary> need comments </summary>
+        /// <summary> Checks to see if file is open in another program. </summary>
+        public static bool IsFileLocked(FileInfo file, bool write)
+        {
+            FileStream stream = null;
+
+            try
+            {
+                if (!write)
+                {
+                    stream = file.Open(FileMode.Open, FileAccess.Read, FileShare.None);
+                }
+                else
+                {
+                    stream = file.Open(FileMode.Open, FileAccess.Write, FileShare.None);
+                }
+            }
+            catch (IOException exception)
+            {
+                //File is locked.
+                MessageBox.Show(exception.Message, "File Access Error");
+                return true;
+            }
+            finally
+            {
+                if (stream != null)
+                {
+                    stream.Close();
+                }
+            }
+
+            //file is not locked.
+            return false;
+        }
+
+        /// <summary> need comments </summary>
         public static List<string> Normalise(FileInfo sourceFile, FileInfo normalFile, string path, string dataFile, int outputs)
         {
             List<string> titles = new List<string>();
@@ -117,7 +151,7 @@ namespace ENP1
             foreach (AnalystField field in analyst.Script.Normalize.NormalizedFields)
             {
                 field.NormalizedHigh = 1;
-                field.NormalizedLow = -1;
+                field.NormalizedLow = 0;
                 //field.Action = Encog.Util.Arrayutil.NormalizationAction.OneOf; //Use this to change normalizaiton type.
             }
 
@@ -152,6 +186,11 @@ namespace ENP1
         ///<summary> Read and store data from csv (File path, Column titles, Sample Percent, Validation type) </summary>
         public Data ReturnInfo(string path, List<string> titles, int sampleNumber, bool validation)
         {
+            if (IsFileLocked(new FileInfo(path), false))
+            {
+                return null;
+            }
+
             int csvLength = 0;
             int inputNumber = 0, outputNumber = 0;
 

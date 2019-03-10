@@ -76,7 +76,12 @@ namespace ENP1
                 return;
             }
 
-			//Try reading file.
+            if (Data.IsFileLocked(new FileInfo(openFileDialog1.FileName), false))
+            {
+                return;
+            }
+
+            //Try reading file.
             try
             {
                 using (var sr = new StreamReader(openFileDialog1.FileName))
@@ -218,12 +223,30 @@ namespace ENP1
 
             //Load analyst from earlier.
             analyst = new EncogAnalyst();
-            analyst.Load(new FileInfo(path + @"normal\normalizationData" + dataFile.Replace(".csv", ".ega")));
+
+            var normalisationData = new FileInfo(path + @"normal\normalizationData" + dataFile.Replace(".csv", ".ega"));
+
+            if (Data.IsFileLocked(normalisationData, false))
+            {
+                return;
+            }
+
+            analyst.Load(normalisationData);
 
             FileInfo sourcefile = new FileInfo(path + dataFile);
 
+            if (Data.IsFileLocked(sourcefile, false))
+            {
+                return;
+            }
+
             AnalystNormalizeCSV norm = new AnalystNormalizeCSV();
-            //norm.InputHeadings = networkSaveDataList[selectedNetwork].Headings.ToArray();
+
+            if (Data.IsFileLocked(new FileInfo(networkSaveDataList[selectedNetwork].NetworkFile), false))
+            {
+                return;
+            }
+
             network.Load(networkSaveDataList[selectedNetwork].NetworkFile);
 
             List<bool> vb = new List<bool>();
@@ -249,6 +272,11 @@ namespace ENP1
                 outString += ",";
 
                 outString.Remove(outString.Length - 1);
+
+                if (Data.IsFileLocked(new FileInfo(path + dataFile.Replace(".csv", "Temp.csv")), true))
+                {
+                    return;
+                }
 
                 if (File.Exists(path + dataFile.Replace(".csv", "Temp.csv")))
                 {
@@ -281,7 +309,18 @@ namespace ENP1
 
                 var inputFile = new FileInfo(path + dataFile.Replace(".csv", "Temp.csv"));
                 var inputFileNorm = new FileInfo(path + @"normal\" + dataFile.Replace(".csv", "TempNormal.csv"));
+
+                if (Data.IsFileLocked(inputFile, false))
+                {
+                    return;
+                }
+
                 norm.Analyze(inputFile, true, CSVFormat.English, analyst);
+
+                if (Data.IsFileLocked(inputFileNorm, true))
+                {
+                    return;
+                }
 
                 try
                 {
@@ -329,6 +368,16 @@ namespace ENP1
                 path = openFileDialog1.FileName.Replace(openFileDialog1.SafeFileName, "");
                 var inputFile = new FileInfo(openFileDialog1.FileName);
                 var inputFileNorm = new FileInfo(openFileDialog1.FileName.Replace(openFileDialog1.SafeFileName, @"normal\" + openFileDialog1.SafeFileName.Replace(".csv", "Normal.csv")));
+
+                if (Data.IsFileLocked(inputFile, false))
+                {
+                    return;
+                }
+
+                if (Data.IsFileLocked(inputFileNorm, true))
+                {
+                    return;
+                }
 
                 output.Text += "Loading File: " + dataFile + ". . .\n";
 
@@ -434,6 +483,16 @@ namespace ENP1
             if (!File.Exists(path + dataFile.Replace(".csv", "Saved.csv")))
             {
                 exists = false;
+            }
+
+            if (Data.IsFileLocked(new FileInfo(path + dataFile.Replace(".csv", "Saved.csv")), true))
+            {
+                return;
+            }
+
+            if (Data.IsFileLocked(new FileInfo(path + @"normal\" + dataFile.Replace(".csv", "Normal.csv")), false))
+            {
+                return;
             }
 
             using (var sw = new StreamWriter(path + dataFile.Replace(".csv", "Saved.csv"), true))
@@ -598,7 +657,6 @@ namespace ENP1
         {
             csvInput = true;
             NetworkBtn_Click(sender, e);
-            //SetPanel(panel5);
         }
 
         private void ManualBtn_Click(object sender, EventArgs e)

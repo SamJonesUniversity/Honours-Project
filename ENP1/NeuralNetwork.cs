@@ -29,35 +29,56 @@ namespace ENP1
                 Layers = layers
             };
 
+            Create(info.InputNumber, layers, neurons, info.OutputNumber);
             best.Error = Train(info, lr, best.Momentum);
+
+            float mom = 0.1F;
 
             while (!complete)
             {
                 if (firstPass)
                 {
-                    best.Momentum = 0.5F;
+                    mom = 0.5F;
                 }
                 else if (increase)
                 {
-                    best.Momentum += 0.1F;
+                    mom += 0.1F;
                 }
                 else
                 {
-                    best.Momentum -= 0.1F;
+                    mom -= 0.1F;
                 }
 
-                if(Math.Round(best.Momentum, 1) == 0.1F || Math.Round(best.Momentum, 1) == 1.0F)
+                mom = (float)Math.Round(mom, 1);
+
+                if (mom == 0.1F || mom == 1.0F)
                 {
                     complete = true;
                 }
 
-                double newest = Train(info, lr, best.Momentum);
+                double[] mean = new double[3];
+
+                for(int i = 0; i < mean.Length; i++)
+                {
+                    Create(info.InputNumber, layers, neurons, info.OutputNumber);
+                    mean[i] = Train(info, lr, mom);
+                }
+
+                double newest = 0;
+
+                for (int i = 0; i < mean.Length; i++)
+                {
+                    newest += mean[i];
+                }
+
+                newest /= mean.Length;
 
                 if (firstPass)
                 {
                     if (newest < best.Error)
                     {
                         best.Error = newest;
+                        best.Momentum = mom;
                         increase = true;
                     }
                     else if (newest == best.Error)
@@ -76,6 +97,7 @@ namespace ENP1
                     if (newest < best.Error)
                     {
                         best.Error = newest;
+                        best.Momentum = mom;
                     }
                     else
                     {
@@ -117,7 +139,9 @@ namespace ENP1
                     lr -= 0.1F;
                 }
 
-                if (Math.Round(lr, 1) == 0.1F || Math.Round(lr, 1) == 1.0F)
+                lr = (float)Math.Round(lr, 1);
+
+                if (lr == 0.1F || lr == 1.0F)
                 {
                     complete = true;
                 }
@@ -165,7 +189,6 @@ namespace ENP1
             bool firstPass = true;
             bool increase = true;
 
-            Create(info.InputNumber, layers, neurons, info.OutputNumber);
             BestNetwork best = BestLearningRate(info, path, layers, neurons);
 
             while (!complete)
@@ -187,8 +210,7 @@ namespace ENP1
                 {
                     complete = true;
                 }
-
-                Create(info.InputNumber, layers, neurons, info.OutputNumber);
+                
                 BestNetwork newest = BestLearningRate(info, path, layers, neurons);
 
                 if (firstPass)
@@ -231,8 +253,8 @@ namespace ENP1
             bool complete = false;
             bool firstPass = true;
             bool increase = true;
-            
-            BestNetwork best = BestNeurons(info, path, layers); ;
+
+            BestNetwork best = BestNeurons(info, path, layers);
 
             if(GetType().ToString().Replace("ENP1.", "") == "EncogDeepNeuralNetwork")
             {

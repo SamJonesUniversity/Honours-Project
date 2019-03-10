@@ -36,16 +36,18 @@ namespace ENP1
             //Train network on data set, parameters (Network, dataset, learning rate, momentum).
             IMLTrain learner = new Backpropagation(EncogNetwork, data, lr, mom);
             double lastError = double.PositiveInfinity;
-
+            
+            //Training loop while error is decreasing by 0.0000001 or more every 1000 iterations.
             do
             {
+                //Set last error as error if the network has trained before.
                 if (learner.Error != 0)
                 {
                     lastError = learner.Error;
                 }
 
+                //Do 1000 learning iterations.
                 int i = 0;
-
                 while (i < 1000)
                 {
                     learner.Iteration();
