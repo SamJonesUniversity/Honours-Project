@@ -56,7 +56,7 @@ namespace ENP1
                     complete = true;
                 }
 
-                double[] mean = new double[3];
+                double[] mean = new double[2];
 
                 for(int i = 0; i < mean.Length; i++)
                 {

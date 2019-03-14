@@ -1,8 +1,6 @@
 ﻿using Encog.App.Analyst;
 using Encog.App.Analyst.CSV.Normalize;
-using Encog.App.Analyst.Script;
 using Encog.Util.CSV;
-using Encog.Util.Normalize;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -65,7 +63,6 @@ namespace ENP1
             //Exit function if file selection was cancelled.
             if (dialogResult == DialogResult.Cancel)
             {
-                //Output.Text += "Cancelling File Selection. . .\n";
                 return;
             }
 
@@ -273,11 +270,6 @@ namespace ENP1
 
                 outString.Remove(outString.Length - 1);
 
-                if (Data.IsFileLocked(new FileInfo(path + dataFile.Replace(".csv", "Temp.csv")), true))
-                {
-                    return;
-                }
-
                 if (File.Exists(path + dataFile.Replace(".csv", "Temp.csv")))
                 {
                     File.Delete(path + dataFile.Replace(".csv", "Temp.csv"));
@@ -310,16 +302,22 @@ namespace ENP1
                 var inputFile = new FileInfo(path + dataFile.Replace(".csv", "Temp.csv"));
                 var inputFileNorm = new FileInfo(path + @"normal\" + dataFile.Replace(".csv", "TempNormal.csv"));
 
-                if (Data.IsFileLocked(inputFile, false))
+                if (inputFile.Exists)
                 {
-                    return;
+                    if (Data.IsFileLocked(inputFile, false))
+                    {
+                        return;
+                    }
                 }
 
                 norm.Analyze(inputFile, true, CSVFormat.English, analyst);
 
-                if (Data.IsFileLocked(inputFileNorm, true))
+                if (inputFileNorm.Exists)
                 {
-                    return;
+                    if (Data.IsFileLocked(inputFileNorm, true))
+                    {
+                        return;
+                    }
                 }
 
                 try
@@ -374,9 +372,12 @@ namespace ENP1
                     return;
                 }
 
-                if (Data.IsFileLocked(inputFileNorm, true))
+                if (inputFileNorm.Exists)
                 {
-                    return;
+                    if (Data.IsFileLocked(inputFileNorm, true))
+                    {
+                        return;
+                    }
                 }
 
                 output.Text += "Loading File: " + dataFile + ". . .\n";
@@ -485,14 +486,20 @@ namespace ENP1
                 exists = false;
             }
 
-            if (Data.IsFileLocked(new FileInfo(path + dataFile.Replace(".csv", "Saved.csv")), true))
+            if (new FileInfo(path + dataFile.Replace(".csv", "Saved.csv")).Exists)
             {
-                return;
+                if (Data.IsFileLocked(new FileInfo(path + dataFile.Replace(".csv", "Saved.csv")), true))
+                {
+                    return;
+                }
             }
 
-            if (Data.IsFileLocked(new FileInfo(path + @"normal\" + dataFile.Replace(".csv", "Normal.csv")), false))
+            if (new FileInfo(path + @"normal\" + dataFile.Replace(".csv", "Normal.csv")).Exists)
             {
-                return;
+                if (Data.IsFileLocked(new FileInfo(path + @"normal\" + dataFile.Replace(".csv", "Normal.csv")), false))
+                {
+                    return;
+                }
             }
 
             using (var sw = new StreamWriter(path + dataFile.Replace(".csv", "Saved.csv"), true))

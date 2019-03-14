@@ -104,9 +104,12 @@ namespace ENP1
                 return;
             }
 
-            if (Data.IsFileLocked(normalFile, true))
+            if (normalFile.Exists)
             {
-                return;
+                if (Data.IsFileLocked(normalFile, true))
+                {
+                    return;
+                }
             }
 
             loadedLbl.Text = "Loaded File: " + dataFile;
@@ -122,7 +125,7 @@ namespace ENP1
         }
 
         /// <summary> Button to test network settings. </summary>
-        private void NetworkBtn_Click(object sender, EventArgs e)
+        private async void NetworkBtn_Click(object sender, EventArgs e)
         {
             //False when percentage split, true when cross validation.
             bool validation = !radBtnSplit.Checked;
@@ -138,8 +141,8 @@ namespace ENP1
             //Load analyst from earlier.
             var analyst = new EncogAnalyst();
             var normalisationData = new FileInfo(path + @"normal\" + "normalizationData" + dataFile.Replace(".csv", "") + ".ega");
-
-            if(Data.IsFileLocked(normalisationData, false))
+            
+            if (Data.IsFileLocked(normalisationData, false))
             {
                 return;
             }
@@ -189,68 +192,58 @@ namespace ENP1
             }
 
             SetPanel(panel4);
-            TaskCompletionSource<double> task = new TaskCompletionSource<double>();
-            Task<double> t1 = task.Task;
 
             //If using cross-validation.
             if (validation)
             {
                 //Setup pool size.
-                decimal tmpPoolSize = info.InputData.Length * decimal.Divide(sampleBar.Value , 100);
+                decimal tmpPoolSize = info.InputData.Length * decimal.Divide(sampleBar.Value, 100);
                 int poolSize = (int)tmpPoolSize;
 
-                double[][] arrayIn = info.InputData; double[][] arrayOut = info.OutputData;
-
-                info.InputData = Data.CreateArray<double>(poolSize, info.InputData[0].Length);
-                info.OutputData = Data.CreateArray<double>(poolSize, info.OutputData[0].Length);
-
-				//Random to randomise pool selection.
-                Random rnd = new Random();
+                double[][] arrayIn = info.InputData;
+                double[][] arrayOut = info.OutputData;
 
                 int[] index = new int[poolSize];
 
-				//Radomly allocate items for training pool.
-                for (int j = 0; j < info.InputData.Length; j++)
-                {
-                    index[j] = rnd.Next(0, arrayIn.Length);
-                    info.InputData[j] = arrayIn[index[j]]; info.OutputData[j] = arrayOut[index[j]];
-                }
-
-				//Remove pooled items from array.
-                arrayIn = Data.RemoveFromArray(arrayIn, index, poolSize);
-                arrayOut = Data.RemoveFromArray(arrayOut, index, poolSize);
-                
                 //Start allocating sample pools.
                 for (int i = 0; i <= arrayIn.Length / poolSize; i++)
                 {
-                    info.InputDataSample = Data.CreateArray<double>(poolSize, arrayIn[0].Length);
-                    info.OutputDataSample = Data.CreateArray<double>(poolSize, arrayOut[0].Length);
+                    info.InputData = Data.CreateArray<double>(arrayIn.Length - poolSize, info.InputData[0].Length);
+                    info.OutputData = Data.CreateArray<double>(arrayOut.Length - poolSize, info.OutputData[0].Length);
+                    info.InputDataSample = Data.CreateArray<double>(poolSize, info.InputData[0].Length);
+                    info.OutputDataSample = Data.CreateArray<double>(poolSize, info.OutputData[0].Length);
 
-                    //Radomly allocate items for [i] sample pool.
-                    for (int j = 0; j < info.InputDataSample.Length; j++)
+                    for (int j = 0; j < poolSize; j++)
                     {
-                        index[j] = rnd.Next(0, arrayIn.Length);
-                        info.InputDataSample[j] = arrayIn[index[j]]; info.OutputDataSample[j] = arrayOut[index[j]];
+                        index[j] = j + i * poolSize;
                     }
 
-                    arrayIn = Data.RemoveFromArray(arrayIn, index, poolSize);
-                    arrayOut = Data.RemoveFromArray(arrayOut, index, poolSize);
+                    int counter = 0;
+                    for (int j = 0; j < info.InputData.Length; j++)
+                    {
+                        if (Array.Exists(index, element => element.Equals(j)))
+                        {
+                            info.InputDataSample[counter] = arrayIn[j];
+                            counter++;
+                        }
+                        else
+                        {
+                            info.InputData[j] = arrayIn[j]; info.OutputData[j] = arrayOut[j];
+                        }
+                    }
 
                     //Create network.
                     network.Create(info.InputNumber, layersBar.Value, neuronsBar.Value, info.OutputNumber);
 
                     float lr = (float)(learningRateBar.Value) / 10; float mom = (float)(momentumBar.Value) / 10;
 
-                    Task.Factory.StartNew(() =>
-                    {
-                        task.SetResult(Math.Round(network.Train(info, lr, mom), 5));
-                    });
+                    double result = await Task<double>.Factory.StartNew(() => network.Train(info, lr, mom));
 
-                    output.Text += "Training complete with an inaccuracy of: " + t1.Result + "\n\n";
+                    output.Text += "Training complete with an inaccuracy of: " + Math.Round(result, 5) + "\n\n";
 
                     double[][] answers = Data.CreateArray<double>(poolSize, info.InputData[0].Length);
 
-					//Compute outputs.
+                    //Compute outputs.
                     for (int j = 0; j < answers.Length; j++)
                     {
                         if (radBtnAccord.Checked)
@@ -270,8 +263,15 @@ namespace ENP1
                         }
                     }
 
-					//Display network.
+                    //Display network.
                     output.Text += network.Display(answers, analyst, info, outputTitles, path + @"normal\" + dataFile.Replace(".csv", "Normal.csv"));
+
+#if false
+                    using (StreamWriter sw = new StreamWriter(path + "crossfoldResults", true))
+                    {
+                        sw.WriteLine(String.Format(network.Display(answers, analyst, info, outputTitles, path + @"normal\" + dataFile.Replace(".csv", "Normal.csv"))));
+                    }
+#endif
                 }
             }
 			//Else percentage split.
@@ -282,12 +282,9 @@ namespace ENP1
 
                 float lr = (float)(learningRateBar.Value) / 10; float mom = (float)(momentumBar.Value) / 10;
 
-                Task.Factory.StartNew(() =>
-                {
-                    task.SetResult(Math.Round(network.Train(info, lr, mom), 5));
-                });
+                double result = await Task<double>.Factory.StartNew(() => network.Train(info, lr, mom));
 
-                output.Text += "Training complete with an inaccuracy of: " + t1.Result + "\n\n";
+                output.Text += "Training complete with an inaccuracy of: " + Math.Round(result, 5) + "\n\n";
 
                 double[][] answers = Data.CreateArray<double>(info.InputDataSample.Length, info.InputDataSample[0].Length);
 
@@ -338,9 +335,12 @@ namespace ENP1
 
             string header = path + "tests" + @"\Results" + dataFile;
 
-            if (Data.IsFileLocked(new FileInfo(header), true))
+            if (new FileInfo(header).Exists)
             {
-                return;
+                if (Data.IsFileLocked(new FileInfo(header), true))
+                {
+                    return;
+                }
             }
 
             using (StreamWriter sw = new StreamWriter(header))
@@ -546,9 +546,12 @@ namespace ENP1
                 return;
             }
 
-            if (Data.IsFileLocked(new FileInfo(path + @"networks\networks.json"), true))
+            if (new FileInfo(path + @"networks\networks.json").Exists)
             {
-                return;
+                if (Data.IsFileLocked(new FileInfo(path + @"networks\networks.json"), true))
+                {
+                    return;
+                }
             }
 
             //Write network object to json file.
