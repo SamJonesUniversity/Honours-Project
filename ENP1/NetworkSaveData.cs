@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace ENP1
 {
-	/// <summary> Class to store network information for saving and loading networks.
+	/// <summary> Class to store network information for saving and loading networks. </summary>
     internal class NetworkSaveData
     {
         public string Name { get; set; }

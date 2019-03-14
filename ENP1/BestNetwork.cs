@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace ENP1
+﻿namespace ENP1
 {
+    /// <summary>
+    /// Class to hold the information when calculating the best network settings.
+    /// </summary>
     class BestNetwork
     {
         public double Error { get; set; }

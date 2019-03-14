@@ -12,7 +12,7 @@ using System.Windows.Forms;
 namespace ENP1
 {
     /// <summary>
-    /// Data class used to load and validate CSV files.
+    /// Data class used to load and validate CSV files. Additionally it can be used to create arrays, remove arrays from 2D arrays and check to see if a file is read/write accessable.
     /// This data is then stored as a data object.
     /// </summary>
     internal class Data
@@ -59,11 +59,13 @@ namespace ENP1
         {
             List<List<T>> tmp = new List<List<T>>();
 
+            //Dynamically setup list of lists.
             for (int i = 0; i < input.Length; i++)
             {
                 tmp.Add(new List<T>(input[i]));
             }
 
+            //Remove lists from list of lists.
             for (int i = 0; i < count; i++)
             {
                 int id = index[i] - i;
@@ -77,6 +79,7 @@ namespace ENP1
 
             T[][] array = Data.CreateArray<T>(tmp.Count, tmp[0].Count);
 
+            //Populate array with newly updated list of lists.
             int j = 0;
             foreach (List<T> entry in tmp)
             {
@@ -87,11 +90,12 @@ namespace ENP1
             return array;
         }
 
-        /// <summary> Checks to see if file is open in another program. </summary>
+        /// <summary> Checks to see if file is open in another program. "write" is true if you need write permissions. </summary>
         public static bool IsFileLocked(FileInfo file, bool write)
         {
             FileStream stream = null;
 
+            //Try to access file using read or write. If unable to catch exception, if able close stream.
             try
             {
                 if (!write)
@@ -121,7 +125,16 @@ namespace ENP1
             return false;
         }
 
-        /// <summary> need comments </summary>
+        /// <summary>
+        /// Normalise CSV file.
+        /// </summary>
+        /// <param name="sourceFile"> Source CSV to normalise. </param>
+        /// <param name="normalFile"> Destination to normalise to. </param>
+        /// <param name="path"> Folder path of sourceFile. </param>
+        /// <param name="dataFile"> Name of source file file in folder path. </param>
+        /// <param name="outputs"> Number of columns that are outputs in CSV. </param>
+        /// <returns></returns>
+        
         public static List<string> Normalise(FileInfo sourceFile, FileInfo normalFile, string path, string dataFile, int outputs)
         {
             List<string> titles = new List<string>();
@@ -141,6 +154,7 @@ namespace ENP1
                 return null;
             }
 
+            //Check for valid output headings.
             if (analyst.Script.Fields.Length - 1 < outputs)
             {
                 MessageBox.Show("You have specified " + outputs + " outputs but there are only " + analyst.Script.Fields.Length + " headings in the file.", "Too Many Outputs Error");
@@ -155,6 +169,7 @@ namespace ENP1
                 //field.Action = Encog.Util.Arrayutil.NormalizationAction.OneOf; //Use this to change normalizaiton type.
             }
 
+            //Handle missing values with negation.
             analyst.Script.Normalize.MissingValues = new NegateMissing();
 
             //Normalization.
@@ -162,6 +177,7 @@ namespace ENP1
             norm.Analyze(sourceFile, true, CSVFormat.English, analyst);
             norm.ProduceOutputHeaders = true;
 
+            //Try as complex problem and unknown execptions may be possible in edge cases.
             try
             {
                 norm.Normalize(normalFile);
@@ -173,6 +189,7 @@ namespace ENP1
                 return null;
             }
             
+            //Populate list with CSV headings.
             for (int i = outputs; i + analyst.Script.Fields.Length > analyst.Script.Fields.Length; i--)
             {
                 titles.Add(analyst.Script.Fields[analyst.Script.Fields.Length - i].Name);
@@ -184,7 +201,14 @@ namespace ENP1
             return titles;
         }
 
-        ///<summary> Read and store data from csv (File path, Column titles, Sample Percent, Validation type) </summary>
+        /// <summary>
+        /// Read and store data from csv.
+        /// </summary>
+        /// <param name="path"> File path. </param>
+        /// <param name="titles"> Titles of CSV columns. </param>
+        /// <param name="sampleNumber"> Percentage for sample data set, if using cross-fold this will not be used. </param>
+        /// <param name="validation"> True for cross-fold validation. False for percentage split. </param>
+        /// <returns></returns>
         public Data ReturnInfo(string path, List<string> titles, int sampleNumber, bool validation)
         {
             if (IsFileLocked(new FileInfo(path), false))
@@ -237,6 +261,7 @@ namespace ENP1
             int numOfSamples = 0;
             int sampleCount = 1;
 
+            //If percentage split ensure file has enough entrees.
             if (!validation)
             {
                 if (csvLength - 1 <= 1)
@@ -246,10 +271,12 @@ namespace ENP1
                 }
                 else
                 {
-                    decimal tmpSampleNumber = csvLength * decimal.Divide(sampleNumber, 100); //(csvLength - 1) / (((csvLength - 1) / 10) * (sampleNumber + 1)) + 1;
+                    //Turn sampleNumber into a fraction of csvLength.
+                    decimal tmpSampleNumber = csvLength * decimal.Divide(sampleNumber, 100);
                     sampleNumber = (int)tmpSampleNumber;
                 }
 
+                //If sampleNumber is too high and will not fit into csv length a whole number of times.
                 while ((csvLength - 1) % sampleNumber > (csvLength - 1) / sampleNumber)
                 {
                     sampleNumber--;
@@ -264,6 +291,7 @@ namespace ENP1
             double[][] inputDataSample = CreateArray<double>(sampleNumber, inputNumber);
             double[][] outputDataSample = CreateArray<double>(sampleNumber, outputNumber);
 
+            //If Cross-Fold validation sample null so all entrees are assigned to one array.
             if (validation)
             {
                 inputDataSample = null;
@@ -277,6 +305,7 @@ namespace ENP1
                 inputData = CreateArray<double>(csvLength - 1 - sampleNumber, inputNumber);
                 outputData = CreateArray<double>(csvLength - 1 - sampleNumber, outputNumber);
 
+                //Set sampleNumber to equal every sampleNumber number of iterations add to sample array.
                 sampleNumber = (csvLength - 1) / sampleNumber;
             }
 
@@ -290,6 +319,7 @@ namespace ENP1
                     var values = line.Split(',');
 
                     //Skips first line with headings.
+                    //Once sampleCount is == sampleNumber and numberOfSamples does no exceed sample array length, add to sample array.
                     if (i >= 1)
                     {
                         //Input array assigning.
@@ -320,7 +350,7 @@ namespace ENP1
                             }
                         }
 
-                        //Reset logic.
+                        //Reset sampleCount and increase number of samples in sample array.
                         if (passed)
                         {
                             sampleCount = 0;
@@ -328,6 +358,7 @@ namespace ENP1
                             passed = false;
                         }
 
+                        //Iterate number of times not entered data into sample array.
                         sampleCount++;
                     }
 
@@ -335,6 +366,7 @@ namespace ENP1
                 }
             }
 
+            //Populate object to return.
             Data info = new Data
             {
                 InputData = inputData,

@@ -12,8 +12,13 @@ using System;
 
 namespace ENP1
 {
+    /// <summary>
+    /// Neural Network class for the deep learning version of EncogNeuralNetwork.
+    /// Inherits: Save and Load from EncogNeuralNetwork.
+    /// </summary>
     class EncogDeepNeuralNetwork : EncogNeuralNetwork
     {
+        /// <summary> Create new instance of neural network. Can only contain 1 hidden layer. </summary>
         public override void Create(int input, int layers, int neurons, int output)
         {
             //Setup network, parameters (Activation, bias, number of neurons).
@@ -29,6 +34,7 @@ namespace ENP1
             EncogNetwork = (BasicNetwork)elman.Generate();
         }
 
+        /// <summary> Train neural network. </summary>
         public override double Train(Data info, float lr, float mom)
         {
             IMLDataSet data = new BasicMLDataSet(info.InputData, info.OutputData);
@@ -39,14 +45,14 @@ namespace ENP1
             IMLTrain learner;
 
             learner = new LevenbergMarquardtTraining(EncogNetwork, data);
-
-            var stop = new StopTrainingStrategy();
+            
             learner.AddStrategy(new Greedy());
             learner.AddStrategy(new HybridStrategy(trainAlt));
 
             //Train network on data set.
             double lastError = double.PositiveInfinity;
 
+            //Training loop while error is decreasing by 0.0000001 or more every 1000 iterations.
             do
             {
                 if (learner.Error != 0)
@@ -54,6 +60,7 @@ namespace ENP1
                     lastError = learner.Error;
                 }
 
+                //An iteration of this takes too long to run 1000 so 1 as ran instead.
                 learner.Iteration();
 
             } while (lastError - learner.Error > 0.0000001);

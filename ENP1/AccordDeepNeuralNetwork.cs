@@ -1,5 +1,4 @@
-﻿using Accord.Math;
-using Accord.Neuro;
+﻿using Accord.Neuro;
 using Accord.Neuro.ActivationFunctions;
 using Accord.Neuro.Learning;
 using Accord.Neuro.Networks;
@@ -63,9 +62,11 @@ namespace ENP1
 
             // Setup batches of input for learning.
             int batchCount = Math.Max(1, info.InputData.Length / 100);
+
             // Create mini-batches to speed learning.
-            int[] groups = Accord.Statistics.Classes.Random(info.InputData.Length, batchCount); //Tools.RandomGroups(info.InputData.Length, batchCount);
-            double[][][] batches = Accord.Statistics.Classes.Separate(info.InputData, groups); //info.InputData.Subgroups(groups);
+            int[] groups = Accord.Statistics.Classes.Random(info.InputData.Length, batchCount);
+            double[][][] batches = Accord.Statistics.Classes.Separate(info.InputData, groups);
+
             // Learning data for the specified layer.
             double[][][] layerData;
 

@@ -1,6 +1,5 @@
 ﻿using Accord.Neuro;
 using Accord.Neuro.Learning;
-using System;
 
 namespace ENP1
 {
@@ -40,7 +39,7 @@ namespace ENP1
             }
         }
 
-        /// <summary>  </summary>
+        /// <summary> Train neural network. </summary>
         public override double Train(Data info, float lr, float mom)
         {
             //Setup trainer using backpropagation.
@@ -51,11 +50,13 @@ namespace ENP1
 
             double lastError;
 
+            //Loop while error does not decrease by 0.0000001 every 1000 training iterations.
             do
             {
                 lastError = error;
                 int i = 0;
 
+                //Run 1000 training iterations.
                 while (i < 1000)
                 {
                     error = teacher.RunEpoch(info.InputData, info.OutputData);
@@ -63,17 +64,18 @@ namespace ENP1
                 }
 
             } while (lastError - error > 0.0000001);
-            
 
             return error;
         }
 
+        /// <summary> Save current neural network. </summary>
         public override void Save(string fileName)
         {
             AccordNetwork.Save(fileName);
         }
-		
-		public override void Load(string fileName)
+
+        /// <summary> Load existing neural network. </summary>
+        public override void Load(string fileName)
         {
             AccordNetwork = (ActivationNetwork) Network.Load(fileName);
         }

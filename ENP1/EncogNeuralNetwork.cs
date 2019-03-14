@@ -1,18 +1,17 @@
-﻿using Accord.Neuro;
-using Encog.Engine.Network.Activation;
+﻿using Encog.Engine.Network.Activation;
 using Encog.ML.Data;
 using Encog.ML.Data.Basic;
 using Encog.ML.Train;
 using Encog.Neural.Networks;
 using Encog.Neural.Networks.Layers;
 using Encog.Neural.Networks.Training.Propagation.Back;
-using System;
 using System.IO;
 
 namespace ENP1
 {
     internal class EncogNeuralNetwork : NeuralNetwork
     {
+        /// <summary> Create new instance of neural network. </summary>
         public override void Create(int input, int layers, int neurons, int output)
         {
             //Setup network, parameters (Activation, bias, number of neurons).
@@ -29,6 +28,7 @@ namespace ENP1
             EncogNetwork.Reset();
         }
 
+        /// <summary> Train neural network. </summary>
         public override double Train(Data info, float lr, float mom)
         {
             IMLDataSet data = new BasicMLDataSet(info.InputData, info.OutputData);
@@ -59,12 +59,14 @@ namespace ENP1
             return learner.Error;
         }
 
+        /// <summary> Save current neural network. </summary>
         public override void Save(string fileName)
         {
             FileInfo networkFile = new FileInfo(fileName);
             Encog.Persist.EncogDirectoryPersistence.SaveObject(networkFile, EncogNetwork);
         }
 
+        /// <summary> Load existing neural network. </summary>
 		public override void Load(string fileName)
         {
             FileInfo networkFile = new FileInfo(fileName);

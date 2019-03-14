@@ -11,10 +11,12 @@ namespace ENP1
     /// <summary> Abstract NeuralNetwork class. </summary>
     internal abstract class NeuralNetwork
     {
+        //Setup all types of network.
         public BasicNetwork EncogNetwork;
         public DeepBeliefNetwork DeepAccordNetwork;
         public ActivationNetwork AccordNetwork;
 
+        //Calculate best momentum for network.
         private BestNetwork BestMomentum(Data info, string path, int layers, int neurons, float lr)
         {
             bool complete = false;
@@ -29,13 +31,19 @@ namespace ENP1
                 Layers = layers
             };
 
+            //Create network again to refresh neurons and weights.
             Create(info.InputNumber, layers, neurons, info.OutputNumber);
+
+            //Train network.
             best.Error = Train(info, lr, best.Momentum);
 
+            //Seperate momentum variable so objects momentum is only updated when error is lower.
             float mom = 0.1F;
 
+            //While momentum has not reached and edge case (0.1 or 1.0).
             while (!complete)
             {
+                //If first time set to middle for comand and conquer.
                 if (firstPass)
                 {
                     mom = 0.5F;
@@ -49,6 +57,7 @@ namespace ENP1
                     mom -= 0.1F;
                 }
 
+                //Rounding as float sometimes shows 0.X...1 instead of 0.X.
                 mom = (float)Math.Round(mom, 1);
 
                 if (mom == 0.1F || mom == 1.0F)
