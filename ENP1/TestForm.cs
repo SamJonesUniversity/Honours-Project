@@ -669,8 +669,8 @@ namespace ENP1
             momentumBar.Value = 7; MomentumBar_Scroll(sender, e); //1 - 10 = 0.1 - 1.0 etc.
             neuronsBar.Value = 35; NeuronsBar_Scroll(sender, e);
             layersBar.Value = 2; LayersBar_Scroll(sender, e);
-            deepNetworkBox.Checked = true; DeepNetworkBox_CheckedChanged(sender, e);
-            radBtnAccord.Checked = true;
+            deepNetworkBox.Checked = false; DeepNetworkBox_CheckedChanged(sender, e);
+            radBtnEncog.Checked = true;
         }
 
         /// Scroll bars ///
