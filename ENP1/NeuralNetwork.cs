@@ -16,6 +16,9 @@ namespace ENP1
         public DeepBeliefNetwork DeepAccordNetwork;
         public ActivationNetwork AccordNetwork;
 
+        //Context switch 20ns overhead.
+        static readonly object Locker = new object();
+
         //Calculate best momentum for network.
         private BestNetwork BestMomentum(Data info, string path, int layers, int neurons, float lr)
         {
@@ -67,6 +70,7 @@ namespace ENP1
 
                 double[] mean = new double[2];
 
+                //Create and train the network X times.
                 for(int i = 0; i < mean.Length; i++)
                 {
                     Create(info.InputNumber, layers, neurons, info.OutputNumber);
@@ -75,19 +79,24 @@ namespace ENP1
 
                 double newest = 0;
 
+                //Collate all training into on value.
                 for (int i = 0; i < mean.Length; i++)
                 {
                     newest += mean[i];
                 }
 
+                //Get mean of training.
                 newest /= mean.Length;
 
                 if (firstPass)
                 {
                     if (newest < best.Error)
                     {
+                        //Set new best error.
                         best.Error = newest;
                         best.Momentum = mom;
+
+                        //Set to increase momentum.
                         increase = true;
                     }
                     else if (newest == best.Error)
@@ -96,13 +105,16 @@ namespace ENP1
                     }
                     else
                     {
+                        //Set to decrease momentum.
                         increase = false;
                     }
 
+                    //No longer first round.
                     firstPass = false;
                 }
                 else
                 {
+                    //
                     if (newest < best.Error)
                     {
                         best.Error = newest;
@@ -115,10 +127,14 @@ namespace ENP1
                 }
             }
 
-            using (StreamWriter sw = new StreamWriter(path, true))
+            //Lock to prevent data race.
+            lock (Locker)
             {
-                sw.WriteLine(String.Format(
-                    "{0},{1},{2},{3},{4},{5}", best.Error, GetType().ToString().Replace("ENP1.", ""), layers, neurons, Math.Round(lr, 1), Math.Round(best.Momentum, 1))); //"ENP1" must change to reflect solution name (name.) if ever changed.
+                using (StreamWriter sw = new StreamWriter(path, true))
+                {
+                    sw.WriteLine(String.Format(
+                        "{0},{1},{2},{3},{4},{5}", best.Error, GetType().ToString().Replace("ENP1.", ""), layers, neurons, Math.Round(lr, 1), Math.Round(best.Momentum, 1))); //"ENP1" must change to reflect solution name (name.) if ever changed.
+                }
             }
 
             return best;
@@ -339,6 +355,10 @@ namespace ENP1
 
             List<int> count = new List<int>();
 
+#if DEBUG
+            List<string> printer = new List<string>();
+#endif
+
             for (int c = 0; c < titles.Count; c++)
             {
                 count.Add(0);
@@ -376,8 +396,13 @@ namespace ENP1
 
                     if (count[j] == 1)
                     {
-                        outpt += Math.Round(analyst.Script.Normalize.NormalizedFields[analyst.Script.Normalize.NormalizedFields.Count + j - count.Count].DeNormalize(info.OutputDataSample[i][j]), 1).ToString();
-                        prediction += Math.Round(analyst.Script.Normalize.NormalizedFields[analyst.Script.Normalize.NormalizedFields.Count + j - count.Count].DeNormalize(answers[i][j]), 1).ToString();
+                        outpt += Math.Round(analyst.Script.Normalize.NormalizedFields[analyst.Script.Normalize.NormalizedFields.Count + j - count.Count].DeNormalize(info.OutputDataSample[i][j]), 5).ToString();
+                        prediction += Math.Round(analyst.Script.Normalize.NormalizedFields[analyst.Script.Normalize.NormalizedFields.Count + j - count.Count].DeNormalize(answers[i][j]), 5).ToString();
+
+#if DEBUG
+                        printer.Add(analyst.Script.Normalize.NormalizedFields[analyst.Script.Normalize.NormalizedFields.Count + j - count.Count].DeNormalize(info.OutputDataSample[i][j]).ToString() + ",");
+                        printer.Add(analyst.Script.Normalize.NormalizedFields[analyst.Script.Normalize.NormalizedFields.Count + j - count.Count].DeNormalize(answers[i][j]).ToString() + "\n");
+#endif
                     }
                     else
                     {
@@ -390,20 +415,38 @@ namespace ENP1
 
                         outpt += analyst.Script.Normalize.NormalizedFields[analyst.Script.Normalize.NormalizedFields.Count + j - count.Count].DetermineClass(temp).Name;
 
+#if DEBUG
+                        printer.Add(analyst.Script.Normalize.NormalizedFields[analyst.Script.Normalize.NormalizedFields.Count + j - count.Count].DetermineClass(temp).Name + ",");
+#endif
+
                         for (int c = 0; c < count[j]; c++)
                         {
                             temp[c] = answers[i][c];
                         }
 
                         prediction += analyst.Script.Normalize.NormalizedFields[analyst.Script.Normalize.NormalizedFields.Count + j - count.Count].DetermineClass(temp).Name;
+
+#if DEBUG
+                        printer.Add(analyst.Script.Normalize.NormalizedFields[analyst.Script.Normalize.NormalizedFields.Count + j - count.Count].DetermineClass(temp).Name + "\n");
+#endif
                     }
 
-                    item += String.Format(
+                        item += String.Format(
                         "Predicted {0} Correct: {1}\n\n",
                         prediction, outpt
                     );
                 }
             }
+
+#if DEBUG
+            using (var sw = new StreamWriter(path.Replace(".csv", "cross-fold-debug-out.csv"), true))
+            {
+                foreach (string s in printer)
+                {
+                    sw.Write(s);
+                }
+            }
+#endif
 
             return item;
         }
@@ -451,7 +494,7 @@ namespace ENP1
 
                     if (count[j] == 1)
                     {
-                        prediction += Math.Round(analyst.Script.Normalize.NormalizedFields[analyst.Script.Normalize.NormalizedFields.Count + j - count.Count].DeNormalize(answers[i][j]), 1).ToString();
+                        prediction += Math.Round(analyst.Script.Normalize.NormalizedFields[analyst.Script.Normalize.NormalizedFields.Count + j - count.Count].DeNormalize(answers[i][j]), 5).ToString();
                     }
                     else
                     {

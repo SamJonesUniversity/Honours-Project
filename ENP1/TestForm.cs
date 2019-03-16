@@ -223,12 +223,12 @@ namespace ENP1
                     {
                         if (Array.Exists(index, element => element.Equals(j)))
                         {
-                            info.InputDataSample[counter] = arrayIn[j];
+                            info.InputDataSample[counter] = arrayIn[j]; info.OutputDataSample[counter] = arrayOut[j];
                             counter++;
                         }
                         else
                         {
-                            info.InputData[j] = arrayIn[j]; info.OutputData[j] = arrayOut[j];
+                            info.InputData[j - counter] = arrayIn[j]; info.OutputData[j - counter] = arrayOut[j];
                         }
                     }
 
@@ -265,13 +265,6 @@ namespace ENP1
 
                     //Display network.
                     output.Text += network.Display(answers, analyst, info, outputTitles, path + @"normal\" + dataFile.Replace(".csv", "Normal.csv"));
-
-#if false
-                    using (StreamWriter sw = new StreamWriter(path + "crossfoldResults", true))
-                    {
-                        sw.WriteLine(String.Format(network.Display(answers, analyst, info, outputTitles, path + @"normal\" + dataFile.Replace(".csv", "Normal.csv"))));
-                    }
-#endif
                 }
             }
 			//Else percentage split.
@@ -672,10 +665,10 @@ namespace ENP1
 
         private void RecommendedBtn_Click(object sender, EventArgs e)
         {
-            learningRateBar.Value = 1; LearningRateBar_Scroll(sender, e);
-            momentumBar.Value = 8; MomentumBar_Scroll(sender, e);
-            neuronsBar.Value = 25; NeuronsBar_Scroll(sender, e);
-            layersBar.Value = 3; LayersBar_Scroll(sender, e);
+            learningRateBar.Value = 1; LearningRateBar_Scroll(sender, e); //1 - 10 = 0.1 - 1.0 etc.
+            momentumBar.Value = 7; MomentumBar_Scroll(sender, e); //1 - 10 = 0.1 - 1.0 etc.
+            neuronsBar.Value = 35; NeuronsBar_Scroll(sender, e);
+            layersBar.Value = 2; LayersBar_Scroll(sender, e);
             deepNetworkBox.Checked = true; DeepNetworkBox_CheckedChanged(sender, e);
             radBtnAccord.Checked = true;
         }
